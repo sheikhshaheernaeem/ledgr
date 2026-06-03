@@ -1,0 +1,88 @@
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { redirect, notFound } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import InvoiceActions from "./InvoiceActions";
+
+const statusStyle: Record<string, string> = {
+  DRAFT: "border-zinc-500/30 text-zinc-400",
+  SENT: "border-blue-500/30 text-blue-400",
+  PAID: "border-emerald-500/30 text-emerald-400",
+  OVERDUE: "border-red-500/30 text-red-400",
+};
+
+export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const { id } = await params;
+  const inv = await prisma.invoice.findFirst({
+    where: { id, userId: session.user.id as string },
+    include: { lineItems: true },
+  });
+  if (!inv) notFound();
+
+  return (
+    <div className="p-8 max-w-3xl mx-auto space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{inv.invoiceNumber}</h1>
+          <p className="text-muted-foreground mt-1">{inv.clientName}{inv.clientEmail && ` · ${inv.clientEmail}`}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className={`text-sm ${statusStyle[inv.status] ?? ""}`}>{inv.status}</Badge>
+          <InvoiceActions invoiceId={inv.id} status={inv.status} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 text-sm">
+        <div><p className="text-muted-foreground">Issue Date</p><p className="font-medium">{new Date(inv.issueDate).toLocaleDateString()}</p></div>
+        <div><p className="text-muted-foreground">Due Date</p><p className="font-medium">{new Date(inv.dueDate).toLocaleDateString()}</p></div>
+        {inv.paidAt && <div><p className="text-muted-foreground">Paid On</p><p className="font-medium text-emerald-400">{new Date(inv.paidAt).toLocaleDateString()}</p></div>}
+      </div>
+
+      <Card className="border-border bg-card">
+        <CardHeader><CardTitle className="text-base">Line Items</CardTitle></CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-center">Qty</TableHead>
+                <TableHead className="text-right">Unit Price</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {inv.lineItems.map(item => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell className="text-center">{item.quantity}</TableCell>
+                  <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">${item.amount.toFixed(2)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Separator className="my-4" />
+          <div className="space-y-1 text-sm text-right">
+            <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>${inv.subtotal.toFixed(2)}</span></div>
+            {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>Tax ({inv.taxRate}%)</span><span>${inv.taxAmount.toFixed(2)}</span></div>}
+            <div className="flex justify-end gap-12 font-bold text-white text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {inv.notes && (
+        <Card className="border-border bg-card">
+          <CardContent className="pt-4">
+            <p className="text-sm text-muted-foreground">{inv.notes}</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

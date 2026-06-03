@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -16,29 +16,54 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  transactions Transaction[]
-  reports      Report[]
-  subscription Subscription?
+  accounts         Account[]
+  sessions         Session[]
+  transactions     Transaction[]
+  reports          Report[]
+  subscription     Subscription?
+  bankAccounts     BankAccount[]
+  invoices         Invoice[]
+  budgets          Budget[]
+  messages         Message[]
+  auditLogs        AuditLog[]
+  plaidConnections PlaidConnection[]
+  cashFlowForecasts CashFlowForecast[]
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date        DateTime
-  description String
-  amount      Float
-  type        String
-  category    String?
-  subcategory String?
-  confidence  Float?
-  status      String   @default("PENDING")
-  aiNotes     String?
-  reportId    String?
-  report      Report?  @relation(fields: [reportId], references: [id])
-  createdAt   DateTime @default(now())
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime
+  description      String
+  amount           Float
+  type             String
+  category         String?
+  subcategory      String?
+  confidence       Float?
+  status           String   @default("PENDING")
+  aiNotes          String?
+  reportId         String?
+  report           Report?  @relation(fields: [reportId], references: [id])
+  createdAt        DateTime @default(now())
+
+  bankAccountId    String?
+  bankAccount      BankAccount? @relation(fields: [bankAccountId], references: [id])
+  receiptData      String?
+  receiptOcrRaw    String?
+  taxCategory      String?
+  taxLine          String?
+  isRecurring      Boolean  @default(false)
+  recurringGroupId String?
+  reconciled       Boolean  @default(false)
+  reconciledAt     DateTime?
+  bankStatementRef String?
+  invoiceId        String?
+  invoice          Invoice? @relation(fields: [invoiceId], references: [id])
+
+  messages            Message[]
+  auditLogs           AuditLog[]
+  reconciliationItems ReconciliationItem[]
 }
 
 model Report {
@@ -56,6 +81,7 @@ model Report {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   transactions  Transaction[]
+  messages      Message[]
 }
 
 model Subscription {
@@ -67,6 +93,157 @@ model Subscription {
   stripeId  String?
   startedAt DateTime  @default(now())
   expiresAt DateTime?
+}
+
+model BankAccount {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  accountType     String   @default("CHECKING")
+  institutionName String?
+  lastFourDigits  String?
+  currency        String   @default("USD")
+  currentBalance  Float    @default(0)
+  isPlaidLinked   Boolean  @default(false)
+  plaidAccountId  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  transactions    Transaction[]
+  reconciliations Reconciliation[]
+}
+
+model Reconciliation {
+  id               String   @id @default(cuid())
+  bankAccountId    String
+  bankAccount      BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  userId           String
+  statementDate    DateTime
+  statementBalance Float
+  status           String   @default("IN_PROGRESS")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  items ReconciliationItem[]
+}
+
+model ReconciliationItem {
+  id               String         @id @default(cuid())
+  reconciliationId String
+  reconciliation   Reconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
+  transactionId    String?
+  transaction      Transaction?   @relation(fields: [transactionId], references: [id])
+  statementDate    DateTime
+  statementDesc    String
+  statementAmount  Float
+  matched          Boolean  @default(false)
+  matchedAt        DateTime?
+  createdAt        DateTime @default(now())
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceNumber String
+  clientName    String
+  clientEmail   String?
+  issueDate     DateTime
+  dueDate       DateTime
+  status        String   @default("DRAFT")
+  subtotal      Float
+  taxRate       Float    @default(0)
+  taxAmount     Float    @default(0)
+  total         Float
+  notes         String?
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  lineItems    InvoiceLineItem[]
+  transactions Transaction[]
+
+  @@unique([userId, invoiceNumber])
+}
+
+model InvoiceLineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float   @default(1)
+  unitPrice   Float
+  amount      Float
+  createdAt   DateTime @default(now())
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month     Int
+  year      Int
+  category  String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, year, month, category])
+}
+
+model Message {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactionId String?
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  reportId      String?
+  report        Report?      @relation(fields: [reportId], references: [id])
+  body          String
+  role          String       @default("CLIENT")
+  readAt        DateTime?
+  createdAt     DateTime     @default(now())
+}
+
+model AuditLog {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action        String
+  entityType    String
+  entityId      String
+  before        String?
+  after         String?
+  ipAddress     String?
+  createdAt     DateTime     @default(now())
+  transactionId String?
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+}
+
+model PlaidConnection {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institutionId   String
+  institutionName String
+  accessToken     String
+  itemId          String
+  status          String    @default("ACTIVE")
+  lastSyncAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model CashFlowForecast {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generatedAt  DateTime @default(now())
+  periodStart  DateTime
+  periodEnd    DateTime
+  forecastJson String
+  narrative    String?
 }
 
 model Account {

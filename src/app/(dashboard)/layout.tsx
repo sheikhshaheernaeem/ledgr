@@ -10,13 +10,35 @@ import {
   Settings,
   LogOut,
   ShieldCheck,
+  Building2,
+  Receipt,
+  Scale,
+  PiggyBank,
+  GitMerge,
+  TrendingUp,
+  Link2,
+  Shield,
 } from "lucide-react";
 import { signOut } from "@/lib/auth";
 
-const navItems = [
+const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
   { href: "/reports", icon: FileText, label: "Reports" },
+];
+
+const financeNav = [
+  { href: "/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/accounts", icon: Building2, label: "Bank Accounts" },
+  { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },
+  { href: "/budget", icon: PiggyBank, label: "Budget vs Actual" },
+  { href: "/reconciliation", icon: GitMerge, label: "Reconciliation" },
+  { href: "/forecast", icon: TrendingUp, label: "Cash Flow Forecast" },
+  { href: "/bank-sync", icon: Link2, label: "Bank Sync" },
+];
+
+const systemNav = [
+  { href: "/audit-log", icon: Shield, label: "Audit Log" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -38,13 +60,33 @@ export default async function DashboardLayout({
           <span className="text-xl font-bold text-emerald-400">Ledgr</span>
         </Link>
 
-        <nav className="flex-1 space-y-1">
-          {navItems.map((item) => (
+        <nav className="flex-1 space-y-1 overflow-y-auto">
+          {coreNav.map((item) => (
             <Link key={item.href} href={item.href}>
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
-              >
+              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+
+          <Separator className="my-2" />
+          <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Finance</p>
+
+          {financeNav.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
+                <item.icon className="h-4 w-4" />
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+
+          <Separator className="my-2" />
+
+          {systemNav.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
                 <item.icon className="h-4 w-4" />
                 {item.label}
               </Button>
@@ -53,12 +95,9 @@ export default async function DashboardLayout({
 
           {isAdmin && (
             <>
-              <Separator className="my-3" />
+              <Separator className="my-2" />
               <Link href="/admin">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 text-emerald-400 hover:text-emerald-300"
-                >
+                <Button variant="ghost" className="w-full justify-start gap-3 text-emerald-400 hover:text-emerald-300">
                   <ShieldCheck className="h-4 w-4" />
                   Admin Panel
                 </Button>

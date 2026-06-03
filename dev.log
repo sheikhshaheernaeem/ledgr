@@ -12,3 +12,130 @@ See more: https://nextjs.org/docs/app/guides/local-development
  GET /login 200 in 5.1s (next.js: 4.9s, application-code: 226ms)
  GET /register 200 in 1156ms (next.js: 930ms, application-code: 227ms)
  GET / 200 in 215ms (next.js: 7ms, application-code: 208ms)
+ GET / 200 in 893ms (next.js: 475ms, application-code: 419ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en" className="geist_a715...">
+                          <body
+                            className="min-h-screen bg-background text-foreground antialiased"
+-                           data-new-gr-c-s-check-loaded="14.1298.0"
+-                           data-gr-ext-installed=""
+                          >
+                  ...
+ 
+    at <unknown> (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3438:13)
+    at completeWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6885:102)
+    at runWithFiberInDEV (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:131)
+    at completeUnitOfWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64) (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3439:25)
+ GET /login 200 in 110ms (next.js: 29ms, application-code: 81ms)
+○ Compiling /api/auth/[...nextauth] ...
+ GET /api/auth/providers 200 in 23.5s (next.js: 23.4s, application-code: 71ms)
+ GET /api/auth/csrf 200 in 77ms (next.js: 42ms, application-code: 35ms)
+ POST /api/auth/callback/credentials? 200 in 2.0s (next.js: 7ms, application-code: 1995ms)
+○ Compiling /dashboard ...
+ GET /dashboard 200 in 6.6s (next.js: 6.0s, application-code: 633ms)
+ GET /dashboard 200 in 435ms (next.js: 15ms, application-code: 420ms)
+○ Compiling /transactions ...
+ GET /transactions 200 in 3.2s (next.js: 3.1s, application-code: 74ms)
+ GET /api/transactions 200 in 1420ms (next.js: 1368ms, application-code: 52ms)
+ GET /api/transactions 200 in 40ms (next.js: 6ms, application-code: 34ms)
+ GET /reports 200 in 1351ms (next.js: 1171ms, application-code: 179ms)
+ GET /reports/cmpwwnu0n000n8sqs8xzb26wm 404 in 1110ms (next.js: 1003ms, application-code: 107ms)
+ GET /reports/cmpwwnu0n000n8sqs8xzb26wm 404 in 59ms (next.js: 8ms, application-code: 51ms)
+ GET /reports/cmpwwnu0n000n8sqs8xzb26wm 404 in 144ms (next.js: 7ms, application-code: 137ms)
+ GET /reports 200 in 3.9s (next.js: 6ms, application-code: 3.9s)
+✓ Finished filesystem cache database compaction in 18.5s
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/reports" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="en" className="geist_a715...">
+                          <body
+                            className="min-h-screen bg-background text-foreground antialiased"
+-                           data-new-gr-c-s-check-loaded="14.1298.0"
+-                           data-gr-ext-installed=""
+                          >
+                  ...
+ 
+    at <unknown> (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3439:25)
+    at runWithFiberInDEV (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:74)
+    at emitPendingHydrationWarnings (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3438:13)
+    at completeWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:6885:102)
+    at runWithFiberInDEV (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:965:131)
+    at completeUnitOfWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9622:23)
+    at performUnitOfWork (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9557:28)
+    at workLoopConcurrentByScheduler (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9551:58)
+    at renderRootConcurrent (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9534:71)
+    at performWorkOnRoot (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_1amofcm._.js:2647:64) (file://D:/Y combinator/AI-native service companies/ledgr/.next/dev/static/chunks/node_modules_next_dist_compiled_react-dom_096_9a-._.js:3439:25)
+✓ Compiled in 24.3s
+✓ Finished filesystem cache database compaction in 29.0s
+  Reload env: .env.local
+✓ Compiled in 6.6s
+✓ Finished filesystem cache database compaction in 12.1s
+✓ Finished writing to filesystem cache in 10.8s
+✓ Finished filesystem cache database compaction in 23.1s
+✓ Compiled in 19.8s

@@ -18,6 +18,10 @@ import {
   ArrowLeftRight,
   Upload,
   FileText,
+  Receipt,
+  GitMerge,
+  TrendingUp as ForecastIcon,
+  PiggyBank,
 } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -26,7 +30,7 @@ export default async function DashboardPage() {
 
   const userId = session.user.id as string;
 
-  const [transactions, reports] = await Promise.all([
+  const [transactions, reports, openInvoices] = await Promise.all([
     prisma.transaction.findMany({
       where: { userId },
       orderBy: { date: "desc" },
@@ -36,6 +40,9 @@ export default async function DashboardPage() {
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: 3,
+    }),
+    prisma.invoice.findMany({
+      where: { userId, status: { in: ["SENT", "OVERDUE"] } },
     }),
   ]);
 
@@ -47,6 +54,7 @@ export default async function DashboardPage() {
     .reduce((s, t) => s + t.amount, 0);
   const netProfit = totalIncome - totalExpenses;
   const pendingCount = transactions.filter((t) => t.status === "PENDING").length;
+  const openInvoiceTotal = openInvoices.reduce((s, i) => s + i.total, 0);
 
   const stats = [
     {
@@ -78,6 +86,14 @@ export default async function DashboardPage() {
       bg: "bg-blue-500/10",
       sub: pendingCount > 0 ? `${pendingCount} pending review` : "All reviewed",
     },
+    {
+      label: "Open Invoices",
+      value: `$${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      icon: Receipt,
+      color: "text-yellow-400",
+      bg: "bg-yellow-500/10",
+      sub: `${openInvoices.length} unpaid`,
+    },
   ];
 
   return (
@@ -100,7 +116,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {stats.map((stat) => (
           <Card key={stat.label} className="border-border bg-card">
             <CardContent className="p-6">
@@ -121,6 +137,29 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { href: "/transactions", icon: Upload, label: "Upload CSV", desc: "Import bank transactions" },
+            { href: "/invoices/new", icon: Receipt, label: "New Invoice", desc: "Create & send invoice" },
+            { href: "/reconciliation/new", icon: GitMerge, label: "Reconcile", desc: "Match to bank statement" },
+            { href: "/forecast", icon: ForecastIcon, label: "Forecast", desc: "AI cash flow prediction" },
+          ].map(action => (
+            <Link key={action.href} href={action.href}>
+              <Card className="border-border bg-card hover:border-emerald-500/30 transition-colors cursor-pointer">
+                <CardContent className="p-4">
+                  <action.icon className="h-5 w-5 text-emerald-400 mb-2" />
+                  <p className="text-sm font-medium text-white">{action.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
