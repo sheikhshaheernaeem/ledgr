@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator } from "lucide-react";
+import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -108,7 +108,17 @@ export function MobileSidebar() {
             ))}
           </nav>
 
-          <Separator className="my-4" />
+          <a href="https://buymeacoffee.com/alsmartech" target="_blank" rel="noreferrer" onClick={close} className="block mb-2">
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 hover:bg-emerald-500/15 transition-colors">
+              <div className="flex items-center gap-2 mb-0.5">
+                <Zap className="h-3.5 w-3.5 text-emerald-400" />
+                <span className="text-xs font-semibold text-emerald-400">Subscribe to Ledgr</span>
+              </div>
+              <p className="text-[11px] text-muted-foreground">Unlock all features · Support development</p>
+            </div>
+          </a>
+
+          <Separator className="my-3" />
           <Link href="/api/auth/signout" onClick={close}>
             <Button
               variant="ghost"

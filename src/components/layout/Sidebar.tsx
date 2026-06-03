@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2,
   Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, ShieldCheck,
-  Users, Calculator,
+  Users, Calculator, Zap,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -83,7 +83,18 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
         )}
       </nav>
 
-      <Separator className="my-4" />
+      {/* Subscribe CTA */}
+      <a href="https://buymeacoffee.com/alsmartech" target="_blank" rel="noreferrer" className="block mx-1 mb-3">
+        <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 hover:bg-emerald-500/15 transition-colors cursor-pointer">
+          <div className="flex items-center gap-2 mb-1">
+            <Zap className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+            <span className="text-xs font-semibold text-emerald-400">Subscribe to Ledgr</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-snug">Unlock all features · Support development</p>
+        </div>
+      </a>
+
+      <Separator className="my-3" />
       <div className="px-2 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <p className="text-xs text-muted-foreground truncate">{email}</p>
