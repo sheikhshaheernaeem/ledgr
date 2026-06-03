@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Printer } from "lucide-react";
 import Link from "next/link";
 
 const fmt = (n: number) =>
@@ -55,7 +56,12 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
             report.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" :
             "border-yellow-500/30 text-yellow-400"
           }`}>{report.status}</Badge>
-          <Link href="/reports"><Button variant="outline" size="sm">Back</Button></Link>
+          <Link href={`/reports/${id}/print`} target="_blank">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Printer className="h-3.5 w-3.5" /> Download PDF
+              </Button>
+            </Link>
+            <Link href="/reports"><Button variant="outline" size="sm">Back</Button></Link>
         </div>
       </div>
 

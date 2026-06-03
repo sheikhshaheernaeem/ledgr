@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight, Camera, ExternalLink } from "lucide-react";
 
 const CATEGORIES = [
   "Revenue","Cost of Goods Sold","Payroll & Benefits","Rent & Utilities",
@@ -24,8 +24,10 @@ interface Transaction {
   id: string; date: string; description: string; amount: number;
   type: "DEBIT" | "CREDIT"; category: string | null; subcategory: string | null;
   confidence: number | null; status: "PENDING" | "APPROVED" | "EDITED";
-  taxCategory: string | null; isRecurring: boolean;
+  taxCategory: string | null; isRecurring: boolean; receiptData: string | null;
 }
+
+interface OcrData { vendor: string; date: string; amount: string; description: string; }
 
 interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; }
 
@@ -54,7 +56,11 @@ export default function TransactionsPage() {
   const [editForm, setEditForm] = useState<EditForm>({ category: "", subcategory: "", taxCategory: "", status: "" });
   const [saving, setSaving] = useState(false);
 
+  const [receiptUploading, setReceiptUploading] = useState(false);
+  const [receiptOcr, setReceiptOcr] = useState<OcrData | null>(null);
+
   const fileRef = useRef<HTMLInputElement>(null);
+  const receiptFileRef = useRef<HTMLInputElement>(null);
 
   const buildParams = useCallback(() => {
     const p = new URLSearchParams();
@@ -89,6 +95,27 @@ export default function TransactionsPage() {
   function openEdit(tx: Transaction) {
     setEditTx(tx);
     setEditForm({ category: tx.category ?? "", subcategory: tx.subcategory ?? "", taxCategory: tx.taxCategory ?? "", status: tx.status });
+    setReceiptOcr(null);
+  }
+
+  async function handleReceiptUpload(file: File) {
+    if (!editTx) return;
+    setReceiptUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch(`/api/transactions/${editTx.id}/receipt`, { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Upload failed");
+      setReceiptOcr(data.ocrData ?? null);
+      setEditTx(prev => prev ? { ...prev, receiptData: data.receiptUrl ?? "attached" } : prev);
+      toast.success("Receipt uploaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Receipt upload failed");
+    } finally {
+      setReceiptUploading(false);
+      if (receiptFileRef.current) receiptFileRef.current.value = "";
+    }
   }
 
   async function saveEdit() {
@@ -386,6 +413,55 @@ export default function TransactionsPage() {
                   <option value="APPROVED">Approved</option>
                   <option value="EDITED">Edited</option>
                 </select>
+              </div>
+
+              {/* Receipt section */}
+              <div className="space-y-2">
+                <Label>Receipt</Label>
+                {editTx?.receiptData ? (
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400">Receipt attached</span>
+                    {editTx.receiptData.startsWith("http") && (
+                      <a href={editTx.receiptData} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 ml-1">
+                        View <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      disabled={receiptUploading}
+                      onClick={() => receiptFileRef.current?.click()}
+                    >
+                      {receiptUploading
+                        ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        : <Camera className="h-3.5 w-3.5" />}
+                      {receiptUploading ? "Uploading…" : "Upload Receipt"}
+                    </Button>
+                    <input
+                      ref={receiptFileRef}
+                      type="file"
+                      accept="image/*,application/pdf"
+                      className="hidden"
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleReceiptUpload(f); }}
+                    />
+                  </div>
+                )}
+
+                {/* OCR extracted data */}
+                {receiptOcr && (
+                  <div className="p-3 rounded-lg bg-muted/30 border border-border space-y-1 mt-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1.5">OCR Extracted</p>
+                    {receiptOcr.vendor && <p className="text-xs"><span className="text-muted-foreground">Vendor:</span> <span className="text-foreground">{receiptOcr.vendor}</span></p>}
+                    {receiptOcr.date && <p className="text-xs"><span className="text-muted-foreground">Date:</span> <span className="text-foreground">{receiptOcr.date}</span></p>}
+                    {receiptOcr.amount && <p className="text-xs"><span className="text-muted-foreground">Amount:</span> <span className="text-foreground">{receiptOcr.amount}</span></p>}
+                  </div>
+                )}
               </div>
             </div>
           )}

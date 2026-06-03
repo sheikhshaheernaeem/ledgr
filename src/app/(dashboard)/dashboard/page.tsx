@@ -11,16 +11,29 @@ import {
 } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 
+function pctChange(thisVal: number, lastVal: number): number | null {
+  if (lastVal === 0) return null;
+  return ((thisVal - lastVal) / lastVal) * 100;
+}
+
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   const userId = session.user.id as string;
 
-  const [transactions, reports, openInvoices, bankAccounts] = await Promise.all([
+  const now = new Date();
+  const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
+  const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
+
+  const [transactions, reports, openInvoices, bankAccounts, lastYearTxs] = await Promise.all([
     prisma.transaction.findMany({ where: { userId }, orderBy: { date: "desc" }, take: 8 }),
     prisma.report.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 3 }),
     prisma.invoice.findMany({ where: { userId, status: { in: ["SENT", "OVERDUE"] } } }),
     prisma.bankAccount.findMany({ where: { userId }, take: 1 }),
+    prisma.transaction.findMany({
+      where: { userId, status: "APPROVED", date: { gte: lastYearStart, lte: lastYearEnd } },
+      select: { amount: true, type: true },
+    }),
   ]);
 
   const totalIncome = transactions.filter(t => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
@@ -29,6 +42,14 @@ export default async function DashboardPage() {
   const pendingCount = transactions.filter(t => t.status === "PENDING").length;
   const openInvoiceTotal = openInvoices.reduce((s, i) => s + i.total, 0);
 
+  const lastYearIncome = lastYearTxs.filter(t => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
+  const lastYearExpenses = lastYearTxs.filter(t => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
+  const lastYearNet = lastYearIncome - lastYearExpenses;
+
+  const incomePct = pctChange(totalIncome, lastYearIncome);
+  const expensesPct = pctChange(totalExpenses, lastYearExpenses);
+  const netPct = pctChange(netProfit, lastYearNet);
+
   // Onboarding checklist
   const hasTransactions = transactions.length > 0;
   const hasApprovedTransactions = transactions.some(t => t.status === "APPROVED");
@@ -36,12 +57,18 @@ export default async function DashboardPage() {
   const hasBankAccount = bankAccounts.length > 0;
   const onboardingDone = hasTransactions && hasApprovedTransactions && hasInvoice && hasBankAccount;
 
+  const formatPct = (pct: number | null) => {
+    if (pct === null) return null;
+    const sign = pct >= 0 ? "+" : "";
+    return `${sign}${pct.toFixed(1)}% vs last year`;
+  };
+
   const stats = [
-    { label: "Total Income", value: `$${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-    { label: "Total Expenses", value: `$${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10" },
-    { label: "Net Profit", value: `${netProfit >= 0 ? "+" : ""}$${Math.abs(netProfit).toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: DollarSign, color: netProfit >= 0 ? "text-emerald-400" : "text-red-400", bg: netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10" },
-    { label: "Transactions", value: `${transactions.length}`, icon: ArrowLeftRight, color: "text-blue-400", bg: "bg-blue-500/10", sub: pendingCount > 0 ? `${pendingCount} pending review` : "All reviewed" },
-    { label: "Open Invoices", value: `$${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: Receipt, color: "text-yellow-400", bg: "bg-yellow-500/10", sub: `${openInvoices.length} unpaid` },
+    { label: "Total Income", value: `$${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", yoy: formatPct(incomePct), yoyPositive: incomePct === null ? null : incomePct >= 0 },
+    { label: "Total Expenses", value: `$${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10", yoy: formatPct(expensesPct), yoyPositive: expensesPct === null ? null : expensesPct < 0 },
+    { label: "Net Profit", value: `${netProfit >= 0 ? "+" : ""}$${Math.abs(netProfit).toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: DollarSign, color: netProfit >= 0 ? "text-emerald-400" : "text-red-400", bg: netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10", yoy: formatPct(netPct), yoyPositive: netPct === null ? null : netPct >= 0 },
+    { label: "Transactions", value: `${transactions.length}`, icon: ArrowLeftRight, color: "text-blue-400", bg: "bg-blue-500/10", sub: pendingCount > 0 ? `${pendingCount} pending review` : "All reviewed", yoy: null, yoyPositive: null },
+    { label: "Open Invoices", value: `$${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: Receipt, color: "text-yellow-400", bg: "bg-yellow-500/10", sub: `${openInvoices.length} unpaid`, yoy: null, yoyPositive: null },
   ];
 
   const onboardingSteps = [
@@ -102,7 +129,12 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-              {stat.sub && <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>}
+              {stat.yoy && (
+                <p className={`text-xs mt-1 ${stat.yoyPositive ? "text-emerald-400" : "text-red-400"}`}>
+                  {stat.yoy}
+                </p>
+              )}
+              {stat.sub && !stat.yoy && <p className="text-xs text-muted-foreground mt-1">{stat.sub}</p>}
             </CardContent>
           </Card>
         ))}

@@ -164,3 +164,6 @@ https://react.dev/link/hydration-mismatch
 ✓ Finished filesystem cache database compaction in 37.5s
 ✓ Finished filesystem cache database compaction in 23.4s
 ✓ Compiled in 392ms
+✓ Compiled in 8.7s
+✓ Finished filesystem cache database compaction in 12.4s
+✓ Finished filesystem cache database compaction in 35.9s

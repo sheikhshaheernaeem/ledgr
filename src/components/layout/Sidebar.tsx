@@ -7,7 +7,9 @@ import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2,
   Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, ShieldCheck,
+  Users, Calculator,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
@@ -17,9 +19,11 @@ const coreNav = [
 
 const financeNav = [
   { href: "/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/clients", icon: Users, label: "Clients" },
   { href: "/accounts", icon: Building2, label: "Bank Accounts" },
   { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },
   { href: "/budget", icon: PiggyBank, label: "Budget vs Actual" },
+  { href: "/tax-summary", icon: Calculator, label: "Tax Summary" },
   { href: "/reconciliation", icon: GitMerge, label: "Reconciliation" },
   { href: "/forecast", icon: TrendingUp, label: "Cash Flow Forecast" },
   { href: "/bank-sync", icon: Link2, label: "Bank Sync" },
@@ -81,7 +85,16 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
 
       <Separator className="my-4" />
       <div className="px-2 space-y-2">
-        <p className="text-xs text-muted-foreground truncate">{email}</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground truncate">{email}</p>
+          <ThemeToggle />
+        </div>
+        <div className="flex items-center gap-1">
+          <p className="text-xs text-muted-foreground">Search</p>
+          <kbd className="inline-flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1 text-[10px] font-medium text-muted-foreground">
+            ⌘K
+          </kbd>
+        </div>
       </div>
     </>
   );

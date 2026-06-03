@@ -8,7 +8,7 @@ export async function PATCH(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id as string;
 
-  const { name, currentPassword, newPassword } = await req.json();
+  const { name, currentPassword, newPassword, paymentLink, customCategories } = await req.json();
 
   if (newPassword) {
     if (!currentPassword) return NextResponse.json({ error: "Current password required" }, { status: 400 });
@@ -19,7 +19,11 @@ export async function PATCH(req: NextRequest) {
     const hashed = await bcrypt.hash(newPassword, 12);
     await prisma.user.update({ where: { id: userId }, data: { name: name ?? undefined, password: hashed } });
   } else {
-    await prisma.user.update({ where: { id: userId }, data: { name: name ?? undefined } });
+    const data: Record<string, unknown> = {};
+    if (name !== undefined) data.name = name;
+    if (paymentLink !== undefined) data.paymentLink = paymentLink;
+    if (customCategories !== undefined) data.customCategories = JSON.stringify(customCategories);
+    await prisma.user.update({ where: { id: userId }, data });
   }
 
   return NextResponse.json({ success: true });

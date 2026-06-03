@@ -28,6 +28,9 @@ model User {
   auditLogs        AuditLog[]
   plaidConnections PlaidConnection[]
   cashFlowForecasts CashFlowForecast[]
+  paymentLink      String?
+  customCategories String?
+  clients          Client[]
 }
 
 model Transaction {
@@ -164,7 +167,30 @@ model Invoice {
   lineItems    InvoiceLineItem[]
   transactions Transaction[]
 
+  clientId          String?
+  client            Client?  @relation(fields: [clientId], references: [id])
+  isRecurring       Boolean  @default(false)
+  recurringInterval String?
+  nextInvoiceDate   DateTime?
+
   @@unique([userId, invoiceNumber])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  address   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  invoices  Invoice[]
+
+  @@index([userId])
 }
 
 model InvoiceLineItem {

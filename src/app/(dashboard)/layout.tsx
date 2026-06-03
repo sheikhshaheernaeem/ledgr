@@ -4,6 +4,7 @@ import { auth, signOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
+import { MobileSidebar } from "@/components/layout/MobileSidebar";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -13,8 +14,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-60 border-r border-border flex flex-col py-6 px-4 shrink-0">
+      {/* Sidebar — desktop only */}
+      <aside className="hidden md:flex w-60 border-r border-border flex-col py-6 px-4 shrink-0">
         <Link href="/" className="px-2 mb-6">
           <span className="text-xl font-bold text-emerald-400">Ledgr</span>
         </Link>
@@ -40,7 +41,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto">
+        {/* Mobile header */}
+        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border">
+          <Link href="/">
+            <span className="text-xl font-bold text-emerald-400">Ledgr</span>
+          </Link>
+          <MobileSidebar />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }
