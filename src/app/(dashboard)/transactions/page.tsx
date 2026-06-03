@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight, Camera, ExternalLink } from "lucide-react";
+import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight, Camera, ExternalLink, PlusCircle } from "lucide-react";
+import { QuickExpenseDialog } from "@/components/expenses/QuickExpenseDialog";
 
 const CATEGORIES = [
   "Revenue","Cost of Goods Sold","Payroll & Benefits","Rent & Utilities",
@@ -25,11 +26,12 @@ interface Transaction {
   type: "DEBIT" | "CREDIT"; category: string | null; subcategory: string | null;
   confidence: number | null; status: "PENDING" | "APPROVED" | "EDITED";
   taxCategory: string | null; isRecurring: boolean; receiptData: string | null;
+  notes: string | null;
 }
 
 interface OcrData { vendor: string; date: string; amount: string; description: string; }
 
-interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; }
+interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; notes: string; }
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -53,7 +55,9 @@ export default function TransactionsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const [editTx, setEditTx] = useState<Transaction | null>(null);
-  const [editForm, setEditForm] = useState<EditForm>({ category: "", subcategory: "", taxCategory: "", status: "" });
+  const [editForm, setEditForm] = useState<EditForm>({ category: "", subcategory: "", taxCategory: "", status: "", notes: "" });
+  const [quickExpenseOpen, setQuickExpenseOpen] = useState(false);
+  const [quickIncomeOpen, setQuickIncomeOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [receiptUploading, setReceiptUploading] = useState(false);
@@ -98,7 +102,7 @@ export default function TransactionsPage() {
 
   function openEdit(tx: Transaction) {
     setEditTx(tx);
-    setEditForm({ category: tx.category ?? "", subcategory: tx.subcategory ?? "", taxCategory: tx.taxCategory ?? "", status: tx.status });
+    setEditForm({ category: tx.category ?? "", subcategory: tx.subcategory ?? "", taxCategory: tx.taxCategory ?? "", status: tx.status, notes: tx.notes ?? "" });
     setReceiptOcr(null);
   }
 
@@ -128,7 +132,7 @@ export default function TransactionsPage() {
     const res = await fetch(`/api/transactions/${editTx.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category: editForm.category || null, subcategory: editForm.subcategory || null, taxCategory: editForm.taxCategory || null, status: editForm.status }),
+      body: JSON.stringify({ category: editForm.category || null, subcategory: editForm.subcategory || null, taxCategory: editForm.taxCategory || null, status: editForm.status, notes: editForm.notes || null }),
     });
     if (res.ok) { toast.success("Transaction updated"); setEditTx(null); loadTransactions(); }
     else toast.error("Failed to update");
@@ -264,6 +268,9 @@ export default function TransactionsPage() {
         </div>
         <div className="flex gap-2 flex-wrap justify-end">
           <Button variant="outline" onClick={exportCSV} className="gap-2 text-xs"><Download className="h-3.5 w-3.5" /> Export CSV</Button>
+          <a href="/api/transactions/export/quickbooks" download="quickbooks-import.csv" className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-2.5 h-8 text-sm font-medium hover:bg-muted transition-colors text-xs">
+            <Download className="h-3.5 w-3.5" /> Export for QB
+          </a>
           <Button variant="outline" onClick={handleDetectRecurring} disabled={detectingRecurring} className="gap-2 text-xs">
             {detectingRecurring ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Repeat2 className="h-3.5 w-3.5" />} Detect Recurring
           </Button>
@@ -272,6 +279,12 @@ export default function TransactionsPage() {
               {categorizing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Categorize ({pendingCount})
             </Button>
           )}
+          <Button variant="outline" onClick={() => setQuickIncomeOpen(true)} className="gap-2 text-xs text-emerald-400 border-emerald-500/30 hover:text-emerald-300">
+            <PlusCircle className="h-3.5 w-3.5" /> Quick Add Income
+          </Button>
+          <Button variant="outline" onClick={() => setQuickExpenseOpen(true)} className="gap-2 text-xs">
+            <PlusCircle className="h-3.5 w-3.5" /> Quick Add Expense
+          </Button>
           <Button onClick={() => fileRef.current?.click()} disabled={uploading} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
             {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload CSV
           </Button>
@@ -460,6 +473,20 @@ export default function TransactionsPage() {
         </CardContent>
       </Card>
 
+      {/* Quick Add Expense/Income dialogs */}
+      <QuickExpenseDialog
+        open={quickExpenseOpen}
+        onOpenChange={setQuickExpenseOpen}
+        onSuccess={loadTransactions}
+        type="DEBIT"
+      />
+      <QuickExpenseDialog
+        open={quickIncomeOpen}
+        onOpenChange={setQuickIncomeOpen}
+        onSuccess={loadTransactions}
+        type="CREDIT"
+      />
+
       {/* Edit dialog — kept outside drag wrapper */}
       <Dialog open={!!editTx} onOpenChange={open => { if (!open) setEditTx(null); }}>
         <DialogContent className="max-w-md">
@@ -500,6 +527,17 @@ export default function TransactionsPage() {
                   <option value="APPROVED">Approved</option>
                   <option value="EDITED">Edited</option>
                 </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Notes <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                <textarea
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  rows={3}
+                  placeholder="Any additional notes…"
+                  value={editForm.notes}
+                  onChange={e => setEditForm(p => ({ ...p, notes: e.target.value }))}
+                />
               </div>
 
               {/* Receipt section */}

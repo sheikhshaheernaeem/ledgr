@@ -31,6 +31,7 @@ export async function PATCH(
     taxLine,
     bankAccountId,
     invoiceId,
+    notes,
   } = body;
 
   const updated = await prisma.transaction.update({
@@ -43,6 +44,7 @@ export async function PATCH(
       taxLine: taxLine ?? undefined,
       bankAccountId: bankAccountId ?? undefined,
       invoiceId: invoiceId ?? undefined,
+      notes: notes !== undefined ? notes : undefined,
     },
   });
 

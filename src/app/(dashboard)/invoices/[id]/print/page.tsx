@@ -13,9 +13,16 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
   });
   if (!inv) notFound();
 
-  const user = await prisma.user.findUnique({ where: { id: session.user.id as string } });
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id as string },
+    select: { name: true, email: true, paymentLink: true, companyName: true, companyAddress: true, companyLogo: true },
+  });
 
-  const fmt = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const CURRENCY_SYMBOLS: Record<string, string> = {
+    USD: "$", EUR: "€", GBP: "£", PKR: "₨", CAD: "C$", AUD: "A$", AED: "د.إ",
+  };
+  const symbol = CURRENCY_SYMBOLS[inv.currency ?? "USD"] ?? (inv.currency + " ");
+  const fmt = (n: number) => `${symbol}${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <html lang="en">
@@ -69,13 +76,20 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
         </div>
 
         <div className="header">
-          <div>
-            <div className="brand">Ledgr</div>
-            {user?.name && <p style={{ fontSize: "14px", color: "#666", marginTop: "4px" }}>{user.name}</p>}
-            {user?.email && <p style={{ fontSize: "13px", color: "#999" }}>{user.email}</p>}
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+            {user?.companyLogo && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.companyLogo} alt="Company logo" style={{ maxHeight: "48px", width: "auto", objectFit: "contain" }} />
+            )}
+            <div>
+              <div className="brand">{user?.companyName ?? "Ledgr"}</div>
+              {!user?.companyName && user?.name && <p style={{ fontSize: "14px", color: "#666", marginTop: "4px" }}>{user.name}</p>}
+              {user?.companyAddress && <p style={{ fontSize: "13px", color: "#666", marginTop: "2px", whiteSpace: "pre-line" }}>{user.companyAddress}</p>}
+              {user?.email && <p style={{ fontSize: "13px", color: "#999" }}>{user.email}</p>}
+            </div>
           </div>
           <div className="invoice-meta">
-            <h1>INVOICE</h1>
+            <h1>{inv.type === "QUOTE" ? "QUOTE" : "INVOICE"}</h1>
             <p style={{ fontWeight: 600, color: "#111" }}>{inv.invoiceNumber}</p>
             <p>
               <span className={`status-badge status-${inv.status}`}>{inv.status}</span>

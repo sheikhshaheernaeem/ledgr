@@ -38,34 +38,47 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const {
-    invoiceNumber,
+    invoiceNumber: rawInvoiceNumber,
     clientName,
     clientEmail,
     issueDate,
     dueDate,
     taxRate,
+    lateFeePct,
     notes,
     lineItems,
     isRecurring,
     recurringInterval,
+    type,
+    currency,
   } = body as {
-    invoiceNumber: string;
+    invoiceNumber?: string;
     clientName: string;
     clientEmail?: string;
     issueDate: string;
     dueDate: string;
     taxRate?: number;
+    lateFeePct?: number;
     notes?: string;
     lineItems: Array<{ description: string; quantity: number; unitPrice: number }>;
     isRecurring?: boolean;
     recurringInterval?: string;
+    type?: string;
+    currency?: string;
   };
 
-  if (!invoiceNumber || !clientName || !issueDate || !dueDate) {
+  if (!clientName || !issueDate || !dueDate) {
     return NextResponse.json(
-      { error: "invoiceNumber, clientName, issueDate, dueDate are required" },
+      { error: "clientName, issueDate, dueDate are required" },
       { status: 400 }
     );
+  }
+
+  // Auto-generate invoice number if not provided
+  let invoiceNumber = rawInvoiceNumber?.trim() || "";
+  if (!invoiceNumber) {
+    const count = await prisma.invoice.count({ where: { userId: session.user.id } });
+    invoiceNumber = `INV-${String(count + 1).padStart(4, "0")}`;
   }
 
   if (!lineItems || lineItems.length === 0) {
@@ -100,6 +113,9 @@ export async function POST(request: Request) {
       total,
       notes: notes ?? undefined,
       publicToken,
+      type: type ?? "INVOICE",
+      currency: currency ?? "USD",
+      lateFeePct: lateFeePct ?? 0,
       isRecurring: isRecurring ?? false,
       recurringInterval: recurringInterval ?? undefined,
       lineItems: {

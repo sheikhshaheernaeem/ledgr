@@ -31,6 +31,10 @@ model User {
   paymentLink      String?
   customCategories String?
   clients          Client[]
+  companyName      String?
+  companyAddress   String?
+  companyLogo      String?
+  revenueGoal      Float?
 }
 
 model Transaction {
@@ -63,6 +67,7 @@ model Transaction {
   bankStatementRef String?
   invoiceId        String?
   invoice          Invoice? @relation(fields: [invoiceId], references: [id])
+  notes            String?
 
   messages            Message[]
   auditLogs           AuditLog[]
@@ -174,6 +179,9 @@ model Invoice {
   nextInvoiceDate   DateTime?
   publicToken       String?   @unique
   amountPaid        Float     @default(0)
+  type              String   @default("INVOICE")
+  currency          String   @default("USD")
+  lateFeePct        Float    @default(0)
 
   @@unique([userId, invoiceNumber])
 }

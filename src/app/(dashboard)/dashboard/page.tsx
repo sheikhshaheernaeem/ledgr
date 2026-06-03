@@ -8,6 +8,7 @@ import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, ArrowLeftRight, Upload,
   FileText, Receipt, GitMerge, PiggyBank, CheckCircle2, Circle, AlertTriangle,
+  Target, Repeat2,
 } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 
@@ -25,7 +26,9 @@ export default async function DashboardPage() {
   const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
   const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
 
-  const [transactions, reports, openInvoices, bankAccounts, lastYearTxs] = await Promise.all([
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [transactions, reports, openInvoices, bankAccounts, lastYearTxs, userGoal, recurringTxs, monthIncomeTxs] = await Promise.all([
     prisma.transaction.findMany({ where: { userId }, orderBy: { date: "desc" }, take: 8 }),
     prisma.report.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 3 }),
     prisma.invoice.findMany({ where: { userId, status: { in: ["SENT", "OVERDUE"] } } }),
@@ -33,6 +36,16 @@ export default async function DashboardPage() {
     prisma.transaction.findMany({
       where: { userId, status: "APPROVED", date: { gte: lastYearStart, lte: lastYearEnd } },
       select: { amount: true, type: true },
+    }),
+    prisma.user.findUnique({ where: { id: userId }, select: { revenueGoal: true } }),
+    prisma.transaction.findMany({
+      where: { userId, isRecurring: true },
+      orderBy: { amount: "desc" },
+      take: 5,
+    }),
+    prisma.transaction.findMany({
+      where: { userId, status: "APPROVED", type: "CREDIT", date: { gte: monthStart, lte: now } },
+      select: { amount: true },
     }),
   ]);
 
@@ -77,6 +90,10 @@ export default async function DashboardPage() {
     { label: "Create a bank account", done: hasBankAccount, href: "/accounts" },
     { label: "Send your first invoice", done: hasInvoice, href: "/invoices/new" },
   ];
+
+  // Monthly goal tracking
+  const revenueGoal = userGoal?.revenueGoal ?? null;
+  const monthIncome = monthIncomeTxs.reduce((s, t) => s + t.amount, 0);
 
   // AR Aging widget data
   const nowMs = now.getTime();
@@ -128,7 +145,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className={`grid gap-4 ${revenueGoal ? "grid-cols-2 lg:grid-cols-6" : "grid-cols-2 lg:grid-cols-5"}`}>
         {stats.map(stat => (
           <Card key={stat.label} className="border-border bg-card">
             <CardContent className="p-6">
@@ -148,6 +165,39 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ))}
+
+        {/* Monthly Goal card */}
+        {revenueGoal ? (() => {
+          const pct = Math.min(100, (monthIncome / revenueGoal) * 100);
+          const goalColor = pct >= 100 ? "text-emerald-400" : pct >= 60 ? "text-yellow-400" : "text-red-400";
+          const barColor = pct >= 100 ? "bg-emerald-500" : pct >= 60 ? "bg-yellow-400" : "bg-red-500";
+          return (
+            <Card className="border-border bg-card">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Monthly Goal</span>
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Target className="h-4 w-4 text-emerald-400" />
+                  </div>
+                </div>
+                <p className={`text-xl font-bold ${goalColor}`}>{pct.toFixed(0)}%</p>
+                <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div className={`h-full rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  ${monthIncome.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} of ${revenueGoal.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} goal
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })() : (
+          <Card className="border-border bg-card border-dashed">
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full">
+              <Target className="h-5 w-5 text-muted-foreground/40 mb-2" />
+              <Link href="/settings" className="text-xs text-muted-foreground hover:text-emerald-400 transition-colors">Set a goal →</Link>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* AR Aging widget — only shown when there are overdue invoices */}
@@ -226,6 +276,36 @@ export default async function DashboardPage() {
             <RevenueChart />
           </CardContent>
         </Card>
+
+        {/* Recurring Transactions widget */}
+        {recurringTxs.length > 0 && (
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Repeat2 className="h-4 w-4 text-blue-400" />
+                Recurring Transactions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {recurringTxs.map(tx => (
+                  <div key={tx.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground truncate">{tx.description}</p>
+                      <p className="text-xs text-muted-foreground">{tx.category ?? "Uncategorized"}</p>
+                    </div>
+                    <div className="flex items-center gap-3 ml-4 shrink-0">
+                      <span className={`text-sm font-medium ${tx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}`}>
+                        {tx.type === "CREDIT" ? "+" : "-"}${tx.amount.toFixed(2)}
+                      </span>
+                      <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">recurring</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Transactions */}

@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Plus, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface LineItem { description: string; quantity: string; unitPrice: string; }
 
-export default function NewInvoicePage() {
+export default function NewQuotePage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [autoNumber, setAutoNumber] = useState(false);
@@ -25,11 +25,7 @@ export default function NewInvoicePage() {
     issueDate: new Date().toISOString().split("T")[0],
     dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
     taxRate: "0",
-    lateFeePct: "0",
     notes: "",
-    isRecurring: false,
-    recurringInterval: "monthly",
-    currency: "USD",
   });
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: "1", unitPrice: "" }]);
 
@@ -64,10 +60,8 @@ export default function NewInvoicePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          type: "QUOTE",
           taxRate: parseFloat(form.taxRate) || 0,
-          lateFeePct: parseFloat(form.lateFeePct) || 0,
-          isRecurring: form.isRecurring,
-          recurringInterval: form.isRecurring ? form.recurringInterval : undefined,
           lineItems: items.filter(it => it.description).map(it => ({
             description: it.description,
             quantity: parseFloat(it.quantity) || 1,
@@ -76,10 +70,10 @@ export default function NewInvoicePage() {
         }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed"); }
-      toast.success("Invoice created");
-      router.push("/invoices");
+      toast.success("Quote created");
+      router.push("/invoices?tab=quotes");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to create invoice");
+      toast.error(err instanceof Error ? err.message : "Failed to create quote");
     } finally {
       setSaving(false);
     }
@@ -89,7 +83,7 @@ export default function NewInvoicePage() {
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/invoices"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4" /></Button></Link>
-        <h1 className="text-2xl font-bold text-white">New Invoice</h1>
+        <h1 className="text-2xl font-bold text-white">New Quote / Estimate</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -106,7 +100,7 @@ export default function NewInvoicePage() {
             </div>
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                Invoice Number *
+                Quote Number *
                 {autoNumber && <Badge variant="outline" className="text-xs font-normal px-1.5 py-0 border-emerald-500/40 text-emerald-400">(auto)</Badge>}
               </Label>
               <Input value={form.invoiceNumber} onChange={e => { setForm(p => ({ ...p, invoiceNumber: e.target.value })); setAutoNumber(false); }} required />
@@ -120,37 +114,8 @@ export default function NewInvoicePage() {
               <Input type="date" value={form.issueDate} onChange={e => setForm(p => ({ ...p, issueDate: e.target.value }))} required />
             </div>
             <div className="space-y-2">
-              <Label>Due Date *</Label>
+              <Label>Valid Until *</Label>
               <Input type="date" value={form.dueDate} onChange={e => setForm(p => ({ ...p, dueDate: e.target.value }))} required />
-            </div>
-            <div className="space-y-2">
-              <Label>Currency</Label>
-              <select
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                value={form.currency}
-                onChange={e => setForm(p => ({ ...p, currency: e.target.value }))}
-              >
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="PKR">PKR (₨)</option>
-                <option value="CAD">CAD (C$)</option>
-                <option value="AUD">AUD (A$)</option>
-                <option value="AED">AED (د.إ)</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label>Late Fee (%/month)</Label>
-              <Input
-                type="number"
-                min="0"
-                max="10"
-                step="0.1"
-                placeholder="0"
-                value={form.lateFeePct}
-                onChange={e => setForm(p => ({ ...p, lateFeePct: e.target.value }))}
-              />
-              <p className="text-xs text-muted-foreground">Applied when invoice becomes overdue (0 = no late fee)</p>
             </div>
           </CardContent>
         </Card>
@@ -193,44 +158,14 @@ export default function NewInvoicePage() {
         <Card className="border-border bg-card">
           <CardContent className="pt-4 space-y-2">
             <Label>Notes</Label>
-            <textarea className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500" rows={3} placeholder="Payment terms, bank details, etc." value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} />
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card">
-          <CardHeader><CardTitle className="text-base">Recurring</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="isRecurring"
-                checked={form.isRecurring}
-                onChange={e => setForm(p => ({ ...p, isRecurring: e.target.checked }))}
-                className="h-4 w-4 rounded border-border accent-emerald-500"
-              />
-              <Label htmlFor="isRecurring" className="cursor-pointer">Recurring invoice</Label>
-            </div>
-            {form.isRecurring && (
-              <div className="space-y-2">
-                <Label>Recurrence Interval</Label>
-                <select
-                  value={form.recurringInterval}
-                  onChange={e => setForm(p => ({ ...p, recurringInterval: e.target.value }))}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                >
-                  <option value="monthly">Monthly</option>
-                  <option value="quarterly">Quarterly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              </div>
-            )}
+            <textarea className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500" rows={3} placeholder="Quote terms, validity period, etc." value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} />
           </CardContent>
         </Card>
 
         <div className="flex justify-end gap-3">
           <Link href="/invoices"><Button type="button" variant="outline">Cancel</Button></Link>
           <Button type="submit" disabled={saving} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Invoice"}
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Quote"}
           </Button>
         </div>
       </form>

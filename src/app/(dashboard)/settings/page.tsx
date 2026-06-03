@@ -11,7 +11,14 @@ export default async function SettingsPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id as string },
-    select: { paymentLink: true, customCategories: true },
+    select: {
+      paymentLink: true,
+      customCategories: true,
+      companyName: true,
+      companyAddress: true,
+      companyLogo: true,
+      revenueGoal: true,
+    },
   });
 
   const customCategories = user?.customCategories ? JSON.parse(user.customCategories) as string[] : [];
@@ -34,6 +41,10 @@ export default async function SettingsPage() {
             email={session.user.email ?? ""}
             initialPaymentLink={user?.paymentLink ?? ""}
             initialCustomCategories={customCategories}
+            initialCompanyName={user?.companyName ?? ""}
+            initialCompanyAddress={user?.companyAddress ?? ""}
+            initialCompanyLogo={user?.companyLogo ?? ""}
+            initialRevenueGoal={user?.revenueGoal ?? null}
           />
         </CardContent>
       </Card>
@@ -64,9 +75,17 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle className="text-base">Data & Privacy</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="space-y-4 text-sm text-muted-foreground">
           <p>Your financial data is encrypted at rest and in transit. We never sell your data to third parties.</p>
           <p>All AI processing uses your transaction descriptions only — no account numbers or personal identifiers are sent to AI models.</p>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-foreground font-medium text-sm">Export All Data</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Download all your transactions, invoices, clients, and account data as JSON (GDPR compliant).</p>
+            </div>
+            <a href="/api/export/all" download="ledgr-export.json" className="shrink-0 ml-4 inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 h-7 text-[0.8rem] font-medium hover:bg-muted transition-colors">Export All Data</a>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
+import { invoiceReminderEmail } from "@/lib/email-templates";
 
 export async function GET(request: NextRequest) {
   // Auth: Bearer token or internal call
@@ -46,24 +47,21 @@ export async function GET(request: NextRequest) {
       if (!inv.clientEmail) continue;
 
       try {
+        const daysOverdue = Math.max(1, Math.floor((now.getTime() - new Date(inv.dueDate).getTime()) / 86_400_000));
         await resend.emails.send({
           from: "Ledgr <noreply@ledgr.app>",
           to: inv.clientEmail,
-          subject: `Reminder: Invoice ${inv.invoiceNumber} is overdue`,
-          html: `
-            <div style="font-family:sans-serif;max-width:560px;margin:0 auto;">
-              <h2 style="color:#10b981;">Payment Reminder</h2>
-              <p>Dear ${inv.clientName},</p>
-              <p>
-                This is a friendly reminder that invoice <strong>${inv.invoiceNumber}</strong>
-                for <strong>$${inv.total.toFixed(2)}</strong> was due on
-                <strong>${inv.dueDate.toLocaleDateString()}</strong> and is now overdue.
-              </p>
-              <p>Please arrange payment at your earliest convenience.</p>
-              <br/>
-              <p style="color:#6b7280;font-size:12px;">Sent via Ledgr · AI-native bookkeeping</p>
-            </div>
-          `,
+          subject: `Reminder: Invoice ${inv.invoiceNumber} is ${daysOverdue} day${daysOverdue !== 1 ? "s" : ""} overdue`,
+          html: invoiceReminderEmail({
+            invoiceNumber: inv.invoiceNumber,
+            clientName: inv.clientName,
+            senderName: inv.user.name ?? "Your service provider",
+            amount: inv.total,
+            currency: (inv as { currency?: string }).currency ?? "USD",
+            dueDate: inv.dueDate,
+            daysOverdue,
+            paymentLink: (inv.user as { paymentLink?: string | null }).paymentLink ?? null,
+          }),
         });
         emailsSent++;
       } catch {

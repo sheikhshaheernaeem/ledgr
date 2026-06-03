@@ -1,24 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Plus, X, Link } from "lucide-react";
+import { Loader2, Save, Plus, X, Link, Building2 } from "lucide-react";
 
 export default function SettingsForm({
   initialName,
   email,
   initialPaymentLink,
   initialCustomCategories,
+  initialCompanyName,
+  initialCompanyAddress,
+  initialCompanyLogo,
+  initialRevenueGoal,
 }: {
   initialName: string;
   email: string;
   initialPaymentLink: string;
   initialCustomCategories: string[];
+  initialCompanyName: string;
+  initialCompanyAddress: string;
+  initialCompanyLogo: string;
+  initialRevenueGoal: number | null;
 }) {
   const [name, setName] = useState(initialName);
   const [paymentLink, setPaymentLink] = useState(initialPaymentLink);
@@ -28,6 +36,41 @@ export default function SettingsForm({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Company profile state
+  const [companyName, setCompanyName] = useState(initialCompanyName);
+  const [companyAddress, setCompanyAddress] = useState(initialCompanyAddress);
+  const [companyLogo, setCompanyLogo] = useState(initialCompanyLogo);
+  const [revenueGoal, setRevenueGoal] = useState(initialRevenueGoal !== null ? String(initialRevenueGoal) : "");
+  const [savingCompany, setSavingCompany] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      setCompanyLogo((ev.target?.result as string) ?? "");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveCompanyProfile() {
+    setSavingCompany(true);
+    const res = await fetch("/api/user/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        companyName: companyName || null,
+        companyAddress: companyAddress || null,
+        companyLogo: companyLogo || null,
+        revenueGoal: revenueGoal ? parseFloat(revenueGoal) : null,
+      }),
+    });
+    if (res.ok) toast.success("Company profile saved");
+    else toast.error("Failed to save company profile");
+    setSavingCompany(false);
+  }
 
   async function saveProfile() {
     setSaving(true);
@@ -85,6 +128,67 @@ export default function SettingsForm({
 
   return (
     <div className="space-y-6">
+      {/* Company Profile */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5"><Building2 className="h-4 w-4" /> Company Profile</h3>
+          <p className="text-xs text-muted-foreground mt-1">Shown on invoices and quotes</p>
+        </div>
+        <div className="space-y-2">
+          <Label>Company Name</Label>
+          <Input value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Acme Inc." />
+        </div>
+        <div className="space-y-2">
+          <Label>Company Address</Label>
+          <textarea
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            rows={2}
+            placeholder="123 Main St, City, State 00000"
+            value={companyAddress}
+            onChange={e => setCompanyAddress(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Company Logo</Label>
+          <div className="flex items-center gap-4">
+            {companyLogo && (
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={companyLogo} alt="Company logo" className="h-12 w-auto rounded border border-border object-contain" />
+                <button
+                  type="button"
+                  onClick={() => { setCompanyLogo(""); if (logoInputRef.current) logoInputRef.current.value = ""; }}
+                  className="absolute -top-2 -right-2 bg-destructive text-white rounded-full h-5 w-5 flex items-center justify-center"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+            <Button type="button" variant="outline" size="sm" onClick={() => logoInputRef.current?.click()}>
+              {companyLogo ? "Change Logo" : "Upload Logo"}
+            </Button>
+            <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+          </div>
+          <p className="text-xs text-muted-foreground">PNG, JPG, SVG. Stored as base64 — keep under 200 KB.</p>
+        </div>
+        <div className="space-y-2">
+          <Label>Monthly Revenue Goal (USD)</Label>
+          <Input
+            type="number"
+            min="0"
+            step="100"
+            placeholder="10000"
+            value={revenueGoal}
+            onChange={e => setRevenueGoal(e.target.value)}
+          />
+        </div>
+        <Button onClick={saveCompanyProfile} disabled={savingCompany} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
+          {savingCompany ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Company Profile
+        </Button>
+      </div>
+
+      <Separator />
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label>Display Name</Label>

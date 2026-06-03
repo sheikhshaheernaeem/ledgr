@@ -33,7 +33,7 @@ export default async function AnalyticsPage() {
     }),
     prisma.invoice.findMany({
       where: { userId },
-      select: { clientName: true, total: true, status: true, issueDate: true, dueDate: true, createdAt: true },
+      select: { clientName: true, total: true, amountPaid: true, status: true, issueDate: true, dueDate: true, createdAt: true },
     }),
     prisma.invoice.findMany({
       where: { userId, status: { in: ["SENT", "OVERDUE"] } },
@@ -106,6 +106,25 @@ export default async function AnalyticsPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
   const maxClientRevenue = topClients[0]?.[1] ?? 1;
+
+  // ── E. Client Revenue table ──────────────────────────────────────────
+  interface ClientRevRow { name: string; totalInvoiced: number; totalPaid: number; outstanding: number; paymentRate: number; }
+  const clientRevMap: Record<string, { invoiced: number; paid: number }> = {};
+  for (const inv of invoicesAll) {
+    if (!clientRevMap[inv.clientName]) clientRevMap[inv.clientName] = { invoiced: 0, paid: 0 };
+    clientRevMap[inv.clientName].invoiced += inv.total;
+    clientRevMap[inv.clientName].paid += inv.amountPaid ?? (inv.status === "PAID" ? inv.total : 0);
+  }
+  const clientRevRows: ClientRevRow[] = Object.entries(clientRevMap)
+    .map(([name, v]) => ({
+      name,
+      totalInvoiced: v.invoiced,
+      totalPaid: v.paid,
+      outstanding: Math.max(0, v.invoiced - v.paid),
+      paymentRate: v.invoiced > 0 ? Math.min(100, (v.paid / v.invoiced) * 100) : 0,
+    }))
+    .sort((a, b) => b.totalInvoiced - a.totalInvoiced)
+    .slice(0, 10);
 
   // ── D. AR Aging ───────────────────────────────────────────────────────
   const aging = { current: 0, d1_30: 0, d31_60: 0, d60plus: 0 };
@@ -323,6 +342,54 @@ export default async function AnalyticsPage() {
                   </div>
                 );
               })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* E. Profit Margin by Client (Client Revenue breakdown) */}
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-base">Profit Margin by Client</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {clientRevRows.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">No invoices yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-muted-foreground uppercase tracking-wide border-b border-border">
+                    <th className="text-left pb-2 font-medium">Client</th>
+                    <th className="text-right pb-2 font-medium">Invoiced</th>
+                    <th className="text-right pb-2 font-medium">Paid</th>
+                    <th className="text-right pb-2 font-medium">Outstanding</th>
+                    <th className="text-right pb-2 font-medium w-36">Payment Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientRevRows.map((row) => {
+                    const barColor = row.paymentRate >= 80 ? "bg-emerald-500" : row.paymentRate >= 50 ? "bg-yellow-400" : "bg-red-500";
+                    const rateColor = row.paymentRate >= 80 ? "text-emerald-400" : row.paymentRate >= 50 ? "text-yellow-400" : "text-red-400";
+                    return (
+                      <tr key={row.name} className="border-b border-border/50 last:border-0">
+                        <td className="py-3 font-medium text-white truncate max-w-[150px]">{row.name}</td>
+                        <td className="py-3 text-right text-foreground">${fmt(row.totalInvoiced)}</td>
+                        <td className="py-3 text-right text-emerald-400">${fmt(row.totalPaid)}</td>
+                        <td className="py-3 text-right text-red-400">${fmt(row.outstanding)}</td>
+                        <td className="py-3 pl-4">
+                          <div className="flex items-center gap-2 justify-end">
+                            <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden min-w-[60px]">
+                              <div className={`h-full rounded-full ${barColor}`} style={{ width: `${row.paymentRate}%` }} />
+                            </div>
+                            <span className={`text-xs font-medium ${rateColor} w-9 text-right shrink-0`}>{row.paymentRate.toFixed(0)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

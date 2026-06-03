@@ -57,6 +57,7 @@ export async function PATCH(
     notes,
     lineItems,
     amountPaid,
+    type,
   } = body as {
     invoiceNumber?: string;
     clientName?: string;
@@ -67,6 +68,7 @@ export async function PATCH(
     notes?: string;
     lineItems?: Array<{ description: string; quantity: number; unitPrice: number }>;
     amountPaid?: number;
+    type?: string;
   };
 
   // Recalculate totals if line items provided
@@ -104,6 +106,7 @@ export async function PATCH(
       subtotal,
       total,
       notes: notes ?? undefined,
+      type: type ?? undefined,
       amountPaid: amountPaid !== undefined ? amountPaid : undefined,
       ...(autoStatusPaid ? { status: "PAID", paidAt: new Date() } : {}),
       ...(lineItems && lineItems.length > 0

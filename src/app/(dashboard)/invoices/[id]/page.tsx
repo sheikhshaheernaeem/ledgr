@@ -29,6 +29,17 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   });
   if (!inv) notFound();
 
+  // Late fee calculation for overdue invoices
+  const now = new Date();
+  let lateFeeAmount: number | null = null;
+  if (inv.status === "OVERDUE" && inv.lateFeePct > 0) {
+    const daysOverdue = Math.floor((now.getTime() - new Date(inv.dueDate).getTime()) / 86_400_000);
+    if (daysOverdue > 0) {
+      const monthlyRate = inv.lateFeePct / 100;
+      lateFeeAmount = inv.total * monthlyRate * (daysOverdue / 30);
+    }
+  }
+
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
@@ -43,7 +54,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               <Printer className="h-3.5 w-3.5" /> Download PDF
             </Button>
           </Link>
-          <InvoiceActions invoiceId={inv.id} status={inv.status} />
+          <InvoiceActions invoiceId={inv.id} status={inv.status} type={inv.type} />
         </div>
       </div>
 
@@ -81,6 +92,12 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>${inv.subtotal.toFixed(2)}</span></div>
             {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>Tax ({inv.taxRate}%)</span><span>${inv.taxAmount.toFixed(2)}</span></div>}
             <div className="flex justify-end gap-12 font-bold text-white text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>
+            {lateFeeAmount !== null && (
+              <div className="flex justify-end gap-12 text-red-400 text-xs mt-1">
+                <span>Late fee accrued ({inv.lateFeePct}%/mo)</span>
+                <span>${lateFeeAmount.toFixed(2)}</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

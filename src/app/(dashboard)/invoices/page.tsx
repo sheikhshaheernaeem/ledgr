@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Plus, MoreHorizontal, Loader2, FileText, Share2, Download } from "lucide-react";
+import { Plus, MoreHorizontal, Loader2, FileText, Share2, Download, Trash2, CheckCheck, Send } from "lucide-react";
 import Link from "next/link";
 
 interface Invoice {
@@ -20,6 +20,8 @@ interface Invoice {
   status: string;
   total: number;
   publicToken: string | null;
+  type: string;
+  currency: string;
 }
 
 const statusStyle: Record<string, string> = {
@@ -29,13 +31,25 @@ const statusStyle: Record<string, string> = {
   OVERDUE: "border-red-500/30 text-red-400",
 };
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: "$", EUR: "€", GBP: "£", PKR: "₨", CAD: "C$", AUD: "A$", AED: "د.إ",
+};
+
+function currencySymbol(currency: string): string {
+  return CURRENCY_SYMBOLS[currency] ?? (currency + " ");
+}
+
 const FILTERS = ["All", "Outstanding", "Paid"] as const;
 type Filter = (typeof FILTERS)[number];
+type TabType = "invoices" | "quotes";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filter, setFilter] = useState<Filter>("All");
+  const [tab, setTab] = useState<TabType>("invoices");
   const [loading, setLoading] = useState(true);
+  const [selectedInvoices, setSelectedInvoices] = useState<Set<string>>(new Set());
+  const [bulkActing, setBulkActing] = useState(false);
 
   async function load() {
     const res = await fetch("/api/invoices");
@@ -61,13 +75,68 @@ export default function InvoicesPage() {
     else toast.error("Cannot delete — only DRAFT invoices can be deleted");
   }
 
-  const filtered = invoices.filter(inv => {
+  function toggleSelect(id: string) {
+    setSelectedInvoices(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    setSelectedInvoices(prev =>
+      prev.size === filtered.length ? new Set() : new Set(filtered.map(i => i.id))
+    );
+  }
+
+  async function bulkMarkStatus(status: string) {
+    if (selectedInvoices.size === 0) return;
+    setBulkActing(true);
+    let success = 0;
+    for (const id of selectedInvoices) {
+      const res = await fetch(`/api/invoices/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) success++;
+    }
+    toast.success(`Marked ${success} invoice${success === 1 ? "" : "s"} as ${status.toLowerCase()}`);
+    setSelectedInvoices(new Set());
+    setBulkActing(false);
+    load();
+  }
+
+  async function bulkDelete() {
+    if (selectedInvoices.size === 0) return;
+    if (!confirm(`Delete ${selectedInvoices.size} selected invoice(s)? This cannot be undone.`)) return;
+    setBulkActing(true);
+    let success = 0;
+    for (const id of selectedInvoices) {
+      const res = await fetch(`/api/invoices/${id}`, { method: "DELETE" });
+      if (res.ok) success++;
+    }
+    toast.success(`Deleted ${success} invoice${success === 1 ? "" : "s"}`);
+    setSelectedInvoices(new Set());
+    setBulkActing(false);
+    load();
+  }
+
+  const tabFiltered = invoices.filter(inv =>
+    tab === "quotes" ? inv.type === "QUOTE" : inv.type !== "QUOTE"
+  );
+
+  const filtered = tabFiltered.filter(inv => {
     if (filter === "Outstanding") return ["SENT", "OVERDUE"].includes(inv.status);
     if (filter === "Paid") return inv.status === "PAID";
     return true;
   });
 
-  const outstanding = invoices.filter(i => ["SENT", "OVERDUE"].includes(i.status)).reduce((s, i) => s + i.total, 0);
+  const outstanding = invoices
+    .filter(i => ["SENT", "OVERDUE"].includes(i.status) && i.type !== "QUOTE")
+    .reduce((s, i) => s + i.total, 0);
+
+  const allSelected = filtered.length > 0 && selectedInvoices.size === filtered.length;
 
   return (
     <div className="p-8 space-y-6">
@@ -75,7 +144,7 @@ export default function InvoicesPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Invoices</h1>
           <p className="text-muted-foreground mt-1">
-            {invoices.filter(i => ["SENT", "OVERDUE"].includes(i.status)).length} outstanding — $
+            {invoices.filter(i => ["SENT", "OVERDUE"].includes(i.status) && i.type !== "QUOTE").length} outstanding — $
             {outstanding.toLocaleString("en-US", { minimumFractionDigits: 2 })} due
           </p>
         </div>
@@ -85,12 +154,33 @@ export default function InvoicesPage() {
               <Download className="h-3.5 w-3.5" /> Export CSV
             </Button>
           </a>
+          <Link href="/invoices/new/quote">
+            <Button variant="outline" className="gap-2 font-semibold">
+              <Plus className="h-4 w-4" /> New Quote
+            </Button>
+          </Link>
           <Link href="/invoices/new">
             <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
               <Plus className="h-4 w-4" /> New Invoice
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Type Tabs */}
+      <div className="flex gap-2 border-b border-border pb-0">
+        <button
+          onClick={() => { setTab("invoices"); setSelectedInvoices(new Set()); }}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === "invoices" ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+        >
+          Invoices ({invoices.filter(i => i.type !== "QUOTE").length})
+        </button>
+        <button
+          onClick={() => { setTab("quotes"); setSelectedInvoices(new Set()); }}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${tab === "quotes" ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+        >
+          Quotes ({invoices.filter(i => i.type === "QUOTE").length})
+        </button>
       </div>
 
       <div className="flex gap-2">
@@ -102,9 +192,50 @@ export default function InvoicesPage() {
         ))}
       </div>
 
+      {/* Bulk action bar */}
+      {selectedInvoices.size > 0 && (
+        <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg border border-border bg-card">
+          <span className="text-sm text-muted-foreground">{selectedInvoices.size} selected</span>
+          <div className="flex-1" />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={bulkActing}
+            onClick={() => bulkMarkStatus("SENT")}
+            className="gap-1.5 text-xs border-blue-500/30 text-blue-400 hover:text-blue-300"
+          >
+            {bulkActing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+            Mark as Sent
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={bulkActing}
+            onClick={() => bulkMarkStatus("PAID")}
+            className="gap-1.5 text-xs border-emerald-500/30 text-emerald-400 hover:text-emerald-300"
+          >
+            {bulkActing ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCheck className="h-3 w-3" />}
+            Mark as Paid
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={bulkActing}
+            onClick={bulkDelete}
+            className="gap-1.5 text-xs border-red-500/30 text-red-400 hover:text-red-300"
+          >
+            {bulkActing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+            Delete
+          </Button>
+        </div>
+      )}
+
       <Card className="border-border bg-card">
         <CardHeader>
-          <CardTitle className="text-base">Invoices <span className="text-muted-foreground font-normal text-sm">({filtered.length})</span></CardTitle>
+          <CardTitle className="text-base">
+            {tab === "quotes" ? "Quotes" : "Invoices"}{" "}
+            <span className="text-muted-foreground font-normal text-sm">({filtered.length})</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -112,13 +243,20 @@ export default function InvoicesPage() {
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <FileText className="h-10 w-10 mx-auto mb-3 opacity-20" />
-              <p>No invoices found</p>
-              <Link href="/invoices/new"><Button variant="outline" size="sm" className="mt-3">Create your first invoice</Button></Link>
+              <p>No {tab === "quotes" ? "quotes" : "invoices"} found</p>
+              <Link href={tab === "quotes" ? "/invoices/new/quote" : "/invoices/new"}>
+                <Button variant="outline" size="sm" className="mt-3">
+                  Create your first {tab === "quotes" ? "quote" : "invoice"}
+                </Button>
+              </Link>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <input type="checkbox" checked={allSelected} onChange={toggleAll} className="rounded border-border" />
+                  </TableHead>
                   <TableHead>Invoice #</TableHead>
                   <TableHead>Client</TableHead>
                   <TableHead>Issue Date</TableHead>
@@ -130,7 +268,15 @@ export default function InvoicesPage() {
               </TableHeader>
               <TableBody>
                 {filtered.map(inv => (
-                  <TableRow key={inv.id}>
+                  <TableRow key={inv.id} className={selectedInvoices.has(inv.id) ? "bg-emerald-500/5" : ""}>
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedInvoices.has(inv.id)}
+                        onChange={() => toggleSelect(inv.id)}
+                        className="rounded border-border"
+                      />
+                    </TableCell>
                     <TableCell>
                       <Link href={`/invoices/${inv.id}`} className="text-emerald-400 hover:underline font-medium">
                         {inv.invoiceNumber}
@@ -142,7 +288,9 @@ export default function InvoicesPage() {
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{new Date(inv.issueDate).toLocaleDateString()}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{new Date(inv.dueDate).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right font-medium">${inv.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {currencySymbol(inv.currency ?? "USD")}{inv.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`text-xs ${statusStyle[inv.status] ?? ""}`}>{inv.status}</Badge>
                     </TableCell>
@@ -171,7 +319,9 @@ export default function InvoicesPage() {
                             <DropdownMenuItem onClick={() => window.location.href = `/invoices/${inv.id}`}>View</DropdownMenuItem>
                             {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "SENT")}>Mark Sent</DropdownMenuItem>}
                             {inv.status === "SENT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "PAID")}>Mark Paid</DropdownMenuItem>}
-                            {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => deleteInvoice(inv.id)} className="text-red-400">Delete</DropdownMenuItem>}
+                            {inv.status === "DRAFT" && (
+                              <DropdownMenuItem onClick={() => deleteInvoice(inv.id)} className="text-red-400">Delete</DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Plus, Pencil, Trash2, Mail, Phone, Building2, Loader2 } from "lucide-react";
+import { Users, Plus, Pencil, Trash2, Mail, Phone, Building2, Loader2, FileBarChart2 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Client {
   id: string;
@@ -155,10 +156,15 @@ export default function ClientsPage() {
                     <span className="truncate">{client.address}</span>
                   </div>
                 )}
-                <div className="pt-2">
+                <div className="pt-2 flex items-center gap-2 flex-wrap">
                   <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">
                     {client._count.invoices} invoice{client._count.invoices !== 1 ? "s" : ""}
                   </Badge>
+                  <Link href={`/clients/${client.id}/statement`} target="_blank">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs px-2 text-muted-foreground hover:text-foreground gap-1">
+                      <FileBarChart2 className="h-3 w-3" /> Statement
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

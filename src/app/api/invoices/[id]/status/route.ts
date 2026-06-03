@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { writeAudit } from "@/lib/audit";
 import { Resend } from "resend";
+import { invoiceSentEmail } from "@/lib/email-templates";
 
 export async function PATCH(
   request: Request,
@@ -56,23 +57,19 @@ export async function PATCH(
         const resend = new Resend(resendKey);
         const user = await prisma.user.findUnique({ where: { id: session.user.id as string }, select: { name: true, paymentLink: true } });
         const senderName = user?.name ?? "Your service provider";
-        const fmt = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-        const payBtn = user?.paymentLink
-          ? `<p style="margin-top:24px;text-align:center"><a href="${user.paymentLink}" style="background:#059669;color:white;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:700;font-size:15px">Pay Now</a></p>`
-          : "";
         await resend.emails.send({
           from: fromEmail,
           to: existing.clientEmail,
-          subject: `Invoice ${existing.invoiceNumber} from ${senderName} — ${fmt(existing.total)} due`,
-          html: `
-            <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#111">
-              <h2 style="color:#059669">Invoice ${existing.invoiceNumber}</h2>
-              <p>Hi ${existing.clientName},</p>
-              <p>${senderName} has sent you an invoice for <strong>${fmt(existing.total)}</strong>, due on <strong>${new Date(existing.dueDate).toLocaleDateString("en-US", { year:"numeric",month:"long",day:"numeric" })}</strong>.</p>
-              ${payBtn}
-              <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb">
-              <p style="font-size:12px;color:#999">Sent via Ledgr · AI-native bookkeeping</p>
-            </div>`,
+          subject: `Invoice ${existing.invoiceNumber} from ${senderName}`,
+          html: invoiceSentEmail({
+            invoiceNumber: existing.invoiceNumber,
+            clientName: existing.clientName,
+            senderName,
+            amount: existing.total,
+            currency: existing.currency ?? "USD",
+            dueDate: existing.dueDate,
+            paymentLink: user?.paymentLink ?? null,
+          }),
         });
       }
     } catch {

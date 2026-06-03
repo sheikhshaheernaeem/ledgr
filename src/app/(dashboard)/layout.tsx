@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -48,6 +49,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <span className="text-xl font-bold text-emerald-400">Ledgr</span>
           </Link>
           <MobileSidebar />
+          <div className="ml-auto">
+            <NotificationBell />
+          </div>
+        </div>
+        {/* Desktop sticky header bar with notification bell */}
+        <div className="hidden md:flex items-center justify-end px-6 py-2 border-b border-border sticky top-0 z-30 bg-background/80 backdrop-blur-sm">
+          <NotificationBell />
         </div>
         {children}
       </main>
