@@ -44,6 +44,15 @@ next-env.d.ts
 
 # SQLite local database
 prisma/dev.db
+
+# One-time migration/seed helper scripts (contain credentials)
+migrate-neon.mjs
+seed-neon.mjs
+
+# Dev logs
+dev.log
 prisma/dev.db-journal
 prisma/dev.db-shm
 prisma/dev.db-wal
+
+.vercel
