@@ -59,6 +59,10 @@ export default function TransactionsPage() {
   const [receiptUploading, setReceiptUploading] = useState(false);
   const [receiptOcr, setReceiptOcr] = useState<OcrData | null>(null);
 
+  const [isDragging, setIsDragging] = useState(false);
+  const [selectedBulkCategory, setSelectedBulkCategory] = useState("");
+  const [bulkCategoryActing, setBulkCategoryActing] = useState(false);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const receiptFileRef = useRef<HTMLInputElement>(null);
 
@@ -131,8 +135,7 @@ export default function TransactionsPage() {
     setSaving(false);
   }
 
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]; if (!file) return;
+  async function uploadFile(file: File) {
     setUploading(true);
     const formData = new FormData(); formData.append("file", file);
     try {
@@ -142,6 +145,54 @@ export default function TransactionsPage() {
       toast.success(`Uploaded ${data.count} transactions`); loadTransactions();
     } catch (err) { toast.error(err instanceof Error ? err.message : "Upload failed"); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; if (!file) return;
+    await uploadFile(file);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+    // Only clear if leaving the wrapper entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && (file.name.endsWith(".csv") || file.type === "text/csv")) {
+      uploadFile(file);
+    } else if (file) {
+      toast.error("Please drop a CSV file");
+    }
+  }
+
+  async function bulkChangeCategory() {
+    if (selected.size === 0 || !selectedBulkCategory) return;
+    setBulkCategoryActing(true);
+    try {
+      const res = await fetch("/api/transactions/bulk", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selected), updates: { category: selectedBulkCategory } }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success(`Category set to "${selectedBulkCategory}" for ${selected.size} transactions`);
+      setSelected(new Set());
+      setSelectedBulkCategory("");
+      loadTransactions();
+    } catch { toast.error("Bulk category update failed"); }
+    finally { setBulkCategoryActing(false); }
   }
 
   async function handleCategorize() {
@@ -190,7 +241,22 @@ export default function TransactionsPage() {
   const hasActiveFilters = search || filterCategory || filterStatus || startDate || endDate;
 
   return (
-    <div className="p-8 space-y-5">
+    <div
+      className="p-8 space-y-5 relative"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Full-screen drag overlay */}
+      {isDragging && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm border-2 border-dashed border-emerald-400 pointer-events-none">
+          <div className="text-center">
+            <Upload className="h-14 w-14 mx-auto mb-4 text-emerald-400" />
+            <p className="text-xl font-semibold text-emerald-400">Drop your CSV here</p>
+            <p className="text-sm text-muted-foreground mt-1">Release to upload your bank statement</p>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Transactions</h1>
@@ -258,9 +324,30 @@ export default function TransactionsPage() {
 
       {/* Bulk action bar */}
       {selected.size > 0 && (
-        <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card">
+        <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg border border-border bg-card">
           <span className="text-sm text-muted-foreground">{selected.size} selected</span>
           <div className="flex-1" />
+          {/* Bulk category change */}
+          <div className="flex items-center gap-1.5">
+            <select
+              className="h-8 rounded-md border border-border bg-background px-2 text-xs"
+              value={selectedBulkCategory}
+              onChange={e => setSelectedBulkCategory(e.target.value)}
+            >
+              <option value="">Pick category…</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={!selectedBulkCategory || bulkCategoryActing}
+              onClick={bulkChangeCategory}
+              className="h-8 text-xs gap-1"
+            >
+              {bulkCategoryActing ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+              Apply Category
+            </Button>
+          </div>
           <Button size="sm" variant="outline" onClick={() => bulkAction("approve")} disabled={bulkActing} className="gap-1.5 border-emerald-500/30 text-emerald-400 hover:text-emerald-300">
             {bulkActing ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCheck className="h-3 w-3" />} Approve
           </Button>
@@ -373,7 +460,7 @@ export default function TransactionsPage() {
         </CardContent>
       </Card>
 
-      {/* Edit dialog */}
+      {/* Edit dialog — kept outside drag wrapper */}
       <Dialog open={!!editTx} onOpenChange={open => { if (!open) setEditTx(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader>

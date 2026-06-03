@@ -46,6 +46,8 @@ export async function POST(request: Request) {
     taxRate,
     notes,
     lineItems,
+    isRecurring,
+    recurringInterval,
   } = body as {
     invoiceNumber: string;
     clientName: string;
@@ -55,6 +57,8 @@ export async function POST(request: Request) {
     taxRate?: number;
     notes?: string;
     lineItems: Array<{ description: string; quantity: number; unitPrice: number }>;
+    isRecurring?: boolean;
+    recurringInterval?: string;
   };
 
   if (!invoiceNumber || !clientName || !issueDate || !dueDate) {
@@ -80,6 +84,8 @@ export async function POST(request: Request) {
   const taxAmount = subtotal * (rate / 100);
   const total = subtotal + taxAmount;
 
+  const publicToken = crypto.randomUUID();
+
   const invoice = await prisma.invoice.create({
     data: {
       userId: session.user.id,
@@ -93,6 +99,9 @@ export async function POST(request: Request) {
       subtotal,
       total,
       notes: notes ?? undefined,
+      publicToken,
+      isRecurring: isRecurring ?? false,
+      recurringInterval: recurringInterval ?? undefined,
       lineItems: {
         create: lineItems.map((item) => ({
           description: item.description,

@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Printer } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import InvoiceActions from "./InvoiceActions";
+import RecordPayment from "./RecordPayment";
 import Link from "next/link";
 
 const statusStyle: Record<string, string> = {
@@ -88,6 +89,19 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         <Card className="border-border bg-card">
           <CardContent className="pt-4">
             <p className="text-sm text-muted-foreground">{inv.notes}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {inv.status !== "PAID" && (
+        <Card className="border-border bg-card">
+          <CardHeader><CardTitle className="text-base">Record Payment</CardTitle></CardHeader>
+          <CardContent>
+            <RecordPayment
+              invoiceId={inv.id}
+              total={inv.total}
+              amountPaid={inv.amountPaid}
+            />
           </CardContent>
         </Card>
       )}

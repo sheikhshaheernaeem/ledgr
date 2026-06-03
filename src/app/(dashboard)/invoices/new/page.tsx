@@ -24,6 +24,8 @@ export default function NewInvoicePage() {
     dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
     taxRate: "0",
     notes: "",
+    isRecurring: false,
+    recurringInterval: "monthly",
   });
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: "1", unitPrice: "" }]);
 
@@ -49,6 +51,8 @@ export default function NewInvoicePage() {
         body: JSON.stringify({
           ...form,
           taxRate: parseFloat(form.taxRate) || 0,
+          isRecurring: form.isRecurring,
+          recurringInterval: form.isRecurring ? form.recurringInterval : undefined,
           lineItems: items.filter(it => it.description).map(it => ({
             description: it.description,
             quantity: parseFloat(it.quantity) || 1,
@@ -143,6 +147,36 @@ export default function NewInvoicePage() {
           <CardContent className="pt-4 space-y-2">
             <Label>Notes</Label>
             <textarea className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500" rows={3} placeholder="Payment terms, bank details, etc." value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-card">
+          <CardHeader><CardTitle className="text-base">Recurring</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isRecurring"
+                checked={form.isRecurring}
+                onChange={e => setForm(p => ({ ...p, isRecurring: e.target.checked }))}
+                className="h-4 w-4 rounded border-border accent-emerald-500"
+              />
+              <Label htmlFor="isRecurring" className="cursor-pointer">Recurring invoice</Label>
+            </div>
+            {form.isRecurring && (
+              <div className="space-y-2">
+                <Label>Recurrence Interval</Label>
+                <select
+                  value={form.recurringInterval}
+                  onChange={e => setForm(p => ({ ...p, recurringInterval: e.target.value }))}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+            )}
           </CardContent>
         </Card>
 

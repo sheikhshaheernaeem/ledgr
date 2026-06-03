@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, ArrowLeftRight, Upload,
-  FileText, Receipt, GitMerge, PiggyBank, CheckCircle2, Circle,
+  FileText, Receipt, GitMerge, PiggyBank, CheckCircle2, Circle, AlertTriangle,
 } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 
@@ -78,6 +78,16 @@ export default async function DashboardPage() {
     { label: "Send your first invoice", done: hasInvoice, href: "/invoices/new" },
   ];
 
+  // AR Aging widget data
+  const nowMs = now.getTime();
+  const overdueInvoices = openInvoices.filter(inv => new Date(inv.dueDate).getTime() < nowMs);
+  const totalOverdueAmount = overdueInvoices.reduce((s, inv) => s + inv.total, 0);
+  const oldestOverdue = overdueInvoices.length > 0
+    ? overdueInvoices.reduce((oldest, inv) =>
+        new Date(inv.dueDate) < new Date(oldest.dueDate) ? inv : oldest
+      )
+    : null;
+
   return (
     <div className="p-8 space-y-8">
       <div className="flex items-center justify-between">
@@ -139,6 +149,49 @@ export default async function DashboardPage() {
           </Card>
         ))}
       </div>
+
+      {/* AR Aging widget — only shown when there are overdue invoices */}
+      {overdueInvoices.length > 0 && (
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-amber-500/15 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-amber-400">Overdue Invoices</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {overdueInvoices.length} invoice{overdueInvoices.length !== 1 ? "s" : ""} past due
+                    {oldestOverdue && (
+                      <> · oldest due {new Date(oldestOverdue.dueDate).toLocaleDateString()}</>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 sm:gap-8">
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Amount Overdue</p>
+                  <p className="text-xl font-bold text-red-400">
+                    ${totalOverdueAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Open AR</p>
+                  <p className="text-lg font-semibold text-amber-400">
+                    ${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <Link href="/invoices">
+                  <Badge variant="outline" className="border-amber-500/40 text-amber-400 cursor-pointer hover:bg-amber-500/10 whitespace-nowrap">
+                    View Invoices →
+                  </Badge>
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <div>

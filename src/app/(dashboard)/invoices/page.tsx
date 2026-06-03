@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Plus, MoreHorizontal, Loader2, FileText } from "lucide-react";
+import { Plus, MoreHorizontal, Loader2, FileText, Share2, Download } from "lucide-react";
 import Link from "next/link";
 
 interface Invoice {
@@ -19,6 +19,7 @@ interface Invoice {
   dueDate: string;
   status: string;
   total: number;
+  publicToken: string | null;
 }
 
 const statusStyle: Record<string, string> = {
@@ -78,11 +79,18 @@ export default function InvoicesPage() {
             {outstanding.toLocaleString("en-US", { minimumFractionDigits: 2 })} due
           </p>
         </div>
-        <Link href="/invoices/new">
-          <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
-            <Plus className="h-4 w-4" /> New Invoice
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <a href="/api/invoices/export">
+            <Button variant="outline" className="gap-2 text-xs">
+              <Download className="h-3.5 w-3.5" /> Export CSV
+            </Button>
+          </a>
+          <Link href="/invoices/new">
+            <Button className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
+              <Plus className="h-4 w-4" /> New Invoice
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="flex gap-2">
@@ -139,17 +147,34 @@ export default function InvoicesPage() {
                       <Badge variant="outline" className={`text-xs ${statusStyle[inv.status] ?? ""}`}>{inv.status}</Badge>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => window.location.href = `/invoices/${inv.id}`}>View</DropdownMenuItem>
-                          {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "SENT")}>Mark Sent</DropdownMenuItem>}
-                          {inv.status === "SENT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "PAID")}>Mark Paid</DropdownMenuItem>}
-                          {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => deleteInvoice(inv.id)} className="text-red-400">Delete</DropdownMenuItem>}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center gap-1">
+                        {inv.publicToken && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            title="Copy share link"
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `${window.location.origin}/p/${inv.publicToken}`
+                              );
+                              toast.success("Share link copied!");
+                            }}
+                          >
+                            <Share2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => window.location.href = `/invoices/${inv.id}`}>View</DropdownMenuItem>
+                            {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "SENT")}>Mark Sent</DropdownMenuItem>}
+                            {inv.status === "SENT" && <DropdownMenuItem onClick={() => updateStatus(inv.id, "PAID")}>Mark Paid</DropdownMenuItem>}
+                            {inv.status === "DRAFT" && <DropdownMenuItem onClick={() => deleteInvoice(inv.id)} className="text-red-400">Delete</DropdownMenuItem>}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

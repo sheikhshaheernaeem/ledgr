@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2,
   Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, ShieldCheck,
-  Users, Calculator, Zap,
+  Users, Calculator, Zap, BarChart2, ScanLine,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -15,10 +15,12 @@ const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
   { href: "/reports", icon: FileText, label: "Reports" },
+  { href: "/analytics", icon: BarChart2, label: "Analytics" },
 ];
 
 const financeNav = [
   { href: "/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/receipts", icon: ScanLine, label: "Receipts" },
   { href: "/clients", icon: Users, label: "Clients" },
   { href: "/accounts", icon: Building2, label: "Bank Accounts" },
   { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },

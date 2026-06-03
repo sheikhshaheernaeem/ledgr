@@ -56,6 +56,7 @@ export async function PATCH(
     taxRate,
     notes,
     lineItems,
+    amountPaid,
   } = body as {
     invoiceNumber?: string;
     clientName?: string;
@@ -65,6 +66,7 @@ export async function PATCH(
     taxRate?: number;
     notes?: string;
     lineItems?: Array<{ description: string; quantity: number; unitPrice: number }>;
+    amountPaid?: number;
   };
 
   // Recalculate totals if line items provided
@@ -85,6 +87,10 @@ export async function PATCH(
     total = subtotal + taxAmount;
   }
 
+  // Determine new amountPaid and whether to auto-mark PAID
+  const newAmountPaid = amountPaid !== undefined ? amountPaid : existing.amountPaid;
+  const autoStatusPaid = newAmountPaid >= total && existing.status !== "PAID" ? "PAID" : undefined;
+
   const updated = await prisma.invoice.update({
     where: { id },
     data: {
@@ -98,6 +104,8 @@ export async function PATCH(
       subtotal,
       total,
       notes: notes ?? undefined,
+      amountPaid: amountPaid !== undefined ? amountPaid : undefined,
+      ...(autoStatusPaid ? { status: "PAID", paidAt: new Date() } : {}),
       ...(lineItems && lineItems.length > 0
         ? {
             lineItems: {

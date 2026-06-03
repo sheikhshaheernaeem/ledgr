@@ -167,3 +167,429 @@ https://react.dev/link/hydration-mismatch
 ✓ Compiled in 8.7s
 ✓ Finished filesystem cache database compaction in 12.4s
 ✓ Finished filesystem cache database compaction in 35.9s
+✓ Compiled in 5.7s
+✓ Compiled in 2.7s
+✓ Finished filesystem cache database compaction in 13.1s
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/search/CommandPalette'
+  [90m3 |[0m [36mimport[0m { [33mToaster[0m } [36mfrom[0m [32m"@/components/ui/sonner"[0m;
+  [90m4 |[0m [36mimport[0m { [33mProviders[0m } [36mfrom[0m [32m"@/components/Providers"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mCommandPalette[0m } [36mfrom[0m [32m"@/components/search/CommandPalette"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m [32m"./globals.css"[0m;
+  [90m7 |[0m
+  [90m8 |[0m [36mconst[0m geistSans = [33mGeist[0m({
+
+Import map: aliased to relative './src/components/search/CommandPalette' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Finished filesystem cache database compaction in 13.9s
+✓ Compiled in 2.8s
+✓ Finished filesystem cache database compaction in 10.1s
+✓ Compiled in 275ms
+✓ Compiled in 133ms
+✓ Compiled in 137ms
+✓ Finished filesystem cache database compaction in 21.5s

@@ -172,6 +172,8 @@ model Invoice {
   isRecurring       Boolean  @default(false)
   recurringInterval String?
   nextInvoiceDate   DateTime?
+  publicToken       String?   @unique
+  amountPaid        Float     @default(0)
 
   @@unique([userId, invoiceNumber])
 }

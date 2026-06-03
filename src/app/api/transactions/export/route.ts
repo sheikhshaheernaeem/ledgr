@@ -15,25 +15,22 @@ export async function GET(request: NextRequest) {
   const month = parseInt(searchParams.get("month") ?? "");
   const year = parseInt(searchParams.get("year") ?? "");
 
-  if (!month || !year || isNaN(month) || isNaN(year)) {
-    return new Response(JSON.stringify({ error: "month and year are required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // month/year are optional — if omitted, export all transactions
+  const hasMonthYear = !isNaN(month) && !isNaN(year);
 
-  const startDate = new Date(year, month - 1, 1);
-  const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  const whereClause = hasMonthYear
+    ? {
+        userId: session.user.id,
+        status: "APPROVED",
+        date: {
+          gte: new Date(year, month - 1, 1),
+          lte: new Date(year, month, 0, 23, 59, 59, 999),
+        },
+      }
+    : { userId: session.user.id };
 
   const transactions = await prisma.transaction.findMany({
-    where: {
-      userId: session.user.id,
-      status: "APPROVED",
-      date: {
-        gte: startDate,
-        lte: endDate,
-      },
-    },
+    where: whereClause,
     orderBy: { date: "asc" },
   });
 
@@ -46,28 +43,37 @@ export async function GET(request: NextRequest) {
     return str;
   };
 
-  const header = "Date,Description,Amount,Type,Category,Subcategory,Status,Tax Category,Tax Line,Reconciled";
+  const header =
+    "ID,Date,Description,Amount,Type,Category,Subcategory,Tax Category,Status,Is Recurring,Has Receipt,Bank Statement Ref";
   const rows = transactions.map((t) =>
     [
+      escape(t.id),
       escape(t.date.toISOString().split("T")[0]),
       escape(t.description),
       escape(t.amount.toFixed(2)),
       escape(t.type),
       escape(t.category),
       escape(t.subcategory),
-      escape(t.status),
       escape(t.taxCategory),
-      escape(t.taxLine),
-      escape(t.reconciled ? "Yes" : "No"),
+      escape(t.status),
+      escape(t.isRecurring ? "Yes" : "No"),
+      escape(t.receiptData ? "Yes" : "No"),
+      escape(t.bankStatementRef),
     ].join(",")
   );
 
-  const csv = [header, ...rows].join("\n");
+  // UTF-8 BOM for Excel compatibility
+  const bom = "﻿";
+  const csv = bom + [header, ...rows].join("\n");
+
+  const filename = hasMonthYear
+    ? `transactions-${year}-${String(month).padStart(2, "0")}.csv`
+    : "transactions.csv";
 
   return new Response(csv, {
     headers: {
-      "Content-Type": "text/csv",
-      "Content-Disposition": `attachment; filename="transactions-${year}-${String(month).padStart(2, "0")}.csv"`,
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
 }

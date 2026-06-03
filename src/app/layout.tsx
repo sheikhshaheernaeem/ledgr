@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/Providers";
 import { CommandPalette } from "@/components/search/CommandPalette";
+import { KeyboardShortcuts } from "@/components/search/KeyboardShortcuts";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,6 +37,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <CommandPalette />
+          <KeyboardShortcuts />
           <Toaster richColors position="top-right" />
         </Providers>
       </body>

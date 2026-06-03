@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap } from "lucide-react";
+import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap, BarChart2, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,10 +16,12 @@ const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
   { href: "/reports", icon: FileText, label: "Reports" },
+  { href: "/analytics", icon: BarChart2, label: "Analytics" },
 ];
 
 const financeNav = [
   { href: "/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/receipts", icon: ScanLine, label: "Receipts" },
   { href: "/clients", icon: Users, label: "Clients" },
   { href: "/accounts", icon: Building2, label: "Bank Accounts" },
   { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },
