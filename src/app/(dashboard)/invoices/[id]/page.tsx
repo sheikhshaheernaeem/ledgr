@@ -3,9 +3,12 @@ import { prisma } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Printer } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import InvoiceActions from "./InvoiceActions";
+import Link from "next/link";
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
@@ -34,6 +37,11 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="outline" className={`text-sm ${statusStyle[inv.status] ?? ""}`}>{inv.status}</Badge>
+          <Link href={`/invoices/${inv.id}/print`} target="_blank">
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <Printer className="h-3.5 w-3.5" /> Download PDF
+            </Button>
+          </Link>
           <InvoiceActions invoiceId={inv.id} status={inv.status} />
         </div>
       </div>

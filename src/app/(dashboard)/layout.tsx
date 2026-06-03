@@ -20,6 +20,7 @@ import {
   Shield,
 } from "lucide-react";
 import { signOut } from "@/lib/auth";
+import { NavItem } from "@/components/layout/NavItem";
 
 const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
@@ -62,35 +63,20 @@ export default async function DashboardLayout({
 
         <nav className="flex-1 space-y-1 overflow-y-auto">
           {coreNav.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Button>
-            </Link>
+            <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} />
           ))}
 
           <Separator className="my-2" />
           <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Finance</p>
 
           {financeNav.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Button>
-            </Link>
+            <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} />
           ))}
 
           <Separator className="my-2" />
 
           {systemNav.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground">
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Button>
-            </Link>
+            <NavItem key={item.href} href={item.href} icon={item.icon} label={item.label} />
           ))}
 
           {isAdmin && (
