@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { AIChatBubble } from "@/components/ai/AIChatBubble";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -59,6 +60,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
         {children}
       </main>
+      <AIChatBubble />
     </div>
   );
 }

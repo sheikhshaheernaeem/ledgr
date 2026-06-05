@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen, BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent, ClipboardList, Briefcase, UserCheck, Wallet, FileCheck } from "lucide-react";
+import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen, BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent, ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -17,6 +17,7 @@ const coreNav = [
   { href: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
   { href: "/reports", icon: FileText, label: "Reports" },
   { href: "/analytics", icon: BarChart2, label: "Analytics" },
+  { href: "/ai-assistant", icon: Sparkles, label: "AI Assistant" },
 ];
 
 const financeNav = [
