@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, TrendingUp, TrendingDown } from "lucide-react";
+import { FileText, TrendingUp, TrendingDown, BarChart3, CheckCircle2 } from "lucide-react";
 
 export default async function ReportsPage() {
   const session = await auth();
@@ -25,11 +25,18 @@ export default async function ReportsPage() {
 
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Reports</h1>
-        <p className="text-muted-foreground mt-1">
-          Your monthly profit & loss statements
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Reports</h1>
+          <p className="text-muted-foreground mt-1">
+            Your monthly profit & loss statements
+          </p>
+        </div>
+        <Link href="/reports/consolidated">
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <BarChart3 className="h-3.5 w-3.5" /> Consolidated View
+          </Button>
+        </Link>
       </div>
 
       {reports.length === 0 ? (
@@ -63,14 +70,18 @@ export default async function ReportsPage() {
                     <Badge
                       variant="outline"
                       className={`text-xs ${
-                        report.status === "SENT"
+                        report.clientApprovedAt
                           ? "border-emerald-500/30 text-emerald-400"
-                          : report.status === "REVIEWED"
-                            ? "border-blue-500/30 text-blue-400"
-                            : "border-yellow-500/30 text-yellow-400"
+                          : report.status === "SENT"
+                            ? "border-emerald-500/30 text-emerald-400"
+                            : report.status === "REVIEWED"
+                              ? "border-blue-500/30 text-blue-400"
+                              : "border-yellow-500/30 text-yellow-400"
                       }`}
                     >
-                      {report.status.toLowerCase()}
+                      {report.clientApprovedAt ? (
+                        <span className="flex items-center gap-1"><CheckCircle2 className="h-2.5 w-2.5" /> approved</span>
+                      ) : report.status.toLowerCase()}
                     </Badge>
                   </div>
                   <CardDescription>

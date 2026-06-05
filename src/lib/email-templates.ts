@@ -338,3 +338,75 @@ export function weeklyDigestEmail(p: WeeklyDigestParams): string {
 </body>
 </html>`;
 }
+
+interface ReportApprovalParams {
+  monthName: string;
+  senderName: string;
+  clientEmail: string;
+  approvalUrl: string;
+  totalIncome: number;
+  totalExpenses: number;
+  netProfit: number;
+}
+
+export function reportApprovalEmail(p: ReportApprovalParams): string {
+  const netColor = p.netProfit >= 0 ? "#059669" : "#dc2626";
+  const netSign = p.netProfit >= 0 ? "+" : "-";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="background:#059669;padding:28px 32px;">
+            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Ledgr</p>
+            <p style="margin:4px 0 0;font-size:12px;color:#a7f3d0;letter-spacing:1px;text-transform:uppercase;">Monthly Report Ready</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px 32px 0;">
+            <h1 style="margin:0 0 4px;font-size:24px;color:#111827;font-weight:700;">${p.monthName}</h1>
+            <p style="margin:0 0 24px;font-size:15px;color:#374151;">from <strong>${p.senderName}</strong></p>
+            <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">Your monthly Profit &amp; Loss report is ready. Please review and approve below.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 32px;">
+            <table width="100%" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;">
+              <tr><td style="padding:16px 20px;">
+                <table width="100%">
+                  <tr><td style="font-size:12px;color:#6b7280;padding-bottom:4px;">Revenue</td><td style="font-size:14px;font-weight:700;color:#059669;text-align:right;">${fmtCurrency(p.totalIncome, "USD")}</td></tr>
+                  <tr><td style="font-size:12px;color:#6b7280;padding-bottom:4px;">Expenses</td><td style="font-size:14px;font-weight:700;color:#dc2626;text-align:right;">${fmtCurrency(p.totalExpenses, "USD")}</td></tr>
+                  <tr>
+                    <td style="font-size:13px;font-weight:700;color:#111;border-top:1px solid #e5e7eb;padding-top:8px;">Net Profit</td>
+                    <td style="font-size:16px;font-weight:800;color:${netColor};text-align:right;border-top:1px solid #e5e7eb;padding-top:8px;">${netSign}${fmtCurrency(Math.abs(p.netProfit), "USD")}</td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 32px;text-align:center;">
+            <a href="${p.approvalUrl}" style="background:#059669;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block;">
+              Review &amp; Approve Report
+            </a>
+            <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">Or visit: ${p.approvalUrl}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 32px;border-top:1px solid #e5e7eb;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;">
+              Sent via <strong style="color:#059669;">Ledgr</strong> · AI-native bookkeeping
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}

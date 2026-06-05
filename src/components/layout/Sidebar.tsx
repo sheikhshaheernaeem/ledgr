@@ -7,7 +7,9 @@ import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2,
   Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, ShieldCheck,
-  Users, Calculator, Zap, BarChart2, ScanLine,
+  Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen,
+  BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent,
+  ClipboardList, Briefcase, UserCheck, Wallet, FileCheck,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -21,6 +23,7 @@ const coreNav = [
 const financeNav = [
   { href: "/invoices", icon: Receipt, label: "Invoices" },
   { href: "/receipts", icon: ScanLine, label: "Receipts" },
+  { href: "/documents", icon: FolderOpen, label: "Documents" },
   { href: "/clients", icon: Users, label: "Clients" },
   { href: "/accounts", icon: Building2, label: "Bank Accounts" },
   { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },
@@ -29,6 +32,29 @@ const financeNav = [
   { href: "/reconciliation", icon: GitMerge, label: "Reconciliation" },
   { href: "/forecast", icon: TrendingUp, label: "Cash Flow Forecast" },
   { href: "/bank-sync", icon: Link2, label: "Bank Sync" },
+];
+
+const accountingNav = [
+  { href: "/chart-of-accounts", icon: BookOpen, label: "Chart of Accounts" },
+  { href: "/journal-entries", icon: BookMarked, label: "Journal Entries" },
+  { href: "/general-ledger", icon: ListChecks, label: "General Ledger" },
+  { href: "/trial-balance", icon: Scale, label: "Trial Balance" },
+  { href: "/bills", icon: Receipt, label: "Bills (A/P)" },
+  { href: "/cash-flow-statement", icon: Wallet, label: "Cash Flow Statement" },
+  { href: "/vat-returns", icon: Percent, label: "VAT Returns" },
+  { href: "/period-locks", icon: Lock, label: "Period Locks" },
+  { href: "/workpapers", icon: ClipboardList, label: "Workpapers" },
+  { href: "/contractor-1099", icon: FileCheck, label: "1099 Contractors" },
+];
+
+const opsNav = [
+  { href: "/time-tracking", icon: Clock, label: "Time Tracking" },
+  { href: "/payroll", icon: UserCheck, label: "Payroll" },
+  { href: "/fixed-assets", icon: Package, label: "Fixed Assets" },
+];
+
+const firmNav = [
+  { href: "/firm", icon: Briefcase, label: "My Firm" },
 ];
 
 const systemNav = [
@@ -67,6 +93,21 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
         <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Finance</p>
 
         {financeNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Accounting</p>
+
+        {accountingNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">HR & Ops</p>
+
+        {opsNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Firm</p>
+
+        {firmNav.map(item => <NavItem key={item.href} {...item} />)}
 
         <Separator className="my-2" />
 

@@ -4,10 +4,10 @@ import { redirect, notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Printer } from "lucide-react";
+import { Printer, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import ReportApprovalSection from "./ReportApprovalSection";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
@@ -42,6 +42,9 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
   const catRows = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
 
   const monthName = startDate.toLocaleString("default", { month: "long", year: "numeric" });
+  const approvalUrl = report.clientApprovalToken
+    ? `${process.env.NEXTAUTH_URL ?? ""}/p/report/${report.clientApprovalToken}`
+    : null;
 
   return (
     <div className="p-8 space-y-6 max-w-3xl mx-auto">
@@ -52,16 +55,21 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="outline" className={`${
+            report.clientApprovedAt ? "border-emerald-500/30 text-emerald-400" :
             report.status === "SENT" ? "border-emerald-500/30 text-emerald-400" :
             report.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" :
             "border-yellow-500/30 text-yellow-400"
-          }`}>{report.status}</Badge>
+          }`}>
+            {report.clientApprovedAt ? (
+              <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Approved</span>
+            ) : report.status.toLowerCase()}
+          </Badge>
           <Link href={`/reports/${id}/print`} target="_blank">
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Printer className="h-3.5 w-3.5" /> Download PDF
-              </Button>
-            </Link>
-            <Link href="/reports"><Button variant="outline" size="sm">Back</Button></Link>
+            <Button variant="outline" size="sm" className="gap-1.5">
+              <Printer className="h-3.5 w-3.5" /> Download PDF
+            </Button>
+          </Link>
+          <Link href="/reports"><Button variant="outline" size="sm">Back</Button></Link>
         </div>
       </div>
 
@@ -80,6 +88,16 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
           </Card>
         ))}
       </div>
+
+      {/* Client Approval Section */}
+      <ReportApprovalSection
+        reportId={id}
+        initialClientEmail={report.clientEmail ?? ""}
+        initialApprovalToken={report.clientApprovalToken ?? null}
+        initialApprovalUrl={approvalUrl}
+        initialApprovedAt={report.clientApprovedAt?.toISOString() ?? null}
+        initialStatus={report.status}
+      />
 
       {/* Revenue section */}
       <Card className="border-border bg-card">
@@ -145,6 +163,23 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">AI Summary</p>
             <p className="text-sm text-foreground leading-relaxed">{report.aiSummary}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Approval status detail */}
+      {report.clientApprovedAt && (
+        <Card className="border-emerald-500/20 bg-emerald-500/5">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <p className="text-sm text-emerald-400 font-medium">
+                Approved by client on {new Date(report.clientApprovedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              </p>
+            </div>
+            {report.clientEmail && (
+              <p className="text-xs text-muted-foreground mt-1 ml-6">{report.clientEmail}</p>
+            )}
           </CardContent>
         </Card>
       )}

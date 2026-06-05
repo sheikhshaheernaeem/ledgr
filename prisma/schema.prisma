@@ -16,25 +16,39 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  accounts         Account[]
-  sessions         Session[]
-  transactions     Transaction[]
-  reports          Report[]
-  subscription     Subscription?
-  bankAccounts     BankAccount[]
-  invoices         Invoice[]
-  budgets          Budget[]
-  messages         Message[]
-  auditLogs        AuditLog[]
-  plaidConnections PlaidConnection[]
+  accounts          Account[]
+  sessions          Session[]
+  transactions      Transaction[]
+  reports           Report[]
+  subscription      Subscription?
+  bankAccounts      BankAccount[]
+  invoices          Invoice[]
+  budgets           Budget[]
+  messages          Message[]
+  auditLogs         AuditLog[]
+  plaidConnections  PlaidConnection[]
   cashFlowForecasts CashFlowForecast[]
-  paymentLink      String?
-  customCategories String?
-  clients          Client[]
-  companyName      String?
-  companyAddress   String?
-  companyLogo      String?
-  revenueGoal      Float?
+  paymentLink       String?
+  customCategories  String?
+  clients           Client[]
+  companyName       String?
+  companyAddress    String?
+  companyLogo       String?
+  revenueGoal       Float?
+  documents         Document[]
+  vatNumber         String?
+
+  chartOfAccounts   ChartOfAccount[]
+  journalEntries    JournalEntry[]
+  bills             Bill[]
+  lockedPeriods     LockedPeriod[]
+  fixedAssets       FixedAsset[]
+  payrollRuns       PayrollRun[]
+  timeEntries       TimeEntry[]
+  workpapers        Workpaper[]
+  vatReturns        VatReturn[]
+  managedClients    ManagedClient[] @relation("accountant")
+  managedByAccounts ManagedClient[] @relation("client")
 }
 
 model Transaction {
@@ -90,6 +104,11 @@ model Report {
   updatedAt     DateTime      @updatedAt
   transactions  Transaction[]
   messages      Message[]
+  workpapers    Workpaper[]
+
+  clientApprovalToken String?  @unique
+  clientApprovedAt    DateTime?
+  clientEmail         String?
 }
 
 model Subscription {
@@ -157,6 +176,7 @@ model Invoice {
   invoiceNumber String
   clientName    String
   clientEmail   String?
+  clientVatNumber String?
   issueDate     DateTime
   dueDate       DateTime
   status        String   @default("DRAFT")
@@ -182,6 +202,7 @@ model Invoice {
   type              String   @default("INVOICE")
   currency          String   @default("USD")
   lateFeePct        Float    @default(0)
+  timeEntries       TimeEntry[]
 
   @@unique([userId, invoiceNumber])
 }
@@ -196,9 +217,12 @@ model Client {
   company   String?
   address   String?
   notes     String?
+  vatNumber String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   invoices  Invoice[]
+  documents Document[]
+  timeEntries TimeEntry[]
 
   @@index([userId])
 }
@@ -314,4 +338,331 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  type        String   @default("OTHER")
+  content     String?
+  mimeType    String   @default("text/plain")
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  status      String   @default("DRAFT")
+  publicToken String?  @unique
+  sentAt      DateTime?
+  signedAt    DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([clientId])
+}
+
+// ─── Chart of Accounts ────────────────────────────────────────────────────────
+
+model ChartOfAccount {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code          String
+  name          String
+  type          String   // ASSET | LIABILITY | EQUITY | REVENUE | EXPENSE
+  subtype       String?
+  description   String?
+  parentCode    String?
+  normalBalance String   @default("DEBIT")
+  isSystem      Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  journalLines  JournalEntryLine[]
+
+  @@unique([userId, code])
+  @@index([userId])
+}
+
+// ─── Journal Entries ──────────────────────────────────────────────────────────
+
+model JournalEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entryNumber String
+  date        DateTime
+  description String
+  reference   String?
+  type        String   @default("MANUAL")
+  status      String   @default("POSTED")
+  reversalOf  String?
+  memo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lines       JournalEntryLine[]
+
+  @@unique([userId, entryNumber])
+  @@index([userId])
+  @@index([userId, date])
+}
+
+model JournalEntryLine {
+  id             String         @id @default(cuid())
+  journalEntryId String
+  journalEntry   JournalEntry   @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  accountId      String
+  account        ChartOfAccount @relation(fields: [accountId], references: [id])
+  description    String?
+  debit          Float          @default(0)
+  credit         Float          @default(0)
+  createdAt      DateTime       @default(now())
+
+  @@index([journalEntryId])
+  @@index([accountId])
+}
+
+// ─── Accounts Payable ─────────────────────────────────────────────────────────
+
+model Bill {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  billNumber  String
+  vendorName  String
+  vendorEmail String?
+  issueDate   DateTime
+  dueDate     DateTime
+  status      String   @default("PENDING")
+  subtotal    Float
+  taxRate     Float    @default(0)
+  taxAmount   Float    @default(0)
+  total       Float
+  amountPaid  Float    @default(0)
+  currency    String   @default("USD")
+  notes       String?
+  category    String?
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lineItems   BillLineItem[]
+
+  @@unique([userId, billNumber])
+  @@index([userId])
+}
+
+model BillLineItem {
+  id          String   @id @default(cuid())
+  billId      String
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Float    @default(1)
+  unitPrice   Float
+  amount      Float
+  accountCode String?
+  createdAt   DateTime @default(now())
+}
+
+// ─── Period Locking ───────────────────────────────────────────────────────────
+
+model LockedPeriod {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  year     Int
+  month    Int
+  lockedAt DateTime @default(now())
+  lockedBy String
+  notes    String?
+
+  @@unique([userId, year, month])
+  @@index([userId])
+}
+
+// ─── Fixed Assets ─────────────────────────────────────────────────────────────
+
+model FixedAsset {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  assetNumber        String?
+  description        String?
+  purchaseDate       DateTime
+  purchaseCost       Float
+  salvageValue       Float    @default(0)
+  usefulLifeMonths   Int
+  depreciationMethod String   @default("STRAIGHT_LINE")
+  assetAccountCode   String?
+  depnAccountCode    String?
+  expenseAccountCode String?
+  disposalDate       DateTime?
+  disposalValue      Float?
+  status             String   @default("ACTIVE")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  depreciationEntries DepreciationEntry[]
+
+  @@index([userId])
+}
+
+model DepreciationEntry {
+  id        String     @id @default(cuid())
+  assetId   String
+  asset     FixedAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  userId    String
+  month     Int
+  year      Int
+  amount    Float
+  bookValue Float
+  posted    Boolean    @default(false)
+  createdAt DateTime   @default(now())
+
+  @@unique([assetId, year, month])
+  @@index([userId])
+}
+
+// ─── Payroll ──────────────────────────────────────────────────────────────────
+
+model PayrollRun {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  runNumber   String
+  periodStart DateTime
+  periodEnd   DateTime
+  payDate     DateTime
+  totalGross  Float    @default(0)
+  totalTax    Float    @default(0)
+  totalNet    Float    @default(0)
+  status      String   @default("DRAFT")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  employees   PayrollEmployee[]
+
+  @@index([userId])
+}
+
+model PayrollEmployee {
+  id              String     @id @default(cuid())
+  payrollRunId    String
+  payrollRun      PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  userId          String
+  employeeName    String
+  employeeId      String?
+  payType         String     @default("SALARY")
+  hoursWorked     Float?
+  hourlyRate      Float?
+  grossPay        Float
+  federalTax      Float      @default(0)
+  stateTax        Float      @default(0)
+  socialSecurity  Float      @default(0)
+  medicare        Float      @default(0)
+  otherDeductions Float      @default(0)
+  netPay          Float
+  is1099          Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+}
+
+// ─── Time Tracking ────────────────────────────────────────────────────────────
+
+model TimeEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  date        DateTime
+  hours       Float
+  description String
+  hourlyRate  Float    @default(0)
+  amount      Float    @default(0)
+  billable    Boolean  @default(true)
+  invoiced    Boolean  @default(false)
+  invoiceId   String?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([clientId])
+}
+
+// ─── Workpapers ───────────────────────────────────────────────────────────────
+
+model Workpaper {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reportId    String?
+  report      Report?  @relation(fields: [reportId], references: [id])
+  name        String
+  description String?
+  status      String   @default("IN_PROGRESS")
+  assignedTo  String?
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       WorkpaperItem[]
+
+  @@index([userId])
+}
+
+model WorkpaperItem {
+  id          String    @id @default(cuid())
+  workpaperId String
+  workpaper   Workpaper @relation(fields: [workpaperId], references: [id], onDelete: Cascade)
+  description String
+  reference   String?
+  status      String    @default("PENDING")
+  notes       String?
+  tickedBy    String?
+  tickedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── VAT Returns ──────────────────────────────────────────────────────────────
+
+model VatReturn {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  periodStart    DateTime
+  periodEnd      DateTime
+  totalSales     Float    @default(0)
+  vatOnSales     Float    @default(0)
+  totalPurchases Float    @default(0)
+  vatOnPurchases Float    @default(0)
+  vatPayable     Float    @default(0)
+  status         String   @default("DRAFT")
+  filedAt        DateTime?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Multi-client Mode ────────────────────────────────────────────────────────
+
+model ManagedClient {
+  id           String   @id @default(cuid())
+  accountantId String
+  accountant   User     @relation("accountant", fields: [accountantId], references: [id], onDelete: Cascade)
+  clientId     String
+  client       User     @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@unique([accountantId, clientId])
+  @@index([accountantId])
 }
