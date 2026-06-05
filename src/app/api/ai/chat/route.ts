@@ -1,5 +1,5 @@
 import { streamText } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
   const context = await buildContext(userId);
 
   const result = streamText({
-    model: anthropic("claude-sonnet-4-6"),
+    model: google("gemini-1.5-flash"),
     system: `You are Ledgr AI, a smart financial assistant built into Ledgr — an AI-native bookkeeping platform.
 
 You help users with:
