@@ -15,7 +15,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 
 export function AdminDeleteButton({
   userId,
@@ -46,15 +45,11 @@ export function AdminDeleteButton({
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="text-xs border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
-          disabled={loading}
-        >
-          {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
-        </Button>
+      <AlertDialogTrigger
+        disabled={loading}
+        className="inline-flex items-center justify-center rounded-md border border-red-500/30 bg-background text-red-400 hover:bg-red-500/10 hover:border-red-500/50 px-2.5 py-1.5 text-xs font-medium disabled:pointer-events-none disabled:opacity-50 transition-colors"
+      >
+        {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -67,6 +62,7 @@ export function AdminDeleteButton({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
+            variant="destructive"
             className="bg-red-600 hover:bg-red-700 text-white"
           >
             Delete permanently
