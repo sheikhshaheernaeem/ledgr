@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, ArrowLeftRight, Upload,
   FileText, Receipt, GitMerge, PiggyBank, CheckCircle2, Circle, AlertTriangle,
-  Target, Repeat2,
+  Target, Repeat2, CheckSquare,
 } from "lucide-react";
 import RevenueChart from "@/components/dashboard/RevenueChart";
 
@@ -246,12 +246,15 @@ export default async function DashboardPage() {
       {/* Quick Actions */}
       <div>
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className={`grid gap-3 ${pendingCount > 0 ? "grid-cols-2 md:grid-cols-5" : "grid-cols-2 md:grid-cols-4"}`}>
           {[
             { href: "/transactions", icon: Upload, label: "Upload CSV", desc: "Import bank transactions" },
             { href: "/invoices/new", icon: Receipt, label: "New Invoice", desc: "Create & send invoice" },
             { href: "/reconciliation/new", icon: GitMerge, label: "Reconcile", desc: "Match to bank statement" },
             { href: "/budget", icon: PiggyBank, label: "Budget", desc: "Set monthly targets" },
+            ...(pendingCount > 0
+              ? [{ href: "/approvals", icon: CheckSquare, label: `Approvals (${pendingCount})`, desc: "Review pending transactions" }]
+              : []),
           ].map(action => (
             <Link key={action.href} href={action.href}>
               <Card className="border-border bg-card hover:border-emerald-500/30 transition-colors cursor-pointer h-full">

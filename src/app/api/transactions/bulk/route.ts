@@ -10,7 +10,11 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { ids, action } = body as { ids: string[]; action: "APPROVE" | "REJECT" };
+  const { ids, action, rejectionReason } = body as {
+    ids: string[];
+    action: "APPROVE" | "REJECT";
+    rejectionReason?: string;
+  };
 
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return NextResponse.json({ error: "ids array is required" }, { status: 400 });
@@ -33,9 +37,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ updated: 0 });
   }
 
+  // Build update data — include aiNotes as rejection reason when provided
+  const updateData: Record<string, string | null> = { status: newStatus };
+  if (action === "REJECT" && rejectionReason) {
+    updateData.aiNotes = rejectionReason;
+  }
+
   await prisma.transaction.updateMany({
     where: { id: { in: existing.map((t) => t.id) }, userId: session.user.id },
-    data: { status: newStatus },
+    data: updateData,
   });
 
   await Promise.all(
@@ -46,7 +56,7 @@ export async function POST(request: Request) {
         entityType: "Transaction",
         entityId: tx.id,
         before: { status: tx.status },
-        after: { status: newStatus },
+        after: { status: newStatus, ...(rejectionReason ? { rejectionReason } : {}) },
         transactionId: tx.id,
       })
     )

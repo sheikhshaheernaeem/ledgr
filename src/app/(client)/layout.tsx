@@ -1,0 +1,91 @@
+import { redirect } from "next/navigation";
+import { auth, signOut } from "@/lib/auth";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LogOut, LayoutDashboard, FileText, BarChart2 } from "lucide-react";
+
+export default async function ClientLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const role = (session.user as { role?: string }).role;
+  if (role !== "CLIENT") redirect("/dashboard");
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top navigation */}
+      <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          {/* Brand */}
+          <Link href="/client" className="shrink-0">
+            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
+            <span className="ml-2 text-xs text-muted-foreground font-normal">Client Portal</span>
+          </Link>
+
+          {/* Nav links */}
+          <nav className="hidden sm:flex items-center gap-1">
+            <Link href="/client">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+              </Button>
+            </Link>
+            <Link href="/client/invoices">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <FileText className="h-3.5 w-3.5" /> Invoices
+              </Button>
+            </Link>
+            <Link href="/client/reports">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <BarChart2 className="h-3.5 w-3.5" /> Reports
+              </Button>
+            </Link>
+          </nav>
+
+          {/* Right side */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden sm:block text-xs text-muted-foreground truncate max-w-[160px]">
+              {session.user.email}
+            </span>
+            <ThemeToggle />
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/login" });
+              }}
+            >
+              <Button type="submit" variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </Button>
+            </form>
+          </div>
+        </div>
+
+        {/* Mobile nav */}
+        <div className="sm:hidden flex items-center gap-1 px-4 pb-2">
+          <Link href="/client">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+              <LayoutDashboard className="h-3 w-3" /> Dashboard
+            </Button>
+          </Link>
+          <Link href="/client/invoices">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+              <FileText className="h-3 w-3" /> Invoices
+            </Button>
+          </Link>
+          <Link href="/client/reports">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+              <BarChart2 className="h-3 w-3" /> Reports
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Page content */}
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8">
+        {children}
+      </main>
+    </div>
+  );
+}

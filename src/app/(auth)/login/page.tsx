@@ -45,7 +45,11 @@ function LoginForm() {
           toast.error("Invalid email or password");
         }
       } else {
-        router.push("/dashboard");
+        // Fetch the session to determine the user's role for redirect
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = sessionRes.ok ? await sessionRes.json() : null;
+        const role = sessionData?.user?.role;
+        router.push(role === "CLIENT" ? "/client" : "/dashboard");
         router.refresh();
       }
     } finally {

@@ -1394,3 +1394,10 @@ https://nextjs.org/docs/messages/module-not-found
 ✓ Finished filesystem cache database compaction in 13.6s
 ✓ Finished filesystem cache database compaction in 16.4s
   Reload env: .env.local
+✓ Finished filesystem cache database compaction in 15.1s
+✓ Finished filesystem cache database compaction in 20.5s
+✓ Compiled in 974ms
+✓ Compiled in 6.5s
+✓ Compiled in 977ms
+✓ Compiled in 344ms
+✓ Compiled in 31.1s

@@ -22,6 +22,20 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Period lock check on existing transaction date
+  const txDate = existing.date;
+  const txYear = txDate.getFullYear();
+  const txMonth = txDate.getMonth() + 1;
+  const lock = await prisma.lockedPeriod.findFirst({
+    where: { userId: session.user.id, year: txYear, month: txMonth },
+  });
+  if (lock) {
+    return NextResponse.json(
+      { error: "This period is locked. Unlock it first to add transactions." },
+      { status: 400 }
+    );
+  }
+
   const body = await request.json();
   const {
     category,

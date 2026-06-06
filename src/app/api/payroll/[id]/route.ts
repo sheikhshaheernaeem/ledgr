@@ -52,6 +52,55 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     include: { employees: true },
   });
 
+  // Auto-post GL journal entry when transitioning to POSTED
+  if (status === "POSTED" && run.status !== "POSTED") {
+    try {
+      const [expenseAccount, taxPayableAccount, cashAccount] = await Promise.all([
+        prisma.chartOfAccount.findFirst({ where: { userId, code: "6100" } }),
+        prisma.chartOfAccount.findFirst({ where: { userId, code: "2100" } }),
+        prisma.chartOfAccount.findFirst({ where: { userId, code: "1000" } }),
+      ]);
+
+      if (expenseAccount && taxPayableAccount && cashAccount) {
+        const entryNumber = `PAY-${run.runNumber}`;
+        await prisma.journalEntry.create({
+          data: {
+            userId,
+            entryNumber,
+            date: run.payDate,
+            description: `Payroll Run ${run.runNumber}`,
+            type: "PAYROLL",
+            status: "POSTED",
+            lines: {
+              create: [
+                {
+                  accountId: expenseAccount.id,
+                  description: "Payroll expense",
+                  debit: run.totalGross,
+                  credit: 0,
+                },
+                {
+                  accountId: taxPayableAccount.id,
+                  description: "Payroll taxes payable",
+                  debit: 0,
+                  credit: run.totalTax,
+                },
+                {
+                  accountId: cashAccount.id,
+                  description: "Payroll net pay",
+                  debit: 0,
+                  credit: run.totalNet,
+                },
+              ],
+            },
+          },
+        });
+      }
+    } catch {
+      console.error("Failed to auto-post GL entry for payroll:", id);
+    }
+  }
+
   return NextResponse.json(updated);
 }
 

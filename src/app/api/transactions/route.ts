@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { writeAudit } from "@/lib/audit";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -43,4 +44,70 @@ export async function GET(req: NextRequest) {
   ]);
 
   return NextResponse.json({ transactions, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+}
+
+export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = session.user.id as string;
+
+  const body = await req.json();
+  const { date, description, amount, type, category, subcategory, notes, bankAccountId } = body as {
+    date: string;
+    description: string;
+    amount: number;
+    type: string;
+    category?: string | null;
+    subcategory?: string | null;
+    notes?: string | null;
+    bankAccountId?: string | null;
+  };
+
+  if (!date || !description || amount == null || !type) {
+    return NextResponse.json(
+      { error: "date, description, amount, and type are required" },
+      { status: 400 }
+    );
+  }
+
+  // Period lock check
+  const txDate = new Date(date);
+  const txYear = txDate.getFullYear();
+  const txMonth = txDate.getMonth() + 1;
+  const lock = await prisma.lockedPeriod.findFirst({
+    where: { userId, year: txYear, month: txMonth },
+  });
+  if (lock) {
+    return NextResponse.json(
+      { error: "This period is locked. Unlock it first to add transactions." },
+      { status: 400 }
+    );
+  }
+
+  const transaction = await prisma.transaction.create({
+    data: {
+      userId,
+      date: txDate,
+      description,
+      amount: Number(amount),
+      type,
+      category: category ?? null,
+      subcategory: subcategory ?? null,
+      notes: notes ?? null,
+      bankAccountId: bankAccountId ?? null,
+      status: "APPROVED",
+      confidence: null,
+    },
+  });
+
+  await writeAudit({
+    userId,
+    action: "CREATE",
+    entityType: "Transaction",
+    entityId: transaction.id,
+    after: transaction,
+    transactionId: transaction.id,
+  });
+
+  return NextResponse.json(transaction, { status: 201 });
 }

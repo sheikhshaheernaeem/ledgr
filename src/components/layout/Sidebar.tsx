@@ -9,13 +9,14 @@ import {
   Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, ShieldCheck,
   Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen,
   BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent,
-  ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles,
+  ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles, CheckSquare,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const coreNav = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
   { href: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
+  { href: "/approvals", icon: CheckSquare, label: "Approvals" },
   { href: "/reports", icon: FileText, label: "Reports" },
   { href: "/analytics", icon: BarChart2, label: "Analytics" },
   { href: "/ai-assistant", icon: Sparkles, label: "AI Assistant" },

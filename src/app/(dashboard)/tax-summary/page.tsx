@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Download, AlertTriangle } from "lucide-react";
+import { Download, AlertTriangle, CalendarClock } from "lucide-react";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
@@ -43,7 +43,7 @@ export default async function TaxSummaryPage({
       status: "APPROVED",
       date: { gte: startDate, lte: endDate },
     },
-    select: { amount: true, type: true, taxCategory: true },
+    select: { amount: true, type: true, taxCategory: true, date: true },
   });
 
   // Only expenses are relevant for tax deductions
@@ -76,6 +76,77 @@ export default async function TaxSummaryPage({
   const estimatedTaxSavings = totalDeductible * 0.3;
 
   const catRows = Object.entries(grouped).sort((a, b) => b[1].total - a[1].total);
+
+  // ── Quarterly Estimated Tax ─────────────────────────────────────────────────
+  function getQuarter(date: Date): 1 | 2 | 3 | 4 {
+    const m = date.getMonth(); // 0-based
+    if (m <= 2) return 1;
+    if (m <= 5) return 2;
+    if (m <= 8) return 3;
+    return 4;
+  }
+
+  function calcSETax(netProfit: number): number {
+    if (netProfit <= 0) return 0;
+    return netProfit * 0.9235 * 0.153;
+  }
+
+  function calcIncomeTax(netProfit: number): number {
+    if (netProfit <= 0) return 0;
+    // 2024 standard deduction applied implicitly via brackets starting at 0
+    // Simplified single-filer brackets (2024):
+    // 10% on $0–$11,600, 12% on $11,601–$47,150, 22% on $47,151–$100,525
+    let tax = 0;
+    const b1 = 11600, b2 = 47150, b3 = 100525;
+    if (netProfit <= b1) {
+      tax = netProfit * 0.10;
+    } else if (netProfit <= b2) {
+      tax = b1 * 0.10 + (netProfit - b1) * 0.12;
+    } else if (netProfit <= b3) {
+      tax = b1 * 0.10 + (b2 - b1) * 0.12 + (netProfit - b2) * 0.22;
+    } else {
+      tax = b1 * 0.10 + (b2 - b1) * 0.12 + (b3 - b2) * 0.22 + (netProfit - b3) * 0.24;
+    }
+    return tax;
+  }
+
+  const quarters: Record<1 | 2 | 3 | 4, { income: number; expenses: number }> = {
+    1: { income: 0, expenses: 0 },
+    2: { income: 0, expenses: 0 },
+    3: { income: 0, expenses: 0 },
+    4: { income: 0, expenses: 0 },
+  };
+
+  for (const t of transactions) {
+    const q = getQuarter(new Date(t.date));
+    if (t.type === "CREDIT") quarters[q].income += t.amount;
+    else quarters[q].expenses += t.amount;
+  }
+
+  // Annual totals for annualised tax estimate
+  const annualIncome = (quarters[1].income + quarters[2].income + quarters[3].income + quarters[4].income);
+  const annualExpensesAll = (quarters[1].expenses + quarters[2].expenses + quarters[3].expenses + quarters[4].expenses);
+  const annualNetProfit = annualIncome - annualExpensesAll;
+  const annualSE = calcSETax(annualNetProfit);
+  const annualIT = calcIncomeTax(annualNetProfit);
+  const annualTotalTax = annualSE + annualIT;
+  const quarterlyPaymentDue = annualTotalTax / 4;
+
+  const today = new Date();
+
+  const quarterMeta = [
+    { q: 1 as const, label: "Q1", period: "Jan – Mar", dueDate: new Date(year, 3, 15), dueDateLabel: `Apr 15, ${year}` },
+    { q: 2 as const, label: "Q2", period: "Apr – Jun", dueDate: new Date(year, 5, 17), dueDateLabel: `Jun 17, ${year}` },
+    { q: 3 as const, label: "Q3", period: "Jul – Sep", dueDate: new Date(year, 8, 16), dueDateLabel: `Sep 16, ${year}` },
+    { q: 4 as const, label: "Q4", period: "Oct – Dec", dueDate: new Date(year + 1, 0, 15), dueDateLabel: `Jan 15, ${year + 1}` },
+  ];
+
+  function getQBadge(dueDate: Date): { label: string; cls: string } {
+    const diffDays = (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    if (diffDays < 0) return { label: "Due", cls: "border-red-500/40 text-red-400 bg-red-500/5" };
+    if (diffDays <= 30) return { label: "Upcoming", cls: "border-yellow-500/40 text-yellow-400 bg-yellow-500/5" };
+    return { label: "Paid", cls: "border-emerald-500/40 text-emerald-400 bg-emerald-500/5" };
+  }
 
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
@@ -253,6 +324,86 @@ export default async function TaxSummaryPage({
           )}
         </CardContent>
       </Card>
+
+      {/* ── Quarterly Estimated Tax ─────────────────────────────────────────── */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarClock className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <h2 className="text-lg font-bold text-foreground">
+            Quarterly Estimated Tax ({year})
+          </h2>
+        </div>
+
+        {/* Annual summary row */}
+        <div className="flex flex-wrap items-center gap-4 mb-4 text-sm text-muted-foreground px-1">
+          <span>
+            Annual net profit:{" "}
+            <span className={annualNetProfit >= 0 ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-red-500 dark:text-red-400 font-medium"}>
+              {fmt(annualNetProfit)}
+            </span>
+          </span>
+          <span>·</span>
+          <span>
+            Est. annual tax:{" "}
+            <span className="text-foreground font-medium">{fmt(annualTotalTax)}</span>
+          </span>
+          <span>·</span>
+          <span>
+            Quarterly payment:{" "}
+            <span className="text-foreground font-medium">{fmt(quarterlyPaymentDue)}</span>
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {quarterMeta.map(({ q, label, period, dueDate, dueDateLabel }) => {
+            const qData = quarters[q];
+            const qNet = qData.income - qData.expenses;
+            const badge = getQBadge(dueDate);
+            return (
+              <Card key={q} className="border-border bg-card">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-semibold text-foreground">
+                      {label} <span className="text-muted-foreground font-normal">· {period}</span>
+                    </CardTitle>
+                    <Badge variant="outline" className={`text-xs ${badge.cls}`}>
+                      {badge.label}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-3">
+                  <div className="space-y-1.5 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Revenue</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">{fmt(qData.income)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Expenses</span>
+                      <span className="text-red-500 dark:text-red-400 font-medium">{fmt(qData.expenses)}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-border pt-1.5">
+                      <span className="text-muted-foreground font-medium">Net Profit</span>
+                      <span className={`font-semibold ${qNet >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
+                        {fmt(qNet)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Est. Quarterly Payment</p>
+                    <p className="text-xl font-bold text-foreground">{fmt(quarterlyPaymentDue)}</p>
+                    <p className="text-xs text-muted-foreground">Due {dueDateLabel}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-3 px-1">
+          * SE tax (15.3% on 92.35% of net profit) + progressive federal income tax using 2024 single-filer brackets. Consult a tax professional before making payments.
+        </p>
+      </div>
     </div>
   );
 }

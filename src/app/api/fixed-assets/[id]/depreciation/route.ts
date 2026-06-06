@@ -65,5 +65,49 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     });
   }
 
+  // Auto-post GL journal entry for depreciation
+  try {
+    const expenseCode = asset.expenseAccountCode ?? "6000";
+    const accumCode = asset.depnAccountCode ?? "1600";
+
+    const [expenseAccount, accumAccount] = await Promise.all([
+      prisma.chartOfAccount.findFirst({ where: { userId, code: expenseCode } }),
+      prisma.chartOfAccount.findFirst({ where: { userId, code: accumCode } }),
+    ]);
+
+    if (expenseAccount && accumAccount) {
+      const entryNumber = `DEP-${year}-${String(month).padStart(2, "0")}-${id.slice(-4)}`;
+      await prisma.journalEntry.create({
+        data: {
+          userId,
+          entryNumber,
+          date: new Date(year, month - 1, 1),
+          description: `Depreciation - ${asset.name} ${month}/${year}`,
+          type: "DEPRECIATION",
+          status: "POSTED",
+          lines: {
+            create: [
+              {
+                accountId: expenseAccount.id,
+                description: "Depreciation expense",
+                debit: amount,
+                credit: 0,
+              },
+              {
+                accountId: accumAccount.id,
+                description: "Accumulated depreciation",
+                debit: 0,
+                credit: amount,
+              },
+            ],
+          },
+        },
+      });
+    }
+  } catch {
+    // Non-fatal: GL posting failure should not block depreciation recording
+    console.error("Failed to auto-post GL entry for depreciation:", id);
+  }
+
   return NextResponse.json(entry, { status: 201 });
 }
