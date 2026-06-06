@@ -49,7 +49,7 @@ function LoginForm() {
         const sessionRes = await fetch("/api/auth/session");
         const sessionData = sessionRes.ok ? await sessionRes.json() : null;
         const role = sessionData?.user?.role;
-        router.push(role === "CLIENT" ? "/client" : "/dashboard");
+        router.push("/dashboard");
         router.refresh();
       }
     } finally {
