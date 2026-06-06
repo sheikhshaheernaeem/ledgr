@@ -605,3 +605,788 @@ https://nextjs.org/docs/messages/module-not-found
 ✓ Compiled in 452ms
 ✓ Compiled in 2.7s
 ✓ Finished filesystem cache database compaction in 33.7s
+✓ Compiled in 4.5s
+✓ Finished filesystem cache database compaction in 37.8s
+✓ Compiled in 1007ms
+✓ Finished filesystem cache database compaction in 16.3s
+✓ Compiled in 1967ms
+✓ Compiled in 370ms
+✓ Finished filesystem cache database compaction in 15.7s
+✓ Compiled in 105ms
+✓ Compiled in 85ms
+✓ Compiled in 494ms
+✓ Compiled in 332ms
+✓ Finished filesystem cache database compaction in 20.6s
+✓ Finished filesystem cache database compaction in 10.6s
+✓ Compiled in 2.2s
+✓ Compiled in 423ms
+✓ Finished writing to filesystem cache in 10.3s
+✓ Finished filesystem cache database compaction in 20.9s
+✓ Finished filesystem cache database compaction in 30.8s
+✓ Finished filesystem cache database compaction in 21.6s
+✓ Finished filesystem cache database compaction in 23.9s
+✓ Finished filesystem cache database compaction in 16.4s
+✓ Finished filesystem cache database compaction in 29.8s
+✓ Finished filesystem cache database compaction in 11.9s
+✓ Finished filesystem cache database compaction in 17.2s
+✓ Finished filesystem cache database compaction in 17.0s
+✓ Finished filesystem cache database compaction in 10.8s
+✓ Compiled in 5.5s
+✓ Finished filesystem cache database compaction in 17.2s
+✓ Compiled in 32s
+✓ Finished filesystem cache database compaction in 25.5s
+✓ Finished filesystem cache database compaction in 14.8s
+✓ Finished filesystem cache database compaction in 11.1s
+✓ Finished filesystem cache database compaction in 11.4s
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:7:1
+Module not found: Can't resolve '@/components/ui/scroll-area'
+  [90m 5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m 6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mScrollArea[0m } [36mfrom[0m [32m"@/components/ui/scroll-area"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mSheet[0m, [33mSheetContent[0m } [36mfrom[0m [32m"@/components/ui/sheet"[0m;
+  [90m 9 |[0m [36mimport[0m { [33mBot[0m, [33mSend[0m, [33mX[0m, [33mUser[0m, [33mLoader2[0m, [33mSparkles[0m, [33mMinimize2[0m } [36mfrom[0m [32m"lucide-react"[0m;
+  [90m10 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+
+Import map: aliased to relative './src/components/ui/scroll-area' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/components/ai/AIChatBubble.tsx:3:1
+Module not found: Can't resolve 'ai/react'
+  [90m1 |[0m [32m"use client"[0m;
+  [90m2 |[0m
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { useChat } [36mfrom[0m [32m"ai/react"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { useState, useRef, useEffect } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m;
+  [90m6 |[0m [36mimport[0m { [33mInput[0m } [36mfrom[0m [32m"@/components/ui/input"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./src/components/ai/AIChatBubble.tsx
+    ./src/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Finished filesystem cache database compaction in 16.6s
+✓ Finished filesystem cache database compaction in 11.3s
+○ Compiling /_error ...
+ GET / 500 in 24.0s
+✓ Compiled in 65.1s
+✓ Finished writing to filesystem cache in 14.6s
+✓ Finished writing to filesystem cache in 13.6s
+  Reload env: .env.local
+✓ Finished filesystem cache database compaction in 12.8s
+✓ Finished filesystem cache database compaction in 18.7s
+✓ Finished filesystem cache database compaction in 18.0s
+✓ Finished writing to filesystem cache in 13.7s
+✓ Compiled in 11s
+✓ Finished filesystem cache database compaction in 14.6s
+✓ Finished filesystem cache database compaction in 29.8s
+✓ Finished filesystem cache database compaction in 46s
+✓ Finished filesystem cache database compaction in 16.0s
+✓ Finished filesystem cache database compaction in 22.0s
+✓ Compiled in 14.2s
+  Reload env: .env.local
