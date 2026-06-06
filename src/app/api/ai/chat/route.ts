@@ -1,10 +1,12 @@
 import { streamText } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY ?? process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "",
+// Groq: free, open-source Llama 3.3 70B — get key at console.groq.com
+const groq = createOpenAI({
+  apiKey: process.env.GROQ_API_KEY ?? "",
+  baseURL: "https://api.groq.com/openai/v1",
 });
 
 async function buildContext(userId: string): Promise<string> {
@@ -88,14 +90,14 @@ async function buildContext(userId: string): Promise<string> {
     "### Invoices (Open/Overdue)",
     `- Outstanding Invoices: ${invoices.length} totaling ${fmt(outstandingInvoices)}`,
     overdueInvoices.length > 0
-      ? `- Overdue Invoices: ${overdueInvoices.length} — ${overdueInvoices.map((i) => `${i.clientName ?? "Unknown"} ${fmt(i.total)}`).join(", ")}`
-      : `- Overdue Invoices: 0`,
+      ? `- Overdue: ${overdueInvoices.map((i) => `${i.clientName ?? "Unknown"} ${fmt(i.total)}`).join(", ")}`
+      : `- No overdue invoices`,
     "",
     "### Bills / Accounts Payable",
     `- Unpaid Bills: ${bills.length} totaling ${fmt(unpaidBills)}`,
     overdueBills.length > 0
-      ? `- Overdue Bills: ${overdueBills.length} — ${overdueBills.map((b) => `${b.vendorName ?? "Unknown"} ${fmt(b.total)}`).join(", ")}`
-      : `- Overdue Bills: 0`,
+      ? `- Overdue: ${overdueBills.map((b) => `${b.vendorName ?? "Unknown"} ${fmt(b.total)}`).join(", ")}`
+      : `- No overdue bills`,
     "",
     "### Time Tracking (this month)",
     `- Hours logged: ${monthHours.toFixed(1)}h`,
@@ -114,13 +116,20 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return new Response("Unauthorized", { status: 401 });
 
+  if (!process.env.GROQ_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "AI assistant is not configured. Set GROQ_API_KEY in environment variables." }),
+      { status: 503, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const { messages } = await req.json();
   const userId = (session.user as { id: string }).id;
 
   const context = await buildContext(userId);
 
   const result = streamText({
-    model: google("gemini-1.5-flash"),
+    model: groq("llama-3.3-70b-versatile"),
     system: `You are Ledgr AI, a smart financial assistant built into Ledgr — an AI-native bookkeeping platform.
 
 You help users with:

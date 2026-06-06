@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { sendVerificationEmail } from "@/lib/resend";
+import { sendVerificationEmail } from "@/lib/mailer";
 
 function getAppUrl(req: Request): string {
   const host = req.headers.get("host") ?? "localhost:3001";

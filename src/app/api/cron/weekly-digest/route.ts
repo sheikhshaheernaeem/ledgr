@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/mailer";
 import { weeklyDigestEmail } from "@/lib/email-templates";
 
 export async function GET(request: NextRequest) {
@@ -18,15 +18,9 @@ export async function GET(request: NextRequest) {
     select: { id: true, email: true, name: true },
   });
 
-  const resendKey = process.env.RESEND_API_KEY ?? "";
-  const isDemo = !resendKey || resendKey === "demo-mode";
-
   let digestsSent = 0;
 
-  const resend = isDemo ? null : new Resend(resendKey);
-
   for (const user of users) {
-    // Transactions in last 7 days
     const transactions = await prisma.transaction.findMany({
       where: {
         userId: user.id,
@@ -36,56 +30,36 @@ export async function GET(request: NextRequest) {
       select: { amount: true, type: true },
     });
 
-    const totalIncome = transactions
-      .filter((t) => t.type === "CREDIT")
-      .reduce((s, t) => s + t.amount, 0);
-
-    const totalExpenses = transactions
-      .filter((t) => t.type === "DEBIT")
-      .reduce((s, t) => s + t.amount, 0);
-
+    const totalIncome = transactions.filter((t) => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
+    const totalExpenses = transactions.filter((t) => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
     const net = totalIncome - totalExpenses;
 
-    // Pending invoices
     const pendingInvoicesCount = await prisma.invoice.count({
-      where: {
-        userId: user.id,
-        status: { in: ["SENT", "DRAFT"] },
-      },
+      where: { userId: user.id, status: { in: ["SENT", "DRAFT"] } },
     });
 
-    if (!isDemo && resend) {
-      try {
-        const dashboardUrl = `${process.env.NEXTAUTH_URL ?? "https://ledgr.app"}/dashboard`;
-        await resend.emails.send({
-          from: "Ledgr <noreply@ledgr.app>",
-          to: user.email,
-          subject: "Your Ledgr weekly summary",
-          html: weeklyDigestEmail({
-            userName: user.name ?? user.email,
-            income: totalIncome,
-            expenses: totalExpenses,
-            net,
-            currency: "USD",
-            pendingInvoices: pendingInvoicesCount,
-            dashboardUrl,
-            weekStart: sevenDaysAgo,
-            weekEnd: now,
-          }),
-        });
-        digestsSent++;
-      } catch {
-        // Continue for other users
-      }
-    } else {
-      // Demo mode — count as "sent"
+    try {
+      const dashboardUrl = `${process.env.NEXTAUTH_URL ?? "https://ledgr.app"}/dashboard`;
+      await sendEmail({
+        to: user.email,
+        subject: "Your Ledgr weekly summary",
+        html: weeklyDigestEmail({
+          userName: user.name ?? user.email,
+          income: totalIncome,
+          expenses: totalExpenses,
+          net,
+          currency: "USD",
+          pendingInvoices: pendingInvoicesCount,
+          dashboardUrl,
+          weekStart: sevenDaysAgo,
+          weekEnd: now,
+        }),
+      });
       digestsSent++;
+    } catch {
+      // Continue for other users
     }
   }
 
-  return NextResponse.json({
-    users: users.length,
-    digestsSent,
-    demoMode: isDemo,
-  });
+  return NextResponse.json({ users: users.length, digestsSent });
 }

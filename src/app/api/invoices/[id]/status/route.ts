@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { writeAudit } from "@/lib/audit";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/mailer";
 import { invoiceSentEmail } from "@/lib/email-templates";
 
 export async function PATCH(
@@ -48,33 +48,24 @@ export async function PATCH(
     after: { status: updated.status, paidAt: updated.paidAt },
   });
 
-  // Send email notification when invoice is marked SENT and client has an email
   if (status === "SENT" && existing.clientEmail) {
-    try {
-      const resendKey = process.env.RESEND_API_KEY;
-      const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@ledgr.app";
-      if (resendKey && resendKey !== "demo-mode") {
-        const resend = new Resend(resendKey);
-        const user = await prisma.user.findUnique({ where: { id: session.user.id as string }, select: { name: true, paymentLink: true } });
-        const senderName = user?.name ?? "Your service provider";
-        await resend.emails.send({
-          from: fromEmail,
-          to: existing.clientEmail,
-          subject: `Invoice ${existing.invoiceNumber} from ${senderName}`,
-          html: invoiceSentEmail({
-            invoiceNumber: existing.invoiceNumber,
-            clientName: existing.clientName,
-            senderName,
-            amount: existing.total,
-            currency: existing.currency ?? "USD",
-            dueDate: existing.dueDate,
-            paymentLink: user?.paymentLink ?? null,
-          }),
-        });
-      }
-    } catch {
-      // Email failure is non-fatal
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id as string },
+      select: { name: true, paymentLink: true },
+    });
+    sendEmail({
+      to: existing.clientEmail,
+      subject: `Invoice ${existing.invoiceNumber} from ${user?.name ?? "Your service provider"}`,
+      html: invoiceSentEmail({
+        invoiceNumber: existing.invoiceNumber,
+        clientName: existing.clientName,
+        senderName: user?.name ?? "Your service provider",
+        amount: existing.total,
+        currency: existing.currency ?? "USD",
+        dueDate: existing.dueDate,
+        paymentLink: user?.paymentLink ?? null,
+      }),
+    }).catch(() => {});
   }
 
   return NextResponse.json(updated);

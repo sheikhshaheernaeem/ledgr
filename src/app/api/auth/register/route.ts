@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { sendVerificationEmail } from "@/lib/resend";
+import { sendVerificationEmail } from "@/lib/mailer";
 
 const schema = z.object({
   name: z.string().min(1),
