@@ -1401,3 +1401,14 @@ https://nextjs.org/docs/messages/module-not-found
 ✓ Compiled in 977ms
 ✓ Compiled in 344ms
 ✓ Compiled in 31.1s
+✓ Finished filesystem cache database compaction in 24.5s
+✓ Finished filesystem cache database compaction in 14.3s
+✓ Finished writing to filesystem cache in 10.3s
+✓ Compiled in 12.9s
+✓ Finished filesystem cache database compaction in 22.3s
+✓ Finished filesystem cache database compaction in 72s
+✓ Finished writing to filesystem cache in 12.1s
+✓ Finished filesystem cache database compaction in 14.1s
+✓ Finished filesystem cache database compaction in 12.8s
+✓ Finished filesystem cache database compaction in 13.9s
+✓ Finished filesystem cache database compaction in 16.1s
