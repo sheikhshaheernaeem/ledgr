@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { AdminRoleButton } from "./AdminRoleButton";
 import { AdminDeleteButton } from "./AdminDeleteButton";
+import { AdminVerifyButton } from "./AdminVerifyButton";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -131,6 +132,9 @@ export default async function AdminPage() {
                         </p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                         <p className="text-[10px] text-muted-foreground font-mono">{user.id.slice(0, 8)}…</p>
+                        {!user.emailVerified && (
+                          <span className="text-[10px] text-yellow-500">● email unverified</span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -172,6 +176,9 @@ export default async function AdminPage() {
                         )}
                         {!isCurrentUser && (
                           <AdminRoleButton userId={user.id} currentRole={user.role} />
+                        )}
+                        {!isCurrentUser && !user.emailVerified && (
+                          <AdminVerifyButton userId={user.id} />
                         )}
                         {!isCurrentUser && (
                           <AdminDeleteButton userId={user.id} userName={user.name ?? user.email ?? user.id} />
