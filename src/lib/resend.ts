@@ -15,7 +15,7 @@ export async function sendVerificationEmail(params: {
   }
 
   const { error } = await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL ?? "noreply@ledgr.app",
+    from: process.env.RESEND_FROM_EMAIL ?? "Ledgr <onboarding@resend.dev>",
     to: params.toEmail,
     subject: "Confirm your Ledgr account",
     html: `

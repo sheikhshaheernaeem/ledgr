@@ -52,7 +52,10 @@ export async function POST(req: Request) {
 
     const verifyUrl = `${getAppUrl(req)}/verify-email?token=${token}`;
 
-    await sendVerificationEmail({ toEmail: email, toName: name, verifyUrl });
+    // Non-blocking — registration succeeds even if email fails
+    sendVerificationEmail({ toEmail: email, toName: name, verifyUrl }).catch((err) => {
+      console.error("Failed to send verification email:", err?.message ?? err);
+    });
 
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
   } catch {
