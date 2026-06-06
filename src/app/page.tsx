@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const features = [
   {
@@ -106,7 +107,8 @@ export default function LandingPage() {
           <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">
             Ledgr
           </span>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/login">
               <Button variant="ghost" size="sm">
                 Log in
