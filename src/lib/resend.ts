@@ -2,6 +2,59 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export async function sendVerificationEmail(params: {
+  toEmail: string;
+  toName: string;
+  verifyUrl: string;
+}) {
+  const isDemoMode = !process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "demo-mode";
+
+  if (isDemoMode) {
+    console.log(`[DEV] Verification link for ${params.toEmail}: ${params.verifyUrl}`);
+    return;
+  }
+
+  const { error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL ?? "noreply@ledgr.app",
+    to: params.toEmail,
+    subject: "Confirm your Ledgr account",
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; margin: 0; padding: 0; }
+    .container { max-width: 560px; margin: 40px auto; padding: 0 20px; }
+    .card { background: #111; border: 1px solid #222; border-radius: 14px; padding: 40px 36px; }
+    .logo { font-size: 22px; font-weight: 700; color: #10b981; letter-spacing: -0.5px; margin-bottom: 28px; }
+    h1 { font-size: 22px; font-weight: 600; color: #fff; margin: 0 0 10px; }
+    p { color: #aaa; font-size: 15px; line-height: 1.6; margin: 0 0 24px; }
+    .btn { display: inline-block; background: #10b981; color: #000 !important; font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 8px; text-decoration: none; }
+    .note { font-size: 12px; color: #555; margin-top: 28px; border-top: 1px solid #1e1e1e; padding-top: 20px; }
+    .url { word-break: break-all; color: #555; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">Ledgr</div>
+      <h1>Confirm your email address</h1>
+      <p>Hi ${params.toName}, welcome to Ledgr! Click the button below to verify your email and activate your account.</p>
+      <a href="${params.verifyUrl}" class="btn">Verify Email →</a>
+      <div class="note">
+        <p style="margin:0 0 8px">This link expires in 24 hours. If you didn't create a Ledgr account, you can safely ignore this email.</p>
+        <p class="url">Or copy this link: ${params.verifyUrl}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`,
+  });
+
+  if (error) throw new Error(error.message);
+}
+
 interface SendReportEmailParams {
   toEmail: string;
   toName: string;

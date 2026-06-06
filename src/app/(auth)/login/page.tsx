@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, Mail } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const verified = params.get("verified") === "1";
+
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [unverified, setUnverified] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setUnverified(false);
     setLoading(true);
     try {
       const res = await signIn("credentials", {
@@ -33,7 +38,11 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        toast.error("Invalid email or password");
+        if (res.error.includes("EMAIL_NOT_VERIFIED")) {
+          setUnverified(true);
+        } else {
+          toast.error("Invalid email or password");
+        }
       } else {
         router.push("/dashboard");
         router.refresh();
@@ -47,21 +56,40 @@ export default function LoginPage() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href="/">
-          <span className="text-2xl font-bold text-emerald-400 tracking-tight">
-            Ledgr
-          </span>
+          <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
         </Link>
-        <p className="text-muted-foreground text-sm mt-1">
-          Sign in to your account
-        </p>
+        <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
       </div>
+
+      {verified && (
+        <div className="flex items-center gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+          <p className="text-sm text-emerald-400 font-medium">Email verified! You can now sign in.</p>
+        </div>
+      )}
+
+      {unverified && (
+        <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 space-y-2">
+          <div className="flex items-center gap-2.5">
+            <Mail className="h-4 w-4 text-yellow-400 shrink-0" />
+            <p className="text-sm text-yellow-400 font-medium">Please verify your email first</p>
+          </div>
+          <p className="text-xs text-muted-foreground pl-6">
+            Check your inbox for the confirmation link.{" "}
+            <Link
+              href={`/check-email?email=${encodeURIComponent(form.email)}`}
+              className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2"
+            >
+              Resend email
+            </Link>
+          </p>
+        </div>
+      )}
 
       <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your dashboard
-          </CardDescription>
+          <CardDescription>Enter your credentials to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,13 +129,18 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link
-          href="/register"
-          className="text-emerald-400 hover:text-emerald-300"
-        >
+        <Link href="/register" className="text-emerald-400 hover:text-emerald-300">
           Sign up free
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

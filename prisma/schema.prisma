@@ -38,17 +38,28 @@ model User {
   documents         Document[]
   vatNumber         String?
 
-  chartOfAccounts   ChartOfAccount[]
-  journalEntries    JournalEntry[]
-  bills             Bill[]
-  lockedPeriods     LockedPeriod[]
-  fixedAssets       FixedAsset[]
-  payrollRuns       PayrollRun[]
-  timeEntries       TimeEntry[]
-  workpapers        Workpaper[]
-  vatReturns        VatReturn[]
-  managedClients    ManagedClient[] @relation("accountant")
-  managedByAccounts ManagedClient[] @relation("client")
+  chartOfAccounts      ChartOfAccount[]
+  journalEntries       JournalEntry[]
+  bills                Bill[]
+  lockedPeriods        LockedPeriod[]
+  fixedAssets          FixedAsset[]
+  payrollRuns          PayrollRun[]
+  timeEntries          TimeEntry[]
+  workpapers           Workpaper[]
+  vatReturns           VatReturn[]
+  managedClients       ManagedClient[]      @relation("accountant")
+  managedByAccounts    ManagedClient[]      @relation("client")
+  emailVerified        Boolean              @default(false)
+  emailVerifications   EmailVerification[]
+}
+
+model EmailVerification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Transaction {

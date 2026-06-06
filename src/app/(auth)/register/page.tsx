@@ -38,8 +38,7 @@ export default function RegisterPage() {
       if (!res.ok) {
         toast.error(data.error ?? "Registration failed");
       } else {
-        toast.success("Account created! Signing you in...");
-        router.push("/dashboard");
+        router.push(`/check-email?email=${encodeURIComponent(form.email)}`);
       }
     } finally {
       setLoading(false);
