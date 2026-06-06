@@ -51,16 +51,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role;
-        token.emailVerified = (user as { emailVerified?: boolean }).emailVerified ?? false;
+        token.role = (user as unknown as { role?: string }).role;
+        token.emailConfirmed = (user as unknown as { emailVerified?: boolean }).emailVerified ?? false;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        (session.user as { role?: string }).role = token.role as string;
-        (session.user as { emailVerified?: boolean }).emailVerified = token.emailVerified as boolean;
+        (session.user as unknown as { role?: string }).role = token.role as string;
+        (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed = token.emailConfirmed as boolean;
       }
       return session;
     },

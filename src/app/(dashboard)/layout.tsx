@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
 
   const isAdmin = (session.user as { role?: string }).role === "ADMIN";
-  const emailVerified = (session.user as { emailVerified?: boolean }).emailVerified ?? false;
+  const emailVerified = (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed ?? false;
 
   return (
     <div className="min-h-screen bg-background flex">
