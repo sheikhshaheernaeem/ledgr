@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2, Receipt, Scale, PiggyBank, GitMerge, TrendingUp, Link2, Shield, LogOut, Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen, BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent, ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles, CheckSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -79,18 +78,17 @@ function MobileNavItem({
     pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
-    <Link href={href} onClick={onNavigate}>
-      <Button
-        variant="ghost"
-        className={`w-full justify-start gap-3 transition-colors ${
-          isActive
-            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-300"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <Icon className="h-4 w-4 shrink-0" />
-        <span className="truncate">{label}</span>
-      </Button>
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        isActive
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+      }`}
+    >
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
@@ -166,14 +164,13 @@ export function MobileSidebar() {
           </a>
 
           <Separator className="my-3" />
-          <Link href="/api/auth/signout" onClick={close}>
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </Button>
+          <Link
+            href="/api/auth/signout"
+            onClick={close}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
           </Link>
         </div>
       </SheetContent>

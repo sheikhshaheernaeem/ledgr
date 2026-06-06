@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard, ArrowLeftRight, FileText, Settings, Building2,
@@ -69,18 +68,16 @@ function NavItem({ href, icon: Icon, label }: { href: string; icon: React.Compon
   const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
-    <Link href={href}>
-      <Button
-        variant="ghost"
-        className={`w-full justify-start gap-3 transition-colors ${
-          isActive
-            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-300"
-            : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        <Icon className="h-4 w-4 shrink-0" />
-        <span className="truncate">{label}</span>
-      </Button>
+    <Link
+      href={href}
+      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+        isActive
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+      }`}
+    >
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
@@ -118,11 +115,12 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
         {isAdmin && (
           <>
             <Separator className="my-2" />
-            <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start gap-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
-                <ShieldCheck className="h-4 w-4" />
-                Admin Panel
-              </Button>
+            <Link
+              href="/admin"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Admin Panel
             </Link>
           </>
         )}
