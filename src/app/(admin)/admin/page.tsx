@@ -14,6 +14,7 @@ import {
   Users, FileText, AlertCircle, CheckCircle2, Shield, UserCheck, Clock,
 } from "lucide-react";
 import { AdminRoleButton } from "./AdminRoleButton";
+import { AdminDeleteButton } from "./AdminDeleteButton";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -171,6 +172,9 @@ export default async function AdminPage() {
                         )}
                         {!isCurrentUser && (
                           <AdminRoleButton userId={user.id} currentRole={user.role} />
+                        )}
+                        {!isCurrentUser && (
+                          <AdminDeleteButton userId={user.id} userName={user.name ?? user.email ?? user.id} />
                         )}
                       </div>
                     </TableCell>
