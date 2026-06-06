@@ -1,40 +1,20 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-export async function sendEmail(params: {
-  to: string;
-  subject: string;
-  html: string;
-  from?: string;
-}) {
-  if (isDemoMode()) {
-    console.log(`[DEV] Email to ${params.to}: ${params.subject}`);
-    return;
-  }
-  const transporter = createTransport()!;
-  await transporter.sendMail({
-    from: params.from ?? `"Ledgr" <${process.env.GMAIL_USER}>`,
-    to: params.to,
-    subject: params.subject,
-    html: params.html,
-  });
-}
-
-function createTransport() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
-
-  if (!user || !pass) return null;
-
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: { user, pass },
-  });
+function getResend() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
 }
 
 function isDemoMode() {
-  return !process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD;
+  return !process.env.RESEND_API_KEY;
+}
+
+// From address — use RESEND_FROM env var, or default Resend sender
+function fromAddress(name = "Ledgr") {
+  const custom = process.env.RESEND_FROM;
+  if (custom) return `"${name}" <${custom}>`;
+  return `"${name}" <onboarding@resend.dev>`;
 }
 
 const emailStyles = `
@@ -49,6 +29,26 @@ const emailStyles = `
   .url { word-break: break-all; color: #555; font-size: 12px; }
 `;
 
+export async function sendEmail(params: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}) {
+  if (isDemoMode()) {
+    console.log(`[DEV] Email to ${params.to}: ${params.subject}`);
+    return;
+  }
+  const resend = getResend()!;
+  const { error } = await resend.emails.send({
+    from: params.from ?? fromAddress(),
+    to: params.to,
+    subject: params.subject,
+    html: params.html,
+  });
+  if (error) throw new Error(error.message);
+}
+
 export async function sendVerificationEmail(params: {
   toEmail: string;
   toName: string;
@@ -58,10 +58,9 @@ export async function sendVerificationEmail(params: {
     console.log(`[DEV] Verify email for ${params.toEmail}: ${params.verifyUrl}`);
     return;
   }
-
-  const transporter = createTransport()!;
-  await transporter.sendMail({
-    from: `"Ledgr" <${process.env.GMAIL_USER}>`,
+  const resend = getResend()!;
+  const { error } = await resend.emails.send({
+    from: fromAddress("Ledgr"),
     to: params.toEmail,
     subject: "Confirm your Ledgr account",
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${emailStyles}</style></head>
@@ -76,6 +75,7 @@ export async function sendVerificationEmail(params: {
   </div>
 </div></div></body></html>`,
   });
+  if (error) throw new Error(error.message);
 }
 
 export async function sendPasswordResetEmail(params: {
@@ -87,10 +87,9 @@ export async function sendPasswordResetEmail(params: {
     console.log(`[DEV] Reset password for ${params.toEmail}: ${params.resetUrl}`);
     return;
   }
-
-  const transporter = createTransport()!;
-  await transporter.sendMail({
-    from: `"Ledgr" <${process.env.GMAIL_USER}>`,
+  const resend = getResend()!;
+  const { error } = await resend.emails.send({
+    from: fromAddress("Ledgr"),
     to: params.toEmail,
     subject: "Reset your Ledgr password",
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${emailStyles}</style></head>
@@ -105,6 +104,7 @@ export async function sendPasswordResetEmail(params: {
   </div>
 </div></div></body></html>`,
   });
+  if (error) throw new Error(error.message);
 }
 
 export async function sendMonthlyReport(params: {
@@ -127,9 +127,9 @@ export async function sendMonthlyReport(params: {
     "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const profitColor = params.netProfit >= 0 ? "#10b981" : "#ef4444";
-  const transporter = createTransport()!;
-  await transporter.sendMail({
-    from: `"Ledgr Reports" <${process.env.GMAIL_USER}>`,
+  const resend = getResend()!;
+  const { error } = await resend.emails.send({
+    from: fromAddress("Ledgr Reports"),
     to: params.toEmail,
     subject: `Your ${params.month} ${params.year} Bookkeeping Report is Ready`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8">
@@ -166,4 +166,5 @@ export async function sendMonthlyReport(params: {
   <div class="footer"><p>Ledgr · AI Bookkeeping for Small Businesses<br>Questions? Reply to this email.</p></div>
 </div></body></html>`,
   });
+  if (error) throw new Error(error.message);
 }

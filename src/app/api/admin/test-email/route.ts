@@ -8,20 +8,17 @@ export async function POST() {
   if ((session.user as { role?: string }).role !== "ADMIN")
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
-
-  if (!user || !pass) {
-    return NextResponse.json({ error: "GMAIL_USER or GMAIL_APP_PASSWORD not set" }, { status: 500 });
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: "RESEND_API_KEY not set" }, { status: 500 });
   }
 
   try {
     await sendEmail({
-      to: session.user.email ?? user,
+      to: session.user.email ?? "admin@ledgr.app",
       subject: "Ledgr — Email test ✓",
       html: `<p>This is a test email from Ledgr sent at ${new Date().toISOString()}. If you received this, email is working correctly.</p>`,
     });
-    return NextResponse.json({ ok: true, sentTo: session.user.email });
+    return NextResponse.json({ ok: true, sentTo: session.user.email ?? "unknown" });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: msg }, { status: 500 });
