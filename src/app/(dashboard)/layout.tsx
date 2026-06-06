@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Sidebar — desktop only */}
       <aside className="hidden md:flex w-60 border-r border-border flex-col py-6 px-4 shrink-0">
         <Link href="/" className="px-2 mb-6">
-          <span className="text-xl font-bold text-emerald-400">Ledgr</span>
+          <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
         </Link>
 
         <Sidebar email={session.user.email ?? ""} isAdmin={isAdmin} />
@@ -47,7 +47,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Mobile header */}
         <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border">
           <Link href="/">
-            <span className="text-xl font-bold text-emerald-400">Ledgr</span>
+            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
           </Link>
           <MobileSidebar />
           <div className="ml-auto">

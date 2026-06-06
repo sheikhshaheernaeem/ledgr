@@ -73,7 +73,7 @@ function NavItem({ href, icon: Icon, label }: { href: string; icon: React.Compon
         variant="ghost"
         className={`w-full justify-start gap-3 transition-colors ${
           isActive
-            ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-300"
+            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-300"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -118,7 +118,7 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
           <>
             <Separator className="my-2" />
             <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start gap-3 text-emerald-400 hover:text-emerald-300">
+              <Button variant="ghost" className="w-full justify-start gap-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
                 <ShieldCheck className="h-4 w-4" />
                 Admin Panel
               </Button>
@@ -131,8 +131,8 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
       <a href="https://buymeacoffee.com/alsmartech" target="_blank" rel="noreferrer" className="block mx-1 mb-3">
         <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 hover:bg-emerald-500/15 transition-colors cursor-pointer">
           <div className="flex items-center gap-2 mb-1">
-            <Zap className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-            <span className="text-xs font-semibold text-emerald-400">Subscribe to Ledgr</span>
+            <Zap className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Subscribe to Ledgr</span>
           </div>
           <p className="text-[11px] text-muted-foreground leading-snug">Unlock all features · Support development</p>
         </div>

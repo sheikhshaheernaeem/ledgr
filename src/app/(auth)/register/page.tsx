@@ -50,7 +50,7 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href="/">
-          <span className="text-2xl font-bold text-emerald-400 tracking-tight">
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">
             Ledgr
           </span>
         </Link>
@@ -111,7 +111,7 @@ export default function RegisterPage() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                 key={item}
                 className="flex items-center gap-2 text-xs text-muted-foreground"
               >
-                <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                 {item}
               </li>
             ))}
@@ -139,7 +139,7 @@ export default function RegisterPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-emerald-400 hover:text-emerald-300">
+        <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
           Sign in
         </Link>
       </p>

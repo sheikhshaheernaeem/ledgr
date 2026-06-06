@@ -83,7 +83,7 @@ function MobileNavItem({
         variant="ghost"
         className={`w-full justify-start gap-3 transition-colors ${
           isActive
-            ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-300"
+            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-300"
             : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -111,7 +111,7 @@ export function MobileSidebar() {
       <SheetContent side="left" className="w-72 p-0 flex flex-col">
         <div className="flex flex-col h-full py-6 px-4">
           <Link href="/" className="px-2 mb-6" onClick={close}>
-            <span className="text-xl font-bold text-emerald-400">Ledgr</span>
+            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
           </Link>
 
           <nav className="flex-1 space-y-1 overflow-y-auto">
@@ -157,8 +157,8 @@ export function MobileSidebar() {
           <a href="https://buymeacoffee.com/alsmartech" target="_blank" rel="noreferrer" onClick={close} className="block mb-2">
             <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 hover:bg-emerald-500/15 transition-colors">
               <div className="flex items-center gap-2 mb-0.5">
-                <Zap className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="text-xs font-semibold text-emerald-400">Subscribe to Ledgr</span>
+                <Zap className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Subscribe to Ledgr</span>
               </div>
               <p className="text-[11px] text-muted-foreground">Unlock all features · Support development</p>
             </div>

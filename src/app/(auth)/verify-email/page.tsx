@@ -40,10 +40,8 @@ function VerifyEmailContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // Actually the verify endpoint does a server-side redirect — handle via direct navigation
   useEffect(() => {
     if (token && !error) {
-      // Navigate directly; the API route will redirect back with result params
       router.replace(`/api/auth/verify-email?token=${token}`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,11 +58,11 @@ function VerifyEmailContent() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <Link href="/"><span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span></Link>
+          <Link href="/"><span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span></Link>
         </div>
         <Card className="border-border bg-card">
           <CardContent className="pt-10 pb-10 text-center space-y-3">
-            <Loader2 className="h-10 w-10 animate-spin text-emerald-400 mx-auto" />
+            <Loader2 className="h-10 w-10 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto" />
             <p className="text-sm text-muted-foreground">Verifying your email…</p>
           </CardContent>
         </Card>
@@ -76,22 +74,22 @@ function VerifyEmailContent() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <Link href="/"><span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span></Link>
+          <Link href="/"><span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span></Link>
         </div>
         <Card className="border-border bg-card">
           <CardContent className="pt-10 pb-10 text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
-              <XCircle className="h-7 w-7 text-red-400" />
+              <XCircle className="h-7 w-7 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Verification failed</h1>
+              <h1 className="text-lg font-bold text-foreground">Verification failed</h1>
               <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
                 {errorMessages[errorType] ?? errorMessages.unknown}
               </p>
             </div>
             <div className="flex flex-col gap-2 items-center pt-2">
               <Link href="/check-email">
-                <Button size="sm" className="gap-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                <Button size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold">
                   <Mail className="h-3.5 w-3.5" /> Request new link
                 </Button>
               </Link>
@@ -108,21 +106,21 @@ function VerifyEmailContent() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <Link href="/"><span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span></Link>
+        <Link href="/"><span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span></Link>
       </div>
       <Card className="border-border bg-card">
         <CardContent className="pt-10 pb-10 text-center space-y-4">
           <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+            <CheckCircle2 className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">Email verified!</h1>
+            <h1 className="text-lg font-bold text-foreground">Email verified!</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Your account is now active. Redirecting to sign in…
             </p>
           </div>
           <Link href="/login">
-            <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold">
               Sign in now
             </Button>
           </Link>

@@ -57,29 +57,29 @@ function LoginForm() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href="/">
-          <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
         </Link>
         <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
       </div>
 
       {verified && (
         <div className="flex items-center gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <p className="text-sm text-emerald-400 font-medium">Email verified! You can now sign in.</p>
+          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Email verified! You can now sign in.</p>
         </div>
       )}
 
       {unverified && (
         <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 space-y-2">
           <div className="flex items-center gap-2.5">
-            <Mail className="h-4 w-4 text-yellow-400 shrink-0" />
-            <p className="text-sm text-yellow-400 font-medium">Please verify your email first</p>
+            <Mail className="h-4 w-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
+            <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">Please verify your email first</p>
           </div>
           <p className="text-xs text-muted-foreground pl-6">
             Check your inbox for the confirmation link.{" "}
             <Link
               href={`/check-email?email=${encodeURIComponent(form.email)}`}
-              className="text-yellow-400 hover:text-yellow-300 underline underline-offset-2"
+              className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 underline underline-offset-2"
             >
               Resend email
             </Link>
@@ -108,7 +108,7 @@ function LoginForm() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-emerald-400 transition-colors">
+                <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -134,7 +134,7 @@ function LoginForm() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -146,7 +146,7 @@ function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="text-emerald-400 hover:text-emerald-300">
+        <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
           Sign up free
         </Link>
       </p>

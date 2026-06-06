@@ -3,7 +3,6 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,15 +65,15 @@ function ResetPasswordForm() {
       <div className="space-y-6">
         <div className="text-center">
           <Link href="/">
-            <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+            <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
           </Link>
         </div>
         <Card className="border-border bg-card">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <XCircle className="h-10 w-10 text-red-400" />
+              <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
               <p className="text-sm text-muted-foreground">Invalid reset link. Please request a new one.</p>
-              <Link href="/forgot-password" className="text-sm text-emerald-400 hover:text-emerald-300">
+              <Link href="/forgot-password" className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
                 Request new link
               </Link>
             </div>
@@ -89,17 +88,17 @@ function ResetPasswordForm() {
       <div className="space-y-6">
         <div className="text-center">
           <Link href="/">
-            <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+            <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
           </Link>
         </div>
         <Card className="border-border bg-card">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="rounded-full bg-emerald-500/10 p-3">
-                <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+                <CheckCircle2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h2 className="font-semibold">Password updated!</h2>
+                <h2 className="font-semibold text-foreground">Password updated!</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Redirecting you to sign in…</p>
               </div>
             </div>
@@ -113,7 +112,7 @@ function ResetPasswordForm() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href="/">
-          <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
         </Link>
         <p className="text-muted-foreground text-sm mt-1">Choose a new password</p>
       </div>
@@ -127,8 +126,8 @@ function ResetPasswordForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="flex items-center gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
-                <XCircle className="h-4 w-4 text-red-400 shrink-0" />
-                <p className="text-sm text-red-400">{error}</p>
+                <XCircle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
               </div>
             )}
             <div className="space-y-2">
@@ -177,7 +176,7 @@ function ResetPasswordForm() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

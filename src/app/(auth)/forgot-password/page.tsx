@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +28,6 @@ export default function ForgotPasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      // Always show success to prevent enumeration
       setSent(true);
     } finally {
       setLoading(false);
@@ -41,7 +39,7 @@ export default function ForgotPasswordPage() {
       <div className="space-y-6">
         <div className="text-center">
           <Link href="/">
-            <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+            <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
           </Link>
         </div>
 
@@ -49,10 +47,10 @@ export default function ForgotPasswordPage() {
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 text-center">
               <div className="rounded-full bg-emerald-500/10 p-4">
-                <Mail className="h-8 w-8 text-emerald-400" />
+                <Mail className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Check your inbox</h2>
+                <h2 className="text-lg font-semibold text-foreground">Check your inbox</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   If an account exists for <span className="text-foreground font-medium">{email}</span>, we&apos;ve sent a password reset link. It expires in 1 hour.
                 </p>
@@ -61,7 +59,7 @@ export default function ForgotPasswordPage() {
                 Didn&apos;t receive it? Check your spam folder or{" "}
                 <button
                   onClick={() => setSent(false)}
-                  className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 underline underline-offset-2"
                 >
                   try again
                 </button>
@@ -71,7 +69,7 @@ export default function ForgotPasswordPage() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
-          <Link href="/login" className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300">
+          <Link href="/login" className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
             <ArrowLeft className="h-3 w-3" /> Back to sign in
           </Link>
         </p>
@@ -83,7 +81,7 @@ export default function ForgotPasswordPage() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href="/">
-          <span className="text-2xl font-bold text-emerald-400 tracking-tight">Ledgr</span>
+          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
         </Link>
         <p className="text-muted-foreground text-sm mt-1">Reset your password</p>
       </div>
@@ -108,7 +106,7 @@ export default function ForgotPasswordPage() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -119,7 +117,7 @@ export default function ForgotPasswordPage() {
       </Card>
 
       <p className="text-center text-sm text-muted-foreground">
-        <Link href="/login" className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300">
+        <Link href="/login" className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
           <ArrowLeft className="h-3 w-3" /> Back to sign in
         </Link>
       </p>
