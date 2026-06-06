@@ -102,9 +102,9 @@ export function MobileSidebar() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Open navigation">
+          <button className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors" aria-label="Open navigation">
             <Menu className="h-5 w-5" />
-          </Button>
+          </button>
         }
       />
       <SheetContent side="left" className="w-72 p-0 flex flex-col">
