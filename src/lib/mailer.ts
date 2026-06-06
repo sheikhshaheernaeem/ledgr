@@ -1,21 +1,80 @@
+/**
+ * Email provider priority:
+ *  1. Brevo (BREVO_API_KEY) — free HTTPS API, sends to any recipient, no domain required
+ *  2. Resend (RESEND_API_KEY) — requires verified sender domain for arbitrary recipients
+ *  3. Demo mode — console.log only (no keys set)
+ */
+
 import { Resend } from "resend";
 
-function getResend() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
-  return new Resend(key);
+// ─── Provider helpers ─────────────────────────────────────────────────────────
+
+async function sendViaBrevo(params: {
+  to: string;
+  toName?: string;
+  senderName: string;
+  subject: string;
+  html: string;
+}) {
+  const key = process.env.BREVO_API_KEY!;
+  const senderEmail = process.env.BREVO_FROM ?? "ledgr.notifications@gmail.com";
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": key,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: params.senderName, email: senderEmail },
+      to: [{ email: params.to, name: params.toName ?? params.to }],
+      subject: params.subject,
+      htmlContent: params.html,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(
+      (body as { message?: string }).message ?? `Brevo error ${res.status}`
+    );
+  }
 }
 
-function isDemoMode() {
-  return !process.env.RESEND_API_KEY;
+async function sendViaResend(params: {
+  to: string;
+  from: string;
+  subject: string;
+  html: string;
+}) {
+  const resend = new Resend(process.env.RESEND_API_KEY!);
+  const { error } = await resend.emails.send({
+    from: params.from,
+    to: params.to,
+    subject: params.subject,
+    html: params.html,
+  });
+  if (error) throw new Error(error.message);
 }
 
-// From address — use RESEND_FROM env var, or default Resend sender
-function fromAddress(name = "Ledgr") {
+function resendFrom(name = "Ledgr") {
   const custom = process.env.RESEND_FROM;
   if (custom) return `"${name}" <${custom}>`;
   return `"${name}" <onboarding@resend.dev>`;
 }
+
+function hasBrevo() {
+  return !!process.env.BREVO_API_KEY;
+}
+function hasResend() {
+  return !!process.env.RESEND_API_KEY;
+}
+function isDemoMode() {
+  return !hasBrevo() && !hasResend();
+}
+
+// ─── Shared styles ────────────────────────────────────────────────────────────
 
 const emailStyles = `
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; margin: 0; padding: 0; }
@@ -29,24 +88,48 @@ const emailStyles = `
   .url { word-break: break-all; color: #555; font-size: 12px; }
 `;
 
+// ─── Core dispatcher ──────────────────────────────────────────────────────────
+
+async function dispatch(params: {
+  to: string;
+  toName?: string;
+  senderName: string;
+  subject: string;
+  html: string;
+}) {
+  if (isDemoMode()) {
+    console.log(`[EMAIL:demo] to=${params.to} subject="${params.subject}"`);
+    return;
+  }
+  if (hasBrevo()) {
+    await sendViaBrevo(params);
+    return;
+  }
+  // Resend fallback — note: onboarding@resend.dev only delivers to the Resend
+  // account owner's email. Set RESEND_FROM to a verified-domain address for
+  // full delivery.
+  await sendViaResend({
+    to: params.to,
+    from: resendFrom(params.senderName),
+    subject: params.subject,
+    html: params.html,
+  });
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
 export async function sendEmail(params: {
   to: string;
   subject: string;
   html: string;
   from?: string;
 }) {
-  if (isDemoMode()) {
-    console.log(`[DEV] Email to ${params.to}: ${params.subject}`);
-    return;
-  }
-  const resend = getResend()!;
-  const { error } = await resend.emails.send({
-    from: params.from ?? fromAddress(),
+  await dispatch({
     to: params.to,
+    senderName: "Ledgr",
     subject: params.subject,
     html: params.html,
   });
-  if (error) throw new Error(error.message);
 }
 
 export async function sendVerificationEmail(params: {
@@ -54,14 +137,10 @@ export async function sendVerificationEmail(params: {
   toName: string;
   verifyUrl: string;
 }) {
-  if (isDemoMode()) {
-    console.log(`[DEV] Verify email for ${params.toEmail}: ${params.verifyUrl}`);
-    return;
-  }
-  const resend = getResend()!;
-  const { error } = await resend.emails.send({
-    from: fromAddress("Ledgr"),
+  await dispatch({
     to: params.toEmail,
+    toName: params.toName,
+    senderName: "Ledgr",
     subject: "Confirm your Ledgr account",
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${emailStyles}</style></head>
 <body><div class="container"><div class="card">
@@ -75,7 +154,6 @@ export async function sendVerificationEmail(params: {
   </div>
 </div></div></body></html>`,
   });
-  if (error) throw new Error(error.message);
 }
 
 export async function sendPasswordResetEmail(params: {
@@ -83,14 +161,10 @@ export async function sendPasswordResetEmail(params: {
   toName: string;
   resetUrl: string;
 }) {
-  if (isDemoMode()) {
-    console.log(`[DEV] Reset password for ${params.toEmail}: ${params.resetUrl}`);
-    return;
-  }
-  const resend = getResend()!;
-  const { error } = await resend.emails.send({
-    from: fromAddress("Ledgr"),
+  await dispatch({
     to: params.toEmail,
+    toName: params.toName,
+    senderName: "Ledgr",
     subject: "Reset your Ledgr password",
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${emailStyles}</style></head>
 <body><div class="container"><div class="card">
@@ -104,7 +178,6 @@ export async function sendPasswordResetEmail(params: {
   </div>
 </div></div></body></html>`,
   });
-  if (error) throw new Error(error.message);
 }
 
 export async function sendMonthlyReport(params: {
@@ -118,19 +191,15 @@ export async function sendMonthlyReport(params: {
   narrative: string;
   reportUrl: string;
 }) {
-  if (isDemoMode()) {
-    console.log(`[DEV] Monthly report email to ${params.toEmail}`);
-    return;
-  }
-
   const fmt = (n: number) =>
     "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const profitColor = params.netProfit >= 0 ? "#10b981" : "#ef4444";
-  const resend = getResend()!;
-  const { error } = await resend.emails.send({
-    from: fromAddress("Ledgr Reports"),
+
+  await dispatch({
     to: params.toEmail,
+    toName: params.toName,
+    senderName: "Ledgr Reports",
     subject: `Your ${params.month} ${params.year} Bookkeeping Report is Ready`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8">
 <style>
@@ -166,5 +235,4 @@ export async function sendMonthlyReport(params: {
   <div class="footer"><p>Ledgr · AI Bookkeeping for Small Businesses<br>Questions? Reply to this email.</p></div>
 </div></body></html>`,
   });
-  if (error) throw new Error(error.message);
 }

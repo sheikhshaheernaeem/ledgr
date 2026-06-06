@@ -46,8 +46,9 @@ export async function POST(req: Request) {
       toEmail: email,
       toName: user.name ?? "there",
       resetUrl,
-    }).catch((err) => {
-      console.error("Failed to send password reset email:", err?.message ?? err);
+    }).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`[email:password-reset] FAILED to=${email} err="${msg}"`);
     });
 
     return NextResponse.json({ ok: true });

@@ -8,8 +8,10 @@ export async function POST() {
   if ((session.user as { role?: string }).role !== "ADMIN")
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  if (!process.env.RESEND_API_KEY) {
-    return NextResponse.json({ error: "RESEND_API_KEY not set" }, { status: 500 });
+  const hasBrevo = !!process.env.BREVO_API_KEY;
+  const hasResend = !!process.env.RESEND_API_KEY;
+  if (!hasBrevo && !hasResend) {
+    return NextResponse.json({ error: "No email provider configured. Set BREVO_API_KEY or RESEND_API_KEY." }, { status: 500 });
   }
 
   try {
