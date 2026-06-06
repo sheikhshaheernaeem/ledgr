@@ -63,7 +63,7 @@ export default function BudgetPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Budget vs Actual</h1>
+          <h1 className="text-2xl font-bold text-foreground">Budget vs Actual</h1>
           <p className="text-muted-foreground mt-1">Set monthly targets and track performance</p>
         </div>
         <div className="flex items-center gap-3">
@@ -120,7 +120,7 @@ export default function BudgetPage() {
                   </div>
                 );
               })}
-              <div className="grid grid-cols-12 gap-4 items-center py-3 px-2 font-bold text-white border-t border-border mt-2">
+              <div className="grid grid-cols-12 gap-4 items-center py-3 px-2 font-bold text-foreground border-t border-border mt-2">
                 <div className="col-span-3 text-sm">Total</div>
                 <div className="col-span-2 text-right text-sm">${totalBudgeted.toFixed(0)}</div>
                 <div className="col-span-2 text-right text-sm">${totalActual.toFixed(0)}</div>

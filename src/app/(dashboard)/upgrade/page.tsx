@@ -20,13 +20,13 @@ export default function UpgradePage() {
         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 text-xs font-semibold text-emerald-400">
           <Zap className="h-3.5 w-3.5" /> Ledgr Pro
         </div>
-        <h1 className="text-3xl font-bold text-white">AI-native bookkeeping for freelancers &amp; small businesses</h1>
+        <h1 className="text-3xl font-bold text-foreground">AI-native bookkeeping for freelancers &amp; small businesses</h1>
         <p className="text-muted-foreground max-w-md mx-auto">Stop wasting hours on spreadsheets. Ledgr handles your books so you can focus on your work.</p>
       </div>
 
       <Card className="border-emerald-500/30 bg-emerald-500/5">
         <CardHeader className="text-center pb-4">
-          <CardTitle className="text-4xl font-bold text-white">
+          <CardTitle className="text-4xl font-bold text-foreground">
             Pay what you want
           </CardTitle>
           <CardDescription className="text-base mt-2">Support the development of Ledgr via Buy Me a Coffee</CardDescription>

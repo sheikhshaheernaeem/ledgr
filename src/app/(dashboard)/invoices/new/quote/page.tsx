@@ -83,7 +83,7 @@ export default function NewQuotePage() {
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/invoices"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4" /></Button></Link>
-        <h1 className="text-2xl font-bold text-white">New Quote / Estimate</h1>
+        <h1 className="text-2xl font-bold text-foreground">New Quote / Estimate</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -150,7 +150,7 @@ export default function NewQuotePage() {
             <div className="space-y-1 text-sm text-right">
               <div className="flex justify-end gap-8 text-muted-foreground"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
               {taxRate > 0 && <div className="flex justify-end gap-8 text-muted-foreground"><span>Tax ({taxRate}%)</span><span>${taxAmount.toFixed(2)}</span></div>}
-              <div className="flex justify-end gap-8 font-bold text-white text-base"><span>Total</span><span>${total.toFixed(2)}</span></div>
+              <div className="flex justify-end gap-8 font-bold text-foreground text-base"><span>Total</span><span>${total.toFixed(2)}</span></div>
             </div>
           </CardContent>
         </Card>

@@ -72,7 +72,7 @@ export default async function ReviewReportPage({ params }: Props) {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-foreground">
             {report.user.name ?? report.user.email} — {monthName}
           </h1>
           <p className="text-muted-foreground mt-1">

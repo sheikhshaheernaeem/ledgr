@@ -197,11 +197,11 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <Link href="/workpapers" className="text-sm text-muted-foreground hover:text-white flex items-center gap-1 mb-2">
+          <Link href="/workpapers" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-2">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Workpapers
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-white">{workpaper.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{workpaper.name}</h1>
             <Badge variant="outline" className={`text-xs ${cfg.color}`}>{cfg.label}</Badge>
           </div>
           {workpaper.description && (
@@ -264,7 +264,7 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
       <Card className="border-border bg-card">
         <CardContent className="py-4">
           <div className="flex items-center justify-between mb-2 text-sm">
-            <span className="text-white font-medium">Progress</span>
+            <span className="text-foreground font-medium">Progress</span>
             <span className="text-muted-foreground">{tickedItems}/{totalItems} items ticked ({progress}%)</span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -315,7 +315,7 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
                           {item.status === "TICKED" && <CheckCircle2 className="h-3 w-3 text-black" />}
                         </button>
                       </TableCell>
-                      <TableCell className={`text-sm ${item.status === "NA" ? "line-through text-muted-foreground" : "text-white"}`}>
+                      <TableCell className={`text-sm ${item.status === "NA" ? "line-through text-muted-foreground" : "text-foreground"}`}>
                         {item.description}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{item.reference ?? "—"}</TableCell>
@@ -344,7 +344,7 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
                           </button>
                           <button
                             onClick={() => handleMarkNA(item.id)}
-                            className="p-1 text-muted-foreground hover:text-white transition-colors text-xs"
+                            className="p-1 text-muted-foreground hover:text-foreground transition-colors text-xs"
                             title="Mark N/A"
                           >
                             N/A
@@ -409,7 +409,7 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
       <Dialog open={!!flagDialog} onOpenChange={() => setFlagDialog(null)}>
         <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-white">Flag Item</DialogTitle>
+            <DialogTitle className="text-foreground">Flag Item</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">

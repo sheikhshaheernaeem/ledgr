@@ -82,7 +82,7 @@ export default async function AdminPage() {
   return (
     <div className="p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
         <p className="text-muted-foreground mt-1">
           Review AI output and manage client reports
         </p>
@@ -131,7 +131,7 @@ export default async function AdminPage() {
                     className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-emerald-500/30 transition-colors"
                   >
                     <div>
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-foreground">
                         {report.user.name ?? report.user.email}
                       </p>
                       <p className="text-xs text-muted-foreground">

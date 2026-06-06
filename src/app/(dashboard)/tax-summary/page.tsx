@@ -82,7 +82,7 @@ export default async function TaxSummaryPage({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Tax Summary</h1>
+          <h1 className="text-2xl font-bold text-foreground">Tax Summary</h1>
           <p className="text-muted-foreground mt-1">
             Expense breakdown by tax category for {year}
           </p>
@@ -245,7 +245,7 @@ export default async function TaxSummaryPage({
                 );
               })}
 
-              <div className="pt-3 border-t border-border flex items-center justify-between font-bold text-white text-sm">
+              <div className="pt-3 border-t border-border flex items-center justify-between font-bold text-foreground text-sm">
                 <span>Total Expenses</span>
                 <span>{fmt(totalExpenses)}</span>
               </div>

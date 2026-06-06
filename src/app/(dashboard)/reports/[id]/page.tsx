@@ -50,7 +50,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
     <div className="p-8 space-y-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">P&L — {monthName}</h1>
+          <h1 className="text-2xl font-bold text-foreground">P&L — {monthName}</h1>
           <p className="text-muted-foreground mt-1">Profit & Loss Statement</p>
         </div>
         <div className="flex items-center gap-3">
@@ -125,7 +125,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell colSpan={3} className="font-bold text-white pt-3">Total Revenue</TableCell>
+                  <TableCell colSpan={3} className="font-bold text-foreground pt-3">Total Revenue</TableCell>
                   <TableCell className="text-right font-bold text-emerald-400 pt-3">{fmt(totalIncome)}</TableCell>
                 </TableRow>
               </TableBody>
@@ -148,7 +148,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
                   <span className="text-red-400 font-medium">{fmt(amt)}</span>
                 </div>
               ))}
-              <div className="flex items-center justify-between pt-2 font-bold text-white">
+              <div className="flex items-center justify-between pt-2 font-bold text-foreground">
                 <span>Total Expenses</span>
                 <span className="text-red-400">{fmt(totalExpenses)}</span>
               </div>

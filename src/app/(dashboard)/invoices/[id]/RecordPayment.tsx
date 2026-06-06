@@ -63,11 +63,11 @@ export default function RecordPayment({ invoiceId, total, amountPaid }: Props) {
       </div>
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">
-          Amount Paid: <span className="text-white font-medium">${amountPaid.toFixed(2)}</span>
+          Amount Paid: <span className="text-foreground font-medium">${amountPaid.toFixed(2)}</span>
         </span>
         <span className="text-muted-foreground">
           Balance Due:{" "}
-          <span className={balanceDue <= 0 ? "text-emerald-400 font-medium" : "text-white font-medium"}>
+          <span className={balanceDue <= 0 ? "text-emerald-400 font-medium" : "text-foreground font-medium"}>
             ${Math.max(0, balanceDue).toFixed(2)}
           </span>
         </span>

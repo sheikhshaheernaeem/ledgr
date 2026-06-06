@@ -44,7 +44,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
     <div className="p-8 max-w-3xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">{inv.invoiceNumber}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{inv.invoiceNumber}</h1>
           <p className="text-muted-foreground mt-1">{inv.clientName}{inv.clientEmail && ` · ${inv.clientEmail}`}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
           <div className="space-y-1 text-sm text-right">
             <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>${inv.subtotal.toFixed(2)}</span></div>
             {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>Tax ({inv.taxRate}%)</span><span>${inv.taxAmount.toFixed(2)}</span></div>}
-            <div className="flex justify-end gap-12 font-bold text-white text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>
+            <div className="flex justify-end gap-12 font-bold text-foreground text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>
             {lateFeeAmount !== null && (
               <div className="flex justify-end gap-12 text-red-400 text-xs mt-1">
                 <span>Late fee accrued ({inv.lateFeePct}%/mo)</span>

@@ -88,7 +88,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
   if (loading) return <div className="p-8 text-muted-foreground">Loading…</div>;
   if (!data) return (
     <div className="p-8 space-y-4">
-      <Link href="/firm" className="text-sm text-muted-foreground hover:text-white flex items-center gap-1">
+      <Link href="/firm" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Clients
       </Link>
       <p className="text-muted-foreground">Client not found or you no longer have access.</p>
@@ -108,12 +108,12 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
     <div className="p-8 space-y-6">
       {/* Header */}
       <div>
-        <Link href="/firm" className="text-sm text-muted-foreground hover:text-white flex items-center gap-1 mb-3">
+        <Link href="/firm" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-3">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Clients
         </Link>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">{displayName}&apos;s Books</h1>
+            <h1 className="text-2xl font-bold text-foreground">{displayName}&apos;s Books</h1>
             {client.companyName && (
               <div className="flex items-center gap-1.5 mt-1 text-muted-foreground text-sm">
                 <Building2 className="h-3.5 w-3.5" /> {client.companyName}
@@ -129,7 +129,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
       {/* Note Banner */}
       <Card className="border-blue-500/20 bg-blue-500/5">
         <CardContent className="py-3 text-sm text-muted-foreground">
-          Viewing <span className="text-white font-medium">{displayName}</span>&apos;s workspace. This is a read-only summary of their books.
+          Viewing <span className="text-foreground font-medium">{displayName}</span>&apos;s workspace. This is a read-only summary of their books.
         </CardContent>
       </Card>
 
@@ -182,7 +182,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">Open Invoices</p>
                   <FileText className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <p className="text-2xl font-bold text-white">{summary.invoices.open}</p>
+                <p className="text-2xl font-bold text-foreground">{summary.invoices.open}</p>
                 {summary.invoices.overdue > 0 && (
                   <p className="text-xs text-red-400 flex items-center gap-1 mt-1">
                     <AlertTriangle className="h-3 w-3" /> {summary.invoices.overdue} overdue
@@ -242,7 +242,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
                   <TableBody>
                     {summary.invoices.recentOpen.map((inv) => (
                       <TableRow key={inv.id} className="border-border">
-                        <TableCell className="text-sm text-white">{inv.clientName}</TableCell>
+                        <TableCell className="text-sm text-foreground">{inv.clientName}</TableCell>
                         <TableCell className="text-sm font-medium">${fmt(inv.total)}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(inv.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -266,7 +266,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
               )}
               <div className="p-4 border-t border-border flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Total outstanding</span>
-                <span className="font-bold text-white">${fmt(summary.invoices.openAmount)}</span>
+                <span className="font-bold text-foreground">${fmt(summary.invoices.openAmount)}</span>
               </div>
             </CardContent>
           </Card>

@@ -42,16 +42,16 @@ export default async function BalanceSheetPage() {
   const equity = totalAssets - totalLiabilities;
 
   const Row = ({ label, value, bold }: { label: string; value: number; bold?: boolean }) => (
-    <div className={`flex justify-between py-2 ${bold ? "font-bold text-white border-t border-border mt-1 pt-3" : "text-sm"}`}>
+    <div className={`flex justify-between py-2 ${bold ? "font-bold text-foreground border-t border-border mt-1 pt-3" : "text-sm"}`}>
       <span className={bold ? "" : "text-muted-foreground"}>{label}</span>
-      <span className={value < 0 ? "text-red-400" : bold ? "text-white" : "text-foreground"}>{fmt(value)}</span>
+      <span className={value < 0 ? "text-red-400" : bold ? "text-foreground" : "text-foreground"}>{fmt(value)}</span>
     </div>
   );
 
   return (
     <div className="p-8 max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Balance Sheet</h1>
+        <h1 className="text-2xl font-bold text-foreground">Balance Sheet</h1>
         <p className="text-muted-foreground mt-1">As of {now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
       </div>
 

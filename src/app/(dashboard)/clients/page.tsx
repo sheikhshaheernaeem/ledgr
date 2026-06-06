@@ -91,7 +91,7 @@ export default function ClientsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Clients</h1>
+          <h1 className="text-2xl font-bold text-foreground">Clients</h1>
           <p className="text-muted-foreground mt-1">Manage your client directory</p>
         </div>
         <Button onClick={openNew} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
@@ -124,7 +124,7 @@ export default function ClientsPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="min-w-0">
-                    <CardTitle className="text-base text-white truncate">{client.name}</CardTitle>
+                    <CardTitle className="text-base text-foreground truncate">{client.name}</CardTitle>
                     {client.company && <CardDescription className="truncate">{client.company}</CardDescription>}
                   </div>
                   <div className="flex gap-1 shrink-0 ml-2">

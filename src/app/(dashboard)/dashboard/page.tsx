@@ -109,7 +109,7 @@ export default async function DashboardPage() {
     <div className="p-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Welcome back, {session.user.name ?? "there"} 👋</h1>
+          <h1 className="text-2xl font-bold text-foreground">Welcome back, {session.user.name ?? "there"} 👋</h1>
           <p className="text-muted-foreground mt-1">Here&apos;s your financial overview</p>
         </div>
         <Link href="/transactions">
@@ -257,7 +257,7 @@ export default async function DashboardPage() {
               <Card className="border-border bg-card hover:border-emerald-500/30 transition-colors cursor-pointer h-full">
                 <CardContent className="p-4">
                   <action.icon className="h-5 w-5 text-emerald-400 mb-2" />
-                  <p className="text-sm font-medium text-white">{action.label}</p>
+                  <p className="text-sm font-medium text-foreground">{action.label}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
                 </CardContent>
               </Card>
@@ -369,7 +369,7 @@ export default async function DashboardPage() {
                     <Link key={report.id} href={`/reports/${report.id}`}>
                       <div className="p-3 rounded-lg border border-border hover:border-emerald-500/30 transition-colors cursor-pointer">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-white">
+                          <span className="text-sm font-medium text-foreground">
                             {new Date(report.year, report.month - 1).toLocaleString("default", { month: "long", year: "numeric" })}
                           </span>
                           <Badge variant="outline" className={`text-xs ${report.status === "SENT" ? "border-emerald-500/30 text-emerald-400" : report.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" : "border-yellow-500/30 text-yellow-400"}`}>

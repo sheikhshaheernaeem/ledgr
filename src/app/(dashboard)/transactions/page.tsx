@@ -263,7 +263,7 @@ export default function TransactionsPage() {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Transactions</h1>
+          <h1 className="text-2xl font-bold text-foreground">Transactions</h1>
           <p className="text-muted-foreground mt-1">Upload your bank CSV and let AI categorize everything</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end">

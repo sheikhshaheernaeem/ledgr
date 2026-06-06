@@ -26,7 +26,7 @@ function LineItem({ label, amount, indent = false }: { label: string; amount: nu
 function SectionTotal({ label, amount }: { label: string; amount: number }) {
   return (
     <div className="flex items-center justify-between pt-3 mt-2 border-t border-border">
-      <span className="font-semibold text-white text-sm">{label}</span>
+      <span className="font-semibold text-foreground text-sm">{label}</span>
       <span className={`font-bold text-base ${amount < 0 ? "text-red-400" : "text-emerald-400"}`}>
         {amount >= 0 ? "" : "-"}${fmt(Math.abs(amount))}
       </span>
@@ -144,7 +144,7 @@ export default async function CashFlowStatementPage({
     <div className="p-8 space-y-6 max-w-3xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Cash Flow Statement</h1>
+          <h1 className="text-2xl font-bold text-foreground">Cash Flow Statement</h1>
           <p className="text-muted-foreground mt-1">{periodLabel}</p>
         </div>
         <div className="flex items-center gap-3">

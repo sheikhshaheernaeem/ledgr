@@ -156,7 +156,7 @@ export default async function AnalyticsPage() {
   return (
     <div className="p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Analytics</h1>
+        <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
         <p className="text-muted-foreground mt-1">Deep-dive into your financials</p>
       </div>
 
@@ -326,7 +326,7 @@ export default async function AnalyticsPage() {
                     <span className="text-sm font-medium text-muted-foreground w-5 shrink-0">#{idx + 1}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-white truncate">{name}</span>
+                        <span className="text-sm font-medium text-foreground truncate">{name}</span>
                         <span className="text-sm font-bold text-emerald-400 ml-4 shrink-0">${fmt(amount)}</span>
                       </div>
                       <div className="h-2 rounded-full bg-muted overflow-hidden">
@@ -373,7 +373,7 @@ export default async function AnalyticsPage() {
                     const rateColor = row.paymentRate >= 80 ? "text-emerald-400" : row.paymentRate >= 50 ? "text-yellow-400" : "text-red-400";
                     return (
                       <tr key={row.name} className="border-b border-border/50 last:border-0">
-                        <td className="py-3 font-medium text-white truncate max-w-[150px]">{row.name}</td>
+                        <td className="py-3 font-medium text-foreground truncate max-w-[150px]">{row.name}</td>
                         <td className="py-3 text-right text-foreground">${fmt(row.totalInvoiced)}</td>
                         <td className="py-3 text-right text-emerald-400">${fmt(row.totalPaid)}</td>
                         <td className="py-3 text-right text-red-400">${fmt(row.outstanding)}</td>

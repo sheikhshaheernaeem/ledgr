@@ -31,7 +31,7 @@ export default async function AuditLogPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Audit Log</h1>
+          <h1 className="text-2xl font-bold text-foreground">Audit Log</h1>
           <p className="text-muted-foreground mt-1">Complete history of all actions taken in your account</p>
         </div>
       </div>

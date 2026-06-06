@@ -106,7 +106,7 @@ export default function NewBillPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold text-white">New Bill</h1>
+        <h1 className="text-2xl font-bold text-foreground">New Bill</h1>
       </div>
 
       <form className="space-y-6">
@@ -286,7 +286,7 @@ export default function NewBillPage() {
                   <span>${taxAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 </div>
               )}
-              <div className="flex justify-end gap-8 font-bold text-white text-base">
+              <div className="flex justify-end gap-8 font-bold text-foreground text-base">
                 <span>Total</span>
                 <span>${total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>

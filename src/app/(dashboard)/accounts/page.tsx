@@ -78,7 +78,7 @@ export default function AccountsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Bank Accounts</h1>
+          <h1 className="text-2xl font-bold text-foreground">Bank Accounts</h1>
           <p className="text-muted-foreground mt-1">Manage your connected accounts</p>
         </div>
         <div className="flex gap-3">
@@ -123,7 +123,7 @@ export default function AccountsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-foreground">
                     ${acct.currentBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                   {acct.lastFourDigits && <p className="text-xs text-muted-foreground">•••• {acct.lastFourDigits}</p>}

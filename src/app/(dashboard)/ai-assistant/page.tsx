@@ -25,7 +25,7 @@ function MessageBubble({ role, content }: { role: string; content: string }) {
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUser ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"}`}>
         {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
       </div>
-      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${isUser ? "bg-emerald-500/15 text-white rounded-tr-sm" : "bg-card border border-border text-foreground rounded-tl-sm"}`}>
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${isUser ? "bg-emerald-500/15 text-foreground rounded-tr-sm" : "bg-card border border-border text-foreground rounded-tl-sm"}`}>
         {content}
       </div>
     </div>
@@ -57,7 +57,7 @@ export default function AIAssistantPage() {
             <Sparkles className="h-5 w-5 text-blue-400" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white flex items-center gap-2">
+            <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
               Ledgr AI
               <Badge className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 font-medium">BETA</Badge>
             </h1>
@@ -73,7 +73,7 @@ export default function AIAssistantPage() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-500/20 flex items-center justify-center mb-4">
               <Bot className="h-8 w-8 text-blue-400" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Hi, I&apos;m Ledgr AI</h2>
+            <h2 className="text-xl font-bold text-foreground mb-2">Hi, I&apos;m Ledgr AI</h2>
             <p className="text-sm text-muted-foreground max-w-sm mb-8">
               I can answer accounting questions, analyze your finances, and help you work smarter — all with access to your live books.
             </p>

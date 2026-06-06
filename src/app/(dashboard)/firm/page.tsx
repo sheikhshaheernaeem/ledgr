@@ -132,7 +132,7 @@ export default function FirmPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Clients</h1>
+          <h1 className="text-2xl font-bold text-foreground">My Clients</h1>
           <p className="text-muted-foreground mt-1">Firm management — view and manage client books</p>
         </div>
         <Button
@@ -200,14 +200,14 @@ export default function FirmPage() {
                   {summary ? (
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-md border border-border p-2 text-center">
-                        <p className="text-lg font-bold text-white">{summary.invoices.open}</p>
+                        <p className="text-lg font-bold text-foreground">{summary.invoices.open}</p>
                         <p className="text-xs text-muted-foreground">Open Invoices</p>
                         {summary.invoices.overdue > 0 && (
                           <p className="text-xs text-red-400">{summary.invoices.overdue} overdue</p>
                         )}
                       </div>
                       <div className="rounded-md border border-border p-2 text-center">
-                        <p className="text-sm font-bold text-white">
+                        <p className="text-sm font-bold text-foreground">
                           ${fmt(summary.invoices.openAmount)}
                         </p>
                         <p className="text-xs text-muted-foreground">Outstanding</p>
@@ -259,7 +259,7 @@ export default function FirmPage() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-white">Add Client</DialogTitle>
+            <DialogTitle className="text-foreground">Add Client</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -294,7 +294,7 @@ export default function FirmPage() {
       <Dialog open={!!removeId} onOpenChange={() => setRemoveId(null)}>
         <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-white">Remove Client?</DialogTitle>
+            <DialogTitle className="text-foreground">Remove Client?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             This will remove your access to this client&apos;s books. The client&apos;s account and data will not be affected.

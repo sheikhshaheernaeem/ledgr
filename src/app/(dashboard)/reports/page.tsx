@@ -27,7 +27,7 @@ export default async function ReportsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Reports</h1>
+          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
           <p className="text-muted-foreground mt-1">
             Your monthly profit & loss statements
           </p>
@@ -109,7 +109,7 @@ export default async function ReportsPage() {
                       </span>
                     </div>
                     <div className="border-t border-border pt-2 flex items-center justify-between text-sm">
-                      <span className="font-medium text-white">Net Profit</span>
+                      <span className="font-medium text-foreground">Net Profit</span>
                       <span
                         className={`font-bold ${report.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}
                       >

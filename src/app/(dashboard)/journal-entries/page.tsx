@@ -92,7 +92,7 @@ export default function JournalEntriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Journal Entries</h1>
+          <h1 className="text-2xl font-bold text-foreground">Journal Entries</h1>
           <p className="text-muted-foreground mt-1">
             {totalPosted} posted — {filtered.length} total
           </p>

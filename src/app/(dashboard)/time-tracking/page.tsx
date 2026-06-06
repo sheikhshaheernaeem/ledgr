@@ -225,7 +225,7 @@ export default function TimeTrackingPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Time Tracking</h1>
+          <h1 className="text-2xl font-bold text-foreground">Time Tracking</h1>
           <p className="text-muted-foreground text-sm mt-1">Log billable hours and convert to invoices</p>
         </div>
         <div className="flex items-center gap-2">
@@ -256,7 +256,7 @@ export default function TimeTrackingPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-white">{fmtHours(unbilledHours)}</p>
+            <p className="text-2xl font-bold text-foreground">{fmtHours(unbilledHours)}</p>
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
@@ -276,7 +276,7 @@ export default function TimeTrackingPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-white">{fmtHours(totalHours)}</p>
+            <p className="text-2xl font-bold text-foreground">{fmtHours(totalHours)}</p>
           </CardContent>
         </Card>
       </div>
@@ -290,7 +290,7 @@ export default function TimeTrackingPage() {
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               tab === t
                 ? "border-emerald-500 text-emerald-400"
-                : "border-transparent text-muted-foreground hover:text-white"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             {t}
@@ -378,7 +378,7 @@ export default function TimeTrackingPage() {
                           <TableCell className="text-sm text-muted-foreground">
                             {entry.client?.name ?? <span className="text-zinc-600">—</span>}
                           </TableCell>
-                          <TableCell className="text-sm text-white max-w-[220px] truncate">{entry.description}</TableCell>
+                          <TableCell className="text-sm text-foreground max-w-[220px] truncate">{entry.description}</TableCell>
                           <TableCell className="text-sm text-right">{fmtHours(entry.hours)}</TableCell>
                           <TableCell className="text-sm text-right text-muted-foreground">{fmt(entry.hourlyRate)}/hr</TableCell>
                           <TableCell className="text-sm text-right text-emerald-400 font-semibold">{fmt(entry.amount)}</TableCell>
@@ -400,7 +400,7 @@ export default function TimeTrackingPage() {
                                 <>
                                   <Button
                                     variant="ghost" size="sm"
-                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-white"
+                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
                                     onClick={() => {
                                       setEditEntry(entry);
                                       setEditForm({
@@ -616,7 +616,7 @@ export default function TimeTrackingPage() {
               <p className="text-sm text-muted-foreground mb-2">Selected entries:</p>
               {selectedEntries.map(e => (
                 <div key={e.id} className="flex items-center justify-between text-sm">
-                  <span className="text-white truncate max-w-[240px]">{e.description}</span>
+                  <span className="text-foreground truncate max-w-[240px]">{e.description}</span>
                   <span className="text-emerald-400 ml-2">{fmt(e.amount)}</span>
                 </div>
               ))}

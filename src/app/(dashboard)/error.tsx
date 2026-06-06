@@ -13,7 +13,7 @@ export default function DashboardError({ error, reset }: { error: Error & { dige
         <div className="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
           <AlertTriangle className="h-7 w-7 text-red-400" />
         </div>
-        <h2 className="text-lg font-bold text-white">Failed to load page</h2>
+        <h2 className="text-lg font-bold text-foreground">Failed to load page</h2>
         <p className="text-muted-foreground text-sm">{error.message || "Something went wrong loading this page."}</p>
         <div className="flex gap-3 justify-center">
           <Button variant="outline" size="sm" onClick={() => window.location.href = "/dashboard"}>Dashboard</Button>

@@ -103,7 +103,7 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold text-emerald-400 tracking-tight">
+          <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">
             Ledgr
           </span>
           <div className="flex items-center gap-3">
@@ -128,16 +128,16 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
         <Badge
           variant="outline"
-          className="mb-6 border-emerald-500/30 text-emerald-400 bg-emerald-500/10"
+          className="mb-6 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 inline-block animate-pulse" />
           Replacing your $1,200/month bookkeeper
         </Badge>
 
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
+        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.05]">
           AI Bookkeeping.
           <br />
-          <span className="text-emerald-400">$299/month.</span>
+          <span className="text-emerald-600 dark:text-emerald-400">$299/month.</span>
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -191,7 +191,7 @@ export default function LandingPage() {
       {/* Features */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Everything you need. Nothing you don&apos;t.
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
@@ -209,7 +209,7 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
                 <f.icon className="h-5 w-5 text-emerald-400" />
               </div>
-              <h3 className="font-semibold text-white mb-2">{f.title}</h3>
+              <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 {f.description}
               </p>
@@ -222,7 +222,7 @@ export default function LandingPage() {
       <section className="border-y border-border/40 bg-card/20">
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               How it works
             </h2>
           </div>
@@ -248,7 +248,7 @@ export default function LandingPage() {
                 <span className="text-6xl font-black text-emerald-500/10 select-none">
                   {s.step}
                 </span>
-                <h3 className="text-lg font-semibold text-white mt-2 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mt-2 mb-2">
                   {s.title}
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -263,7 +263,7 @@ export default function LandingPage() {
       {/* Pricing */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Simple, transparent pricing
           </h2>
           <p className="text-muted-foreground text-lg">
@@ -287,14 +287,14 @@ export default function LandingPage() {
                 </Badge>
               )}
               <div className="mb-6">
-                <h3 className="font-bold text-white text-xl mb-1">
+                <h3 className="font-bold text-foreground text-xl mb-1">
                   {plan.name}
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   {plan.description}
                 </p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">
+                  <span className="text-4xl font-black text-foreground">
                     ${plan.price}
                   </span>
                   <span className="text-muted-foreground">/month</span>
@@ -331,7 +331,7 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="border-t border-border/40 bg-card/20">
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Ready to fire your bookkeeper?
           </h2>
           <p className="text-muted-foreground text-lg mb-8">
@@ -352,7 +352,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <span className="font-bold text-emerald-400">Ledgr</span>
+          <span className="font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
           <p>© 2026 Ledgr. AI Bookkeeping for Small Businesses.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-foreground transition-colors">

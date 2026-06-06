@@ -158,7 +158,7 @@ export default function SettingsForm({
                 <button
                   type="button"
                   onClick={() => { setCompanyLogo(""); if (logoInputRef.current) logoInputRef.current.value = ""; }}
-                  className="absolute -top-2 -right-2 bg-destructive text-white rounded-full h-5 w-5 flex items-center justify-center"
+                  className="absolute -top-2 -right-2 bg-destructive text-foreground rounded-full h-5 w-5 flex items-center justify-center"
                 >
                   <X className="h-3 w-3" />
                 </button>

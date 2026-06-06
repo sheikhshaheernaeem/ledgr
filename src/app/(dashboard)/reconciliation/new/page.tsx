@@ -87,7 +87,7 @@ export default function NewReconciliationPage() {
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-white">New Reconciliation</h1>
+        <h1 className="text-2xl font-bold text-foreground">New Reconciliation</h1>
         <p className="text-muted-foreground mt-1">Match your transactions to a bank statement</p>
       </div>
 
@@ -162,11 +162,11 @@ export default function NewReconciliationPage() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Statement Balance</p>
-                <p className="text-lg font-bold text-white mt-1">${balance.toFixed(2)}</p>
+                <p className="text-lg font-bold text-foreground mt-1">${balance.toFixed(2)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Selected Transactions</p>
-                <p className="text-lg font-bold text-white mt-1">${selectedSum.toFixed(2)}</p>
+                <p className="text-lg font-bold text-foreground mt-1">${selectedSum.toFixed(2)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Difference</p>

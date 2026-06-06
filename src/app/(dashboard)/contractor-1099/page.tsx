@@ -101,7 +101,7 @@ export default async function Contractor1099Page({
     <div className="p-8 space-y-6 max-w-5xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">1099 Contractors</h1>
+          <h1 className="text-2xl font-bold text-foreground">1099 Contractors</h1>
           <p className="text-muted-foreground mt-1">
             Track payments to independent contractors for 1099 filing (US).
             Contractors paid $600+ require a 1099.
@@ -146,7 +146,7 @@ export default async function Contractor1099Page({
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Contractors</p>
               <Users className="h-4 w-4 text-muted-foreground" />
             </div>
-            <p className="text-2xl font-bold text-white">{contractors.length}</p>
+            <p className="text-2xl font-bold text-foreground">{contractors.length}</p>
             <p className="text-xs text-muted-foreground mt-1">across all payroll runs in {year}</p>
           </CardContent>
         </Card>
@@ -157,7 +157,7 @@ export default async function Contractor1099Page({
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Paid</p>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </div>
-            <p className="text-2xl font-bold text-white">${fmt(totalPaid)}</p>
+            <p className="text-2xl font-bold text-foreground">${fmt(totalPaid)}</p>
             <p className="text-xs text-muted-foreground mt-1">gross payments in {year}</p>
           </CardContent>
         </Card>
@@ -225,7 +225,7 @@ export default async function Contractor1099Page({
                   const needs1099 = c.totalPaid >= THRESHOLD_1099;
                   return (
                     <TableRow key={c.employeeName} className="border-border">
-                      <TableCell className="font-medium text-white">{c.employeeName}</TableCell>
+                      <TableCell className="font-medium text-foreground">{c.employeeName}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {c.employeeId ?? "—"}
                       </TableCell>
@@ -265,7 +265,7 @@ export default async function Contractor1099Page({
               <div className="text-muted-foreground">
                 {requiring1099.length} of {contractors.length} contractors require a 1099
               </div>
-              <div className="font-semibold text-white">
+              <div className="font-semibold text-foreground">
                 Total: ${fmt(totalPaid)}
               </div>
             </div>

@@ -188,7 +188,7 @@ export default function DocumentsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Documents</h1>
+          <h1 className="text-2xl font-bold text-foreground">Documents</h1>
           <p className="text-muted-foreground mt-1">Engagement letters, contracts, and signed documents</p>
         </div>
         <Button onClick={openNew} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
@@ -239,7 +239,7 @@ export default function DocumentsPage() {
                     <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-white truncate">{doc.name}</span>
+                        <span className="font-medium text-foreground truncate">{doc.name}</span>
                         <Badge variant="outline" className="text-xs">
                           {DOC_TYPES.find(t => t.value === doc.type)?.label ?? doc.type}
                         </Badge>
@@ -358,7 +358,7 @@ export default function DocumentsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDoc(null)}>Close</Button>
             {viewDoc && viewDoc.status === "DRAFT" && (
-              <Button className="bg-blue-500 hover:bg-blue-400 text-white gap-2" onClick={() => { markSent(viewDoc); setViewDoc(null); }}>
+              <Button className="bg-blue-500 hover:bg-blue-400 text-foreground gap-2" onClick={() => { markSent(viewDoc); setViewDoc(null); }}>
                 <Send className="h-4 w-4" /> Mark as Sent
               </Button>
             )}

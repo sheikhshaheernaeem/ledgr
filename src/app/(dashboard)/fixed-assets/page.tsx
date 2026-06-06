@@ -204,7 +204,7 @@ export default function FixedAssetsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Fixed Asset Register</h1>
+          <h1 className="text-2xl font-bold text-foreground">Fixed Asset Register</h1>
           <p className="text-muted-foreground text-sm mt-1">Track and depreciate your fixed assets</p>
         </div>
         <Button
@@ -224,7 +224,7 @@ export default function FixedAssetsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-white">{totalAssets}</p>
+            <p className="text-2xl font-bold text-foreground">{totalAssets}</p>
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
@@ -287,14 +287,14 @@ export default function FixedAssetsPage() {
                         <TableCell>
                           <button
                             onClick={() => toggleRow(asset.id)}
-                            className="text-muted-foreground hover:text-white transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                           </button>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-white">{asset.name}</p>
+                            <p className="font-medium text-foreground">{asset.name}</p>
                             {asset.description && (
                               <p className="text-xs text-muted-foreground truncate max-w-[200px]">{asset.description}</p>
                             )}
@@ -304,7 +304,7 @@ export default function FixedAssetsPage() {
                         <TableCell className="text-muted-foreground text-sm">
                           {new Date(asset.purchaseDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </TableCell>
-                        <TableCell className="text-right text-white">{fmt(asset.purchaseCost)}</TableCell>
+                        <TableCell className="text-right text-foreground">{fmt(asset.purchaseCost)}</TableCell>
                         <TableCell className="text-right text-red-400">{fmt(accumDepr)}</TableCell>
                         <TableCell className="text-right text-emerald-400 font-semibold">{fmt(bookValue)}</TableCell>
                         <TableCell>
@@ -518,7 +518,7 @@ export default function FixedAssetsPage() {
           {deprAsset && (
             <div className="space-y-4 py-2">
               <p className="text-sm text-muted-foreground">
-                Asset: <span className="text-white font-medium">{deprAsset.name}</span>
+                Asset: <span className="text-foreground font-medium">{deprAsset.name}</span>
               </p>
               <p className="text-sm text-muted-foreground">
                 Monthly amount: <span className="text-red-400 font-semibold">

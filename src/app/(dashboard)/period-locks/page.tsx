@@ -107,7 +107,7 @@ export default function PeriodLocksPage() {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Period Locks</h1>
+        <h1 className="text-2xl font-bold text-foreground">Period Locks</h1>
         <p className="text-muted-foreground mt-1">
           Lock closed months to prevent retroactive edits
         </p>
@@ -304,7 +304,7 @@ export default function PeriodLocksPage() {
               className={
                 confirm?.action === "lock"
                   ? "bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
-                  : "bg-red-500 hover:bg-red-400 text-white font-semibold"
+                  : "bg-red-500 hover:bg-red-400 text-foreground font-semibold"
               }
             >
               {acting ? (

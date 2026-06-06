@@ -256,7 +256,7 @@ export default function PayrollPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Payroll</h1>
+          <h1 className="text-2xl font-bold text-foreground">Payroll</h1>
           <p className="text-muted-foreground text-sm mt-1">Manage payroll runs and employee payments</p>
         </div>
         <Button
@@ -317,12 +317,12 @@ export default function PayrollPage() {
                         <TableCell>
                           <button
                             onClick={() => toggleRow(run.id)}
-                            className="text-muted-foreground hover:text-white transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                           </button>
                         </TableCell>
-                        <TableCell className="font-mono text-sm text-white">{run.runNumber}</TableCell>
+                        <TableCell className="font-mono text-sm text-foreground">{run.runNumber}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(run.periodStart).toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
                           {new Date(run.periodEnd).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -330,7 +330,7 @@ export default function PayrollPage() {
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(run.payDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </TableCell>
-                        <TableCell className="text-right text-white">{fmt(run.totalGross)}</TableCell>
+                        <TableCell className="text-right text-foreground">{fmt(run.totalGross)}</TableCell>
                         <TableCell className="text-right text-red-400">{fmt(run.totalTax)}</TableCell>
                         <TableCell className="text-right text-emerald-400 font-semibold">{fmt(run.totalNet)}</TableCell>
                         <TableCell className="text-center text-muted-foreground text-sm">{run.employees.length}</TableCell>
@@ -400,7 +400,7 @@ export default function PayrollPage() {
                                     <TableRow key={emp.id}>
                                       <TableCell className="text-sm">
                                         <div className="flex items-center gap-2">
-                                          <span className="text-white">{emp.employeeName}</span>
+                                          <span className="text-foreground">{emp.employeeName}</span>
                                           {emp.is1099 && (
                                             <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">1099</Badge>
                                           )}
@@ -471,7 +471,7 @@ export default function PayrollPage() {
             {/* Employees */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-white">Employees</h3>
+                <h3 className="text-sm font-semibold text-foreground">Employees</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -631,7 +631,7 @@ export default function PayrollPage() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-xs text-muted-foreground">Total Gross</p>
-                    <p className="text-lg font-bold text-white">{fmt(runTotals.gross)}</p>
+                    <p className="text-lg font-bold text-foreground">{fmt(runTotals.gross)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Total Tax</p>
@@ -687,12 +687,12 @@ export default function PayrollPage() {
             </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to void <span className="text-white font-semibold">{voidRun?.runNumber}</span>? This cannot be undone.
+            Are you sure you want to void <span className="text-foreground font-semibold">{voidRun?.runNumber}</span>? This cannot be undone.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setVoidRun(null)}>Cancel</Button>
             <Button
-              className="bg-red-500 hover:bg-red-400 text-white font-semibold"
+              className="bg-red-500 hover:bg-red-400 text-foreground font-semibold"
               onClick={handleVoid}
               disabled={voiding}
             >

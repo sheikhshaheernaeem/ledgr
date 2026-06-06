@@ -129,7 +129,7 @@ export default function NewJournalEntryPage() {
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-white">New Journal Entry</h1>
+          <h1 className="text-2xl font-bold text-foreground">New Journal Entry</h1>
           <p className="text-muted-foreground mt-1 text-sm">Debits must equal credits before you can save</p>
         </div>
       </div>

@@ -123,7 +123,7 @@ export default function VatReturnsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">VAT / GST Returns</h1>
+          <h1 className="text-2xl font-bold text-foreground">VAT / GST Returns</h1>
           <p className="text-muted-foreground mt-1">
             Track and file your VAT/GST obligations
           </p>
@@ -148,7 +148,7 @@ export default function VatReturnsPage() {
                     VAT Payable — Current Draft
                   </p>
                 </div>
-                <p className="text-3xl font-bold text-white">
+                <p className="text-3xl font-bold text-foreground">
                   ${latestDraft.vatPayable.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -158,7 +158,7 @@ export default function VatReturnsPage() {
               </div>
               <div className="text-right space-y-1 text-sm">
                 <div className="text-muted-foreground">
-                  Sales: <span className="text-white font-medium">
+                  Sales: <span className="text-foreground font-medium">
                     ${latestDraft.totalSales.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -168,7 +168,7 @@ export default function VatReturnsPage() {
                   </span>
                 </div>
                 <div className="text-muted-foreground">
-                  Purchases: <span className="text-white font-medium">
+                  Purchases: <span className="text-foreground font-medium">
                     ${latestDraft.totalPurchases.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -249,7 +249,7 @@ export default function VatReturnsPage() {
                       ${r.vatOnPurchases.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell className="text-right font-bold">
-                      <span className={r.vatPayable >= 0 ? "text-white" : "text-emerald-400"}>
+                      <span className={r.vatPayable >= 0 ? "text-foreground" : "text-emerald-400"}>
                         ${r.vatPayable.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                       </span>
                     </TableCell>

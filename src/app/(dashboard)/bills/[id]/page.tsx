@@ -47,7 +47,7 @@ export default async function BillDetailPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">{bill.billNumber}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{bill.billNumber}</h1>
             <p className="text-muted-foreground mt-1">
               {bill.vendorName}
               {bill.vendorEmail && ` · ${bill.vendorEmail}`}
@@ -70,7 +70,7 @@ export default async function BillDetailPage({
         <Card className="border-border bg-card">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground mb-1">Total</p>
-            <p className="text-lg font-bold text-white">
+            <p className="text-lg font-bold text-foreground">
               ${bill.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
           </CardContent>
@@ -167,7 +167,7 @@ export default async function BillDetailPage({
                 <span>${bill.taxAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
             )}
-            <div className="flex justify-end gap-12 font-bold text-white text-base">
+            <div className="flex justify-end gap-12 font-bold text-foreground text-base">
               <span>Total</span>
               <span>${bill.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
             </div>

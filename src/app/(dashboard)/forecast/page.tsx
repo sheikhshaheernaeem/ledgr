@@ -44,7 +44,7 @@ export default function ForecastPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Cash Flow Forecast</h1>
+          <h1 className="text-2xl font-bold text-foreground">Cash Flow Forecast</h1>
           <p className="text-muted-foreground mt-1">AI-powered 60-day cash flow prediction</p>
         </div>
         <Button onClick={generate} disabled={generating} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">

@@ -171,7 +171,7 @@ export default function ChartOfAccountsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Chart of Accounts</h1>
+          <h1 className="text-2xl font-bold text-foreground">Chart of Accounts</h1>
           <p className="text-muted-foreground mt-1">
             {accounts.length} accounts — {Object.entries(typeCounts).map(([t, c]) => `${c} ${TYPE_MAP[t] ?? t}`).join(", ")}
           </p>

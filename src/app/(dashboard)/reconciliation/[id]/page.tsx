@@ -41,7 +41,7 @@ export default async function ReconciliationDetailPage({ params }: { params: Pro
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Reconciliation</h1>
+          <h1 className="text-2xl font-bold text-foreground">Reconciliation</h1>
           <p className="text-muted-foreground mt-1">
             {reconciliation.bankAccount.name} · {new Date(reconciliation.statementDate).toLocaleDateString()}
           </p>
@@ -56,10 +56,10 @@ export default async function ReconciliationDetailPage({ params }: { params: Pro
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Statement Balance", value: `$${reconciliation.statementBalance.toFixed(2)}`, color: "text-white" },
-          { label: "Matched Balance", value: `$${matchedSum.toFixed(2)}`, color: "text-white" },
+          { label: "Statement Balance", value: `$${reconciliation.statementBalance.toFixed(2)}`, color: "text-foreground" },
+          { label: "Matched Balance", value: `$${matchedSum.toFixed(2)}`, color: "text-foreground" },
           { label: "Difference", value: `$${Math.abs(difference).toFixed(2)}`, color: Math.abs(difference) < 0.01 ? "text-emerald-400" : "text-yellow-400" },
-          { label: "Items Matched", value: `${matched}/${total}`, color: "text-white" },
+          { label: "Items Matched", value: `${matched}/${total}`, color: "text-foreground" },
         ].map(s => (
           <Card key={s.label} className="border-border bg-card">
             <CardContent className="p-4">

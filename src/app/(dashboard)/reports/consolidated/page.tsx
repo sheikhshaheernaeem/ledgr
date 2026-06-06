@@ -82,7 +82,7 @@ export default async function ConsolidatedReportsPage({
               </Button>
             </Link>
           </div>
-          <h1 className="text-2xl font-bold text-white mt-2">Consolidated P&L</h1>
+          <h1 className="text-2xl font-bold text-foreground mt-2">Consolidated P&L</h1>
           <p className="text-muted-foreground mt-1">Year-to-date and quarterly breakdown</p>
         </div>
         <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default async function ConsolidatedReportsPage({
             <Card className="border-emerald-500/20 bg-emerald-500/5">
               <CardContent className="p-4">
                 <p className="text-xs text-emerald-400 uppercase tracking-wide mb-1">Best Month</p>
-                <p className="font-bold text-white">{MONTHS[bestMonth.month - 1]} {selectedYear}</p>
+                <p className="font-bold text-foreground">{MONTHS[bestMonth.month - 1]} {selectedYear}</p>
                 <p className="text-emerald-400 font-semibold">{fmtFull(bestMonth.netProfit)} net profit</p>
               </CardContent>
             </Card>
@@ -160,7 +160,7 @@ export default async function ConsolidatedReportsPage({
             <Card className="border-red-500/20 bg-red-500/5">
               <CardContent className="p-4">
                 <p className="text-xs text-red-400 uppercase tracking-wide mb-1">Worst Month</p>
-                <p className="font-bold text-white">{MONTHS[worstMonth.month - 1]} {selectedYear}</p>
+                <p className="font-bold text-foreground">{MONTHS[worstMonth.month - 1]} {selectedYear}</p>
                 <p className="text-red-400 font-semibold">{fmtFull(worstMonth.netProfit)} net profit</p>
               </CardContent>
             </Card>
@@ -192,7 +192,7 @@ export default async function ConsolidatedReportsPage({
                   const isPast = selectedYear < currentYear || (selectedYear === currentYear && month <= new Date().getMonth() + 1);
                   return (
                     <tr key={month} className="border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors">
-                      <td className="px-6 py-3 font-medium text-white">
+                      <td className="px-6 py-3 font-medium text-foreground">
                         {MONTHS[month - 1]} {selectedYear}
                       </td>
                       <td className="px-4 py-3 text-right text-emerald-400">
@@ -234,7 +234,7 @@ export default async function ConsolidatedReportsPage({
               </tbody>
               <tfoot>
                 <tr className="border-t-2 border-border bg-muted/20">
-                  <td className="px-6 py-3 font-bold text-white uppercase text-xs tracking-wide">
+                  <td className="px-6 py-3 font-bold text-foreground uppercase text-xs tracking-wide">
                     {selectedYear === currentYear ? "YTD Total" : `${selectedYear} Total`}
                   </td>
                   <td className="px-4 py-3 text-right font-bold text-emerald-400">{fmt(ytdIncome)}</td>

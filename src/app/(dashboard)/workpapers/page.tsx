@@ -158,7 +158,7 @@ export default function WorkpapersPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Workpapers</h1>
+          <h1 className="text-2xl font-bold text-foreground">Workpapers</h1>
           <p className="text-muted-foreground mt-1">Audit-ready checklists for period-end close</p>
         </div>
         <Button
@@ -291,7 +291,7 @@ export default function WorkpapersPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-card border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">New Workpaper</DialogTitle>
+            <DialogTitle className="text-foreground">New Workpaper</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -365,7 +365,7 @@ export default function WorkpapersPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="bg-card border-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-white">Delete Workpaper?</DialogTitle>
+            <DialogTitle className="text-foreground">Delete Workpaper?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">This will permanently delete the workpaper and all its items. This cannot be undone.</p>
           <DialogFooter>
