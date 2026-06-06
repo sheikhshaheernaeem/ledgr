@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -53,17 +54,19 @@ export function AdminRoleButton({ userId, currentRole }: { userId: string; curre
         <ChevronDown className="h-3 w-3" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuLabel className="text-xs">Set role to…</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {ROLES.map((role) => (
-          <DropdownMenuItem
-            key={role}
-            onClick={() => changeRole(role)}
-            className={`text-xs cursor-pointer ${role === currentRole ? "text-muted-foreground" : ""}`}
-          >
-            {role === currentRole ? `✓ ${role}` : role}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs">Set role to…</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {ROLES.map((role) => (
+            <DropdownMenuItem
+              key={role}
+              onClick={() => changeRole(role)}
+              className={`text-xs cursor-pointer ${role === currentRole ? "text-muted-foreground" : ""}`}
+            >
+              {role === currentRole ? `✓ ${role}` : role}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
