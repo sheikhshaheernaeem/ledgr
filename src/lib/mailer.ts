@@ -1,13 +1,39 @@
 /**
  * Email provider priority:
- *  1. Brevo (BREVO_API_KEY) — free HTTPS API, sends to any recipient, no domain required
- *  2. Resend (RESEND_API_KEY) — requires verified sender domain for arbitrary recipients
- *  3. Demo mode — console.log only (no keys set)
+ *  1. Gmail SMTP (GMAIL_USER + GMAIL_APP_PASSWORD) — sends to any recipient, no domain required
+ *  2. Brevo (BREVO_API_KEY) — free HTTPS API fallback
+ *  3. Resend (RESEND_API_KEY) — fallback; onboarding@resend.dev only delivers to account owner
+ *  4. Demo mode — console.log only
  */
 
+import nodemailer from "nodemailer";
 import { Resend } from "resend";
 
 // ─── Provider helpers ─────────────────────────────────────────────────────────
+
+async function sendViaGmail(params: {
+  to: string;
+  senderName: string;
+  subject: string;
+  html: string;
+}) {
+  const user = process.env.GMAIL_USER!;
+  const pass = process.env.GMAIL_APP_PASSWORD!;
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user, pass },
+  });
+
+  await transporter.sendMail({
+    from: `"${params.senderName}" <${user}>`,
+    to: params.to,
+    subject: params.subject,
+    html: params.html,
+  });
+}
 
 async function sendViaBrevo(params: {
   to: string;
@@ -64,14 +90,14 @@ function resendFrom(name = "Ledgr") {
   return `"${name}" <onboarding@resend.dev>`;
 }
 
+function hasGmail() {
+  return !!(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
+}
 function hasBrevo() {
   return !!process.env.BREVO_API_KEY;
 }
 function hasResend() {
   return !!process.env.RESEND_API_KEY;
-}
-function isDemoMode() {
-  return !hasBrevo() && !hasResend();
 }
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -97,23 +123,24 @@ async function dispatch(params: {
   subject: string;
   html: string;
 }) {
-  if (isDemoMode()) {
-    console.log(`[EMAIL:demo] to=${params.to} subject="${params.subject}"`);
+  if (hasGmail()) {
+    await sendViaGmail(params);
     return;
   }
   if (hasBrevo()) {
     await sendViaBrevo(params);
     return;
   }
-  // Resend fallback — note: onboarding@resend.dev only delivers to the Resend
-  // account owner's email. Set RESEND_FROM to a verified-domain address for
-  // full delivery.
-  await sendViaResend({
-    to: params.to,
-    from: resendFrom(params.senderName),
-    subject: params.subject,
-    html: params.html,
-  });
+  if (hasResend()) {
+    await sendViaResend({
+      to: params.to,
+      from: resendFrom(params.senderName),
+      subject: params.subject,
+      html: params.html,
+    });
+    return;
+  }
+  console.log(`[EMAIL:demo] to=${params.to} subject="${params.subject}"`);
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
