@@ -25,6 +25,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
+import { usePlaidLink } from "react-plaid-link";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -304,10 +305,48 @@ export default function BankSyncPage() {
   const [connecting, setConnecting] = useState<string | null>(null);
   const [syncing, setSyncing] = useState<string | null>(null);
 
+  // Plaid Link state
+  const [plaidLinkToken, setPlaidLinkToken] = useState<string | null>(null);
+  const [pendingBank, setPendingBank] = useState<{ id: string; name: string } | null>(null);
+
   // multi-step flow state
   const [step, setStep] = useState<Step>("region");
   const [selectedRegion, setSelectedRegion] = useState<(typeof REGIONS)[0] | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+
+  // Plaid Link hook — opens the real bank login popup
+  const { open: openPlaidLink, ready: plaidReady } = usePlaidLink({
+    token: plaidLinkToken ?? "",
+    onSuccess: async (public_token, metadata) => {
+      const institutionName = metadata.institution?.name ?? pendingBank?.name ?? "Bank";
+      const institutionId = metadata.institution?.institution_id ?? pendingBank?.id ?? "";
+      const res = await fetch("/api/plaid/exchange", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicToken: public_token, institutionId, institutionName }),
+      });
+      if (res.ok) {
+        toast.success(`Connected to ${institutionName}`);
+        await loadAccounts();
+        await loadConnections();
+      } else {
+        toast.error("Bank connection failed");
+      }
+      setPlaidLinkToken(null);
+      setPendingBank(null);
+      setConnecting(null);
+    },
+    onExit: () => {
+      setPlaidLinkToken(null);
+      setPendingBank(null);
+      setConnecting(null);
+    },
+  });
+
+  // Open Plaid Link as soon as the token is ready
+  useEffect(() => {
+    if (plaidLinkToken && plaidReady) openPlaidLink();
+  }, [plaidLinkToken, plaidReady, openPlaidLink]);
 
   async function loadAccounts() {
     const res = await fetch("/api/bank-accounts");
@@ -336,8 +375,8 @@ export default function BankSyncPage() {
     const provider = region ? getActiveProvider(region) : "demo";
 
     try {
+      // EU banks — use Nordigen/GoCardless
       if (provider === "nordigen") {
-        // Try Nordigen first
         const res = await fetch("/api/nordigen/connect", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -345,21 +384,21 @@ export default function BankSyncPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.demo) {
-            // Fall through to demo
-          } else if (data.link) {
+          if (!data.demo && data.link) {
             window.location.href = data.link;
             return;
           }
+          // demo fallback — fall through
         }
       }
 
-      // Plaid or demo fallback
+      // US / CA / UK banks — use Plaid (or demo if env vars not set)
       const tokenRes = await fetch("/api/plaid/connect", { method: "POST" });
-      if (!tokenRes.ok) { toast.error("Could not start bank connection"); return; }
-      const { demo } = await tokenRes.json();
+      if (!tokenRes.ok) { toast.error("Could not start bank connection"); setConnecting(null); return; }
+      const { demo, linkToken } = await tokenRes.json();
 
       if (demo) {
+        // No Plaid credentials → generate mock transactions
         const exchangeRes = await fetch("/api/plaid/exchange", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -369,14 +408,22 @@ export default function BankSyncPage() {
             institutionName: bankName,
           }),
         });
-        if (!exchangeRes.ok) { toast.error("Connection failed"); return; }
-        toast.success(`Connected to ${bankName} (demo)`);
-        await loadAccounts();
-        await loadConnections();
+        if (exchangeRes.ok) {
+          toast.success(`Connected to ${bankName} (demo mode)`);
+          await loadAccounts();
+          await loadConnections();
+        } else {
+          toast.error("Connection failed");
+        }
+        setConnecting(null);
       } else {
-        toast.info(`Plaid Link token created. Integrate react-plaid-link to open the Link widget.`, { duration: 6000 });
+        // Real Plaid — open the bank login popup
+        setPendingBank({ id: bankId, name: bankName });
+        setPlaidLinkToken(linkToken); // triggers useEffect → openPlaidLink()
+        // setConnecting stays true until onSuccess / onExit
       }
-    } finally {
+    } catch {
+      toast.error("Connection error");
       setConnecting(null);
     }
   }
