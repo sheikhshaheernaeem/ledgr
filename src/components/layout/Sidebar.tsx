@@ -10,6 +10,8 @@ import {
   BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent,
   ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles, CheckSquare,
   FileMinus, Car, CalendarCheck, UserPlus, TrendingDown, BookKey, FileEdit,
+  Network, Layers, FolderKanban, Box, GitPullRequest, BookCheck, HomeIcon,
+  AlertTriangle, LineChart, PieChart, BarChart3, Send, Brain, Wand2, Users2, Paintbrush,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -65,6 +67,34 @@ const opsNav = [
   { href: "/tax-calendar", icon: CalendarCheck, label: "Tax Calendar" },
 ];
 
+const enterpriseNav = [
+  { href: "/entities", icon: Network, label: "Entities" },
+  { href: "/consolidation", icon: Layers, label: "Consolidation" },
+  { href: "/departments", icon: Building2, label: "Departments" },
+  { href: "/projects", icon: FolderKanban, label: "Projects" },
+  { href: "/inventory", icon: Box, label: "Inventory" },
+  { href: "/approvals/workflows", icon: GitPullRequest, label: "Approval Workflows" },
+  { href: "/revenue-recognition", icon: BookCheck, label: "Revenue Recognition" },
+  { href: "/leases", icon: HomeIcon, label: "Lease Accounting" },
+  { href: "/deferred-tax", icon: Calculator, label: "Deferred Tax" },
+  { href: "/vendor-portal", icon: Send, label: "Vendor Portal" },
+];
+
+const reportsNav = [
+  { href: "/reports/variance", icon: BarChart3, label: "Variance Report" },
+  { href: "/reports/ratios", icon: PieChart, label: "Financial Ratios" },
+  { href: "/reports/custom", icon: FileText, label: "Custom Reports" },
+  { href: "/compliance/sod", icon: Shield, label: "SoD Compliance" },
+  { href: "/integrations", icon: Link2, label: "Integrations" },
+];
+
+const aiNav = [
+  { href: "/ai/anomaly-detection", icon: AlertTriangle, label: "Anomaly Detection" },
+  { href: "/ai/scenarios", icon: LineChart, label: "Scenario Modeling" },
+  { href: "/ai/board-report", icon: Brain, label: "Board Report" },
+  { href: "/ai/cohort-analysis", icon: Users2, label: "Cohort Analysis" },
+];
+
 const firmNav = [
   { href: "/firm", icon: Briefcase, label: "My Firm" },
   { href: "/team", icon: UserPlus, label: "Team Members" },
@@ -72,6 +102,7 @@ const firmNav = [
 
 const systemNav = [
   { href: "/audit-log", icon: Shield, label: "Audit Log" },
+  { href: "/settings/white-label", icon: Paintbrush, label: "White-Label" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -114,6 +145,21 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
         <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">HR & Ops</p>
 
         {opsNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Enterprise</p>
+
+        {enterpriseNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Advanced Reports</p>
+
+        {reportsNav.map(item => <NavItem key={item.href} {...item} />)}
+
+        <Separator className="my-2" />
+        <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">AI Insights</p>
+
+        {aiNav.map(item => <NavItem key={item.href} {...item} />)}
 
         <Separator className="my-2" />
         <p className="text-xs text-muted-foreground uppercase tracking-wide px-3 py-1">Firm</p>

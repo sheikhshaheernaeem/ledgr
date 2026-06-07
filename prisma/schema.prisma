@@ -84,6 +84,25 @@ model User {
   transactionComments TransactionComment[]
   teamMembersOwned    TeamMember[]         @relation("TeamOwner")
   teamMemberOf        TeamMember[]         @relation("TeamMember")
+
+  // Enterprise relations
+  entities             Entity[]
+  departments          Department[]
+  projects             Project[]
+  inventoryItems       InventoryItem[]
+  approvalWorkflows    ApprovalWorkflow[]
+  approvalRequests     ApprovalRequest[]
+  revenueContracts     RevenueContract[]
+  leaseContracts       LeaseContract[]
+  deferredTaxItems     DeferredTaxItem[]
+  customReports        CustomReport[]
+  financialSnapshots   FinancialSnapshot[]
+  sodRules             SodRule[]
+  integrationConfigs   IntegrationConfig[]
+  vendorPortalInvites  VendorPortalInvite[]
+  anomalyFlags         AnomalyFlag[]
+  cashFlowScenarios    CashFlowScenario[]
+  whiteLabelConfig     WhiteLabelConfig?
 }
 
 model EmailVerification {
@@ -152,6 +171,11 @@ model Transaction {
   auditLogs           AuditLog[]
   reconciliationItems ReconciliationItem[]
   comments            TransactionComment[]
+
+  // Enterprise fields
+  entityId    String?
+  departmentId String?
+  projectId    String?
 }
 
 model Report {
@@ -280,6 +304,9 @@ model Invoice {
   exchangeRate       Float?
   baseCurrencyAmount Float?
 
+  // Enterprise fields
+  entityId String?
+
   // Credit note / estimate links (self-relation)
   relatedInvoiceId String?
   relatedInvoice   Invoice?  @relation("InvoiceRelation", fields: [relatedInvoiceId], references: [id])
@@ -323,6 +350,8 @@ model Client {
   invoices  Invoice[]
   documents Document[]
   timeEntries TimeEntry[]
+  projects  Project[]
+  revenueContracts RevenueContract[]
 
   @@index([userId])
 }
@@ -509,6 +538,10 @@ model JournalEntry {
   approvedById    String?
   approvedAt      DateTime?
 
+  // Enterprise fields
+  entityId     String?
+  departmentId String?
+
   lines       JournalEntryLine[]
 
   @@unique([userId, entryNumber])
@@ -556,6 +589,9 @@ model Bill {
   updatedAt   DateTime @updatedAt
 
   lineItems   BillLineItem[]
+
+  // Enterprise fields
+  entityId String?
 
   @@unique([userId, billNumber])
   @@index([userId])
@@ -973,4 +1009,574 @@ model TeamMember {
   @@unique([ownerId, memberId])
   @@index([ownerId])
   @@index([memberId])
+}
+
+// ─── Multi-Entity / Subsidiaries ─────────────────────────────────────────────
+
+model Entity {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  code        String
+  type        String   @default("SUBSIDIARY")
+  parentId    String?
+  parent      Entity?  @relation("EntityHierarchy", fields: [parentId], references: [id])
+  children    Entity[] @relation("EntityHierarchy")
+  currency    String   @default("USD")
+  taxId       String?
+  address     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  interCompanyFrom InterCompanyTransaction[] @relation("ICFrom")
+  interCompanyTo   InterCompanyTransaction[] @relation("ICTo")
+
+  @@unique([userId, code])
+  @@index([userId])
+}
+
+model InterCompanyTransaction {
+  id           String   @id @default(cuid())
+  userId       String
+  fromEntityId String
+  fromEntity   Entity   @relation("ICFrom", fields: [fromEntityId], references: [id])
+  toEntityId   String
+  toEntity     Entity   @relation("ICTo", fields: [toEntityId], references: [id])
+  amount       Float
+  currency     String   @default("USD")
+  description  String
+  date         DateTime
+  eliminated   Boolean  @default(false)
+  eliminatedAt DateTime?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ─── Department / Cost Center ─────────────────────────────────────────────────
+
+model Department {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  code        String
+  description String?
+  managerId   String?
+  parentId    String?
+  parent      Department?  @relation("DeptHierarchy", fields: [parentId], references: [id])
+  children    Department[] @relation("DeptHierarchy")
+  budgetJson  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projects    Project[]
+
+  @@unique([userId, code])
+  @@index([userId])
+}
+
+// ─── Project / Job Costing ────────────────────────────────────────────────────
+
+model Project {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  code         String
+  description  String?
+  clientId     String?
+  client       Client?    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  status       String     @default("ACTIVE")
+  startDate    DateTime?
+  endDate      DateTime?
+  budget       Float?
+  billingType  String     @default("FIXED")
+  hourlyRate   Float?
+  currency     String     @default("USD")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  tasks        ProjectTask[]
+  costs        ProjectCost[]
+
+  @@unique([userId, code])
+  @@index([userId])
+}
+
+model ProjectTask {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  name        String
+  description String?
+  status      String   @default("TODO")
+  assignedTo  String?
+  estimatedHours Float?
+  actualHours    Float?
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model ProjectCost {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  date        DateTime
+  description String
+  category    String   @default("LABOR")
+  amount      Float
+  billable    Boolean  @default(true)
+  invoiced    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+// ─── Inventory ────────────────────────────────────────────────────────────────
+
+model InventoryItem {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sku           String
+  name          String
+  description   String?
+  category      String?
+  unitOfMeasure String   @default("EACH")
+  costMethod    String   @default("FIFO")
+  costPrice     Float    @default(0)
+  sellPrice     Float    @default(0)
+  quantityOnHand Float   @default(0)
+  reorderPoint  Float?
+  reorderQty    Float?
+  assetAccountCode    String?
+  cogsAccountCode     String?
+  revenueAccountCode  String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  movements     InventoryMovement[]
+
+  @@unique([userId, sku])
+  @@index([userId])
+}
+
+model InventoryMovement {
+  id            String        @id @default(cuid())
+  itemId        String
+  item          InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  userId        String
+  date          DateTime
+  type          String
+  quantity      Float
+  unitCost      Float
+  totalCost     Float
+  reference     String?
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  @@index([itemId])
+  @@index([userId])
+}
+
+// ─── Approval Workflows ───────────────────────────────────────────────────────
+
+model ApprovalWorkflow {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  entityType  String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  steps       ApprovalStep[]
+  requests    ApprovalRequest[]
+
+  @@index([userId])
+}
+
+model ApprovalStep {
+  id           String           @id @default(cuid())
+  workflowId   String
+  workflow     ApprovalWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  stepOrder    Int
+  approverRole String
+  approverEmail String?
+  minAmount    Float?
+  maxAmount    Float?
+  createdAt    DateTime         @default(now())
+
+  @@index([workflowId])
+}
+
+model ApprovalRequest {
+  id          String           @id @default(cuid())
+  workflowId  String
+  workflow    ApprovalWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType  String
+  entityId    String
+  currentStep Int              @default(1)
+  status      String           @default("PENDING")
+  submittedBy String
+  amount      Float?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  actions     ApprovalAction[]
+
+  @@index([userId])
+  @@index([entityId])
+}
+
+model ApprovalAction {
+  id          String          @id @default(cuid())
+  requestId   String
+  request     ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  step        Int
+  action      String
+  actorId     String
+  actorEmail  String
+  notes       String?
+  createdAt   DateTime        @default(now())
+
+  @@index([requestId])
+}
+
+// ─── Revenue Recognition (ASC 606) ───────────────────────────────────────────
+
+model RevenueContract {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contractNumber  String
+  clientId        String?
+  client          Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  name            String
+  totalValue      Float
+  currency        String   @default("USD")
+  startDate       DateTime
+  endDate         DateTime?
+  status          String   @default("ACTIVE")
+  recognitionMethod String @default("STRAIGHT_LINE")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  obligations     PerformanceObligation[]
+  schedules       RevenueSchedule[]
+
+  @@unique([userId, contractNumber])
+  @@index([userId])
+}
+
+model PerformanceObligation {
+  id              String          @id @default(cuid())
+  contractId      String
+  contract        RevenueContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  userId          String
+  name            String
+  allocatedValue  Float
+  satisfiedAt     DateTime?
+  status          String          @default("UNSATISFIED")
+  notes           String?
+  createdAt       DateTime        @default(now())
+
+  @@index([contractId])
+}
+
+model RevenueSchedule {
+  id              String          @id @default(cuid())
+  contractId      String
+  contract        RevenueContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  userId          String
+  period          DateTime
+  scheduledAmount Float
+  recognizedAmount Float          @default(0)
+  deferredAmount  Float           @default(0)
+  posted          Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+
+  @@unique([contractId, period])
+  @@index([contractId])
+}
+
+// ─── Lease Accounting (ASC 842) ───────────────────────────────────────────────
+
+model LeaseContract {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaseNumber     String
+  lessorName      String
+  assetDescription String
+  leaseType       String   @default("OPERATING")
+  commencementDate DateTime
+  endDate         DateTime
+  monthlyPayment  Float
+  incrementalBorrowingRate Float @default(0.05)
+  rightOfUseAsset Float    @default(0)
+  leaseLiability  Float    @default(0)
+  remainingLiability Float @default(0)
+  status          String   @default("ACTIVE")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  payments        LeasePayment[]
+  amortizationSchedule LeaseAmortization[]
+
+  @@unique([userId, leaseNumber])
+  @@index([userId])
+}
+
+model LeasePayment {
+  id          String        @id @default(cuid())
+  leaseId     String
+  lease       LeaseContract @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  userId      String
+  paymentDate DateTime
+  amount      Float
+  principal   Float
+  interest    Float
+  balance     Float
+  posted      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  @@index([leaseId])
+}
+
+model LeaseAmortization {
+  id          String        @id @default(cuid())
+  leaseId     String
+  lease       LeaseContract @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  period      DateTime
+  payment     Float
+  interest    Float
+  principal   Float
+  balance     Float
+
+  @@unique([leaseId, period])
+  @@index([leaseId])
+}
+
+// ─── Deferred Tax ─────────────────────────────────────────────────────────────
+
+model DeferredTaxItem {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  type           String   @default("ASSET")
+  description    String?
+  bookValue      Float
+  taxValue       Float
+  temporaryDiff  Float
+  taxRate        Float    @default(0.21)
+  deferredAmount Float
+  period         DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Custom Reports ───────────────────────────────────────────────────────────
+
+model CustomReport {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  reportType  String   @default("TABLE")
+  configJson  String
+  isPublic    Boolean  @default(false)
+  lastRunAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Financial Ratios ─────────────────────────────────────────────────────────
+
+model FinancialSnapshot {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  period           DateTime
+  currentRatio     Float?
+  quickRatio       Float?
+  cashRatio        Float?
+  grossMargin      Float?
+  netMargin        Float?
+  returnOnAssets   Float?
+  returnOnEquity   Float?
+  debtToEquity     Float?
+  debtRatio        Float?
+  interestCoverage Float?
+  assetTurnover    Float?
+  inventoryTurnover Float?
+  receivablesDays  Float?
+  payablesDays     Float?
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, period])
+  @@index([userId])
+}
+
+// ─── Segregation of Duties Rules ─────────────────────────────────────────────
+
+model SodRule {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  action1      String
+  action2      String
+  conflictType String   @default("SEPARATION_REQUIRED")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model SodViolation {
+  id         String   @id @default(cuid())
+  userId     String
+  ruleId     String
+  actorId    String
+  action     String
+  entityId   String
+  detectedAt DateTime @default(now())
+  resolved   Boolean  @default(false)
+  notes      String?
+
+  @@index([userId])
+}
+
+// ─── Integration Configs ──────────────────────────────────────────────────────
+
+model IntegrationConfig {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    String
+  status      String   @default("INACTIVE")
+  credentials String?
+  lastSyncAt  DateTime?
+  config      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, provider])
+  @@index([userId])
+}
+
+// ─── Vendor Portal ────────────────────────────────────────────────────────────
+
+model VendorPortalInvite {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendorName  String
+  vendorEmail String
+  token       String   @unique
+  status      String   @default("PENDING")
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  submissions VendorBillSubmission[]
+
+  @@index([userId])
+}
+
+model VendorBillSubmission {
+  id              String             @id @default(cuid())
+  inviteId        String
+  invite          VendorPortalInvite @relation(fields: [inviteId], references: [id])
+  vendorName      String
+  amount          Float
+  currency        String             @default("USD")
+  dueDate         DateTime
+  description     String
+  attachmentData  String?
+  status          String             @default("SUBMITTED")
+  convertedBillId String?
+  createdAt       DateTime           @default(now())
+
+  @@index([inviteId])
+}
+
+// ─── AI Anomaly Detection ─────────────────────────────────────────────────────
+
+model AnomalyFlag {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactionId String?
+  entityType    String
+  entityId      String
+  reason        String
+  severity      String   @default("MEDIUM")
+  riskScore     Float    @default(0)
+  dismissed     Boolean  @default(false)
+  resolvedAt    DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ─── Cash Flow Scenarios ──────────────────────────────────────────────────────
+
+model CashFlowScenario {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  assumptions  String
+  forecastJson String
+  baselineId   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── White-label Config ───────────────────────────────────────────────────────
+
+model WhiteLabelConfig {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brandName     String?
+  brandLogo     String?
+  primaryColor  String   @default("#0f172a")
+  accentColor   String   @default("#3b82f6")
+  customDomain  String?
+  supportEmail  String?
+  footerText    String?
+  hideVercel    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
