@@ -173,7 +173,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <div className="space-y-3">
             <div className="space-y-1"><Label>Task Name *</Label><Input value={taskForm.name} onChange={e => setTaskForm(f => ({ ...f, name: e.target.value }))} placeholder="Design mockups" /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Status</Label><Select value={taskForm.status} onValueChange={(v: string) => setTaskForm(f => ({ ...f, status: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TODO">To Do</SelectItem><SelectItem value="IN_PROGRESS">In Progress</SelectItem><SelectItem value="DONE">Done</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Status</Label><Select value={taskForm.status} onValueChange={(v: string | null) => setTaskForm(f => ({ ...f, status: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TODO">To Do</SelectItem><SelectItem value="IN_PROGRESS">In Progress</SelectItem><SelectItem value="DONE">Done</SelectItem></SelectContent></Select></div>
               <div className="space-y-1"><Label>Assigned To</Label><Input value={taskForm.assignedTo} onChange={e => setTaskForm(f => ({ ...f, assignedTo: e.target.value }))} placeholder="John Smith" /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -194,7 +194,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <div className="space-y-3">
             <div className="space-y-1"><Label>Description *</Label><Input value={costForm.description} onChange={e => setCostForm(f => ({ ...f, description: e.target.value }))} placeholder="Developer hours - John" /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Category</Label><Select value={costForm.category} onValueChange={(v: string) => setCostForm(f => ({ ...f, category: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LABOR">Labor</SelectItem><SelectItem value="MATERIALS">Materials</SelectItem><SelectItem value="OVERHEAD">Overhead</SelectItem><SelectItem value="SUBCONTRACT">Subcontract</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Category</Label><Select value={costForm.category} onValueChange={(v: string | null) => setCostForm(f => ({ ...f, category: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="LABOR">Labor</SelectItem><SelectItem value="MATERIALS">Materials</SelectItem><SelectItem value="OVERHEAD">Overhead</SelectItem><SelectItem value="SUBCONTRACT">Subcontract</SelectItem></SelectContent></Select></div>
               <div className="space-y-1"><Label>Amount *</Label><Input type="number" value={costForm.amount} onChange={e => setCostForm(f => ({ ...f, amount: e.target.value }))} placeholder="1500" /></div>
             </div>
             <div className="space-y-1"><Label>Date</Label><Input type="date" value={costForm.date} onChange={e => setCostForm(f => ({ ...f, date: e.target.value }))} /></div>

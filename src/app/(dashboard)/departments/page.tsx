@@ -158,7 +158,7 @@ export default function DepartmentsPage() {
             {departments.length > 0 && (
               <div className="space-y-1">
                 <Label>Parent Department</Label>
-                <Select value={form.parentId} onValueChange={(v: string) => setForm(f => ({ ...f, parentId: v }))}>
+                <Select value={form.parentId} onValueChange={(v: string | null) => setForm(f => ({ ...f, parentId: v ?? '' }))}>
                   <SelectTrigger><SelectValue placeholder="No parent" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">No parent</SelectItem>

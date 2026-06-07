@@ -175,7 +175,7 @@ export default function ProjectsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label>Client</Label>
-                <Select value={form.clientId} onValueChange={(v: string) => setForm(f => ({ ...f, clientId: v }))}>
+                <Select value={form.clientId} onValueChange={(v: string | null) => setForm(f => ({ ...f, clientId: v ?? '' }))}>
                   <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">None</SelectItem>
@@ -185,7 +185,7 @@ export default function ProjectsPage() {
               </div>
               <div className="space-y-1">
                 <Label>Department</Label>
-                <Select value={form.departmentId} onValueChange={(v: string) => setForm(f => ({ ...f, departmentId: v }))}>
+                <Select value={form.departmentId} onValueChange={(v: string | null) => setForm(f => ({ ...f, departmentId: v ?? '' }))}>
                   <SelectTrigger><SelectValue placeholder="Select dept" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">None</SelectItem>
@@ -197,7 +197,7 @@ export default function ProjectsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label>Billing Type</Label>
-                <Select value={form.billingType} onValueChange={(v: string) => setForm(f => ({ ...f, billingType: v }))}>
+                <Select value={form.billingType} onValueChange={(v: string | null) => setForm(f => ({ ...f, billingType: v ?? '' }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="FIXED">Fixed Price</SelectItem>

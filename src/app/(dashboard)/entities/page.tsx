@@ -169,7 +169,7 @@ export default function EntitiesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label>Type</Label>
-                <Select value={form.type} onValueChange={(v: string) => setForm(f => ({ ...f, type: v }))}>
+                <Select value={form.type} onValueChange={(v: string | null) => setForm(f => ({ ...f, type: v ?? '' }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PARENT">Parent</SelectItem>
@@ -180,7 +180,7 @@ export default function EntitiesPage() {
               </div>
               <div className="space-y-1">
                 <Label>Currency</Label>
-                <Select value={form.currency} onValueChange={(v: string) => setForm(f => ({ ...f, currency: v }))}>
+                <Select value={form.currency} onValueChange={(v: string | null) => setForm(f => ({ ...f, currency: v ?? '' }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {["USD", "EUR", "GBP", "CAD", "AUD", "JPY", "CHF"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -191,7 +191,7 @@ export default function EntitiesPage() {
             {parents.length > 0 && (
               <div className="space-y-1">
                 <Label>Parent Entity</Label>
-                <Select value={form.parentId} onValueChange={(v: string) => setForm(f => ({ ...f, parentId: v }))}>
+                <Select value={form.parentId} onValueChange={(v: string | null) => setForm(f => ({ ...f, parentId: v ?? '' }))}>
                   <SelectTrigger><SelectValue placeholder="No parent (top level)" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">No parent</SelectItem>

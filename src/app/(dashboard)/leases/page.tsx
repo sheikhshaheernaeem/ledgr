@@ -153,7 +153,7 @@ export default function LeasesPage() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Lease # *</Label><Input value={form.leaseNumber} onChange={e => setForm(f => ({ ...f, leaseNumber: e.target.value }))} placeholder="LEASE-001" /></div>
-              <div className="space-y-1"><Label>Type</Label><Select value={form.leaseType} onValueChange={(v: string) => setForm(f => ({ ...f, leaseType: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="OPERATING">Operating</SelectItem><SelectItem value="FINANCE">Finance</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Type</Label><Select value={form.leaseType} onValueChange={(v: string | null) => setForm(f => ({ ...f, leaseType: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="OPERATING">Operating</SelectItem><SelectItem value="FINANCE">Finance</SelectItem></SelectContent></Select></div>
             </div>
             <div className="space-y-1"><Label>Lessor Name *</Label><Input value={form.lessorName} onChange={e => setForm(f => ({ ...f, lessorName: e.target.value }))} placeholder="ABC Properties LLC" /></div>
             <div className="space-y-1"><Label>Asset Description *</Label><Input value={form.assetDescription} onChange={e => setForm(f => ({ ...f, assetDescription: e.target.value }))} placeholder="Office space at 123 Main St" /></div>

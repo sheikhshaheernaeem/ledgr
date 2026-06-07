@@ -161,10 +161,10 @@ export default function InventoryPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Category</Label><Input value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="Electronics" /></div>
-              <div className="space-y-1"><Label>Unit</Label><Select value={form.unitOfMeasure} onValueChange={(v: string) => setForm(f => ({ ...f, unitOfMeasure: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EACH">Each</SelectItem><SelectItem value="BOX">Box</SelectItem><SelectItem value="KG">KG</SelectItem><SelectItem value="LB">LB</SelectItem><SelectItem value="LITER">Liter</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Unit</Label><Select value={form.unitOfMeasure} onValueChange={(v: string | null) => setForm(f => ({ ...f, unitOfMeasure: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="EACH">Each</SelectItem><SelectItem value="BOX">Box</SelectItem><SelectItem value="KG">KG</SelectItem><SelectItem value="LB">LB</SelectItem><SelectItem value="LITER">Liter</SelectItem></SelectContent></Select></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Cost Method</Label><Select value={form.costMethod} onValueChange={(v: string) => setForm(f => ({ ...f, costMethod: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FIFO">FIFO</SelectItem><SelectItem value="LIFO">LIFO</SelectItem><SelectItem value="WEIGHTED_AVG">Weighted Avg</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Cost Method</Label><Select value={form.costMethod} onValueChange={(v: string | null) => setForm(f => ({ ...f, costMethod: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="FIFO">FIFO</SelectItem><SelectItem value="LIFO">LIFO</SelectItem><SelectItem value="WEIGHTED_AVG">Weighted Avg</SelectItem></SelectContent></Select></div>
               <div className="space-y-1"><Label>Initial Qty</Label><Input type="number" value={form.quantityOnHand} onChange={e => setForm(f => ({ ...f, quantityOnHand: e.target.value }))} /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">

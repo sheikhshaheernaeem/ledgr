@@ -57,7 +57,7 @@ export default function ConsolidationPage() {
           <div className="flex items-end gap-3 flex-wrap">
             <div className="space-y-1">
               <Label>Report Type</Label>
-              <Select value={reportType} onValueChange={setReportType}>
+              <Select value={reportType} onValueChange={(v: string | null) => setReportType(v ?? "")}>
                 <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="PL">P&L Statement</SelectItem>

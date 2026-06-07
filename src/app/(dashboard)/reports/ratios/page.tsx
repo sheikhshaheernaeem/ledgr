@@ -70,11 +70,11 @@ export default function RatiosPage() {
           <div className="flex items-end gap-3">
             <div className="space-y-1">
               <Label>Year</Label>
-              <Select value={year} onValueChange={setYear}><SelectTrigger className="w-28"><SelectValue /></SelectTrigger><SelectContent>{years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent></Select>
+              <Select value={year} onValueChange={(v: string | null) => setYear(v ?? '')}><SelectTrigger className="w-28"><SelectValue /></SelectTrigger><SelectContent>{years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent></Select>
             </div>
             <div className="space-y-1">
               <Label>Month</Label>
-              <Select value={month} onValueChange={setMonth}><SelectTrigger className="w-36"><SelectValue /></SelectTrigger><SelectContent>{MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}</SelectContent></Select>
+              <Select value={month} onValueChange={(v: string | null) => setMonth(v ?? '')}><SelectTrigger className="w-36"><SelectValue /></SelectTrigger><SelectContent>{MONTHS.map((m, i) => <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>)}</SelectContent></Select>
             </div>
             <Button onClick={fetchRatios} disabled={loading}>{loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Calculate Ratios</Button>
           </div>
