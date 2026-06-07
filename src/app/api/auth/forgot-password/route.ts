@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       resetUrl,
     }).catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[email:password-reset] FAILED to=${email} err="${msg}"`);
+      console.error(`[email:password-reset] FAILED to=${email} err="${msg}" GMAIL_USER_SET=${!!process.env.GMAIL_USER} GMAIL_PASS_SET=${!!process.env.GMAIL_APP_PASSWORD}`);
     });
 
     return NextResponse.json({ ok: true });

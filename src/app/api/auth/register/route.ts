@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     // Non-blocking — registration succeeds even if email fails
     sendVerificationEmail({ toEmail: email, toName: name, verifyUrl }).catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[email:verification] FAILED to=${email} err="${msg}"`);
+      console.error(`[email:verification] FAILED to=${email} err="${msg}" GMAIL_USER_SET=${!!process.env.GMAIL_USER} GMAIL_PASS_SET=${!!process.env.GMAIL_APP_PASSWORD}`);
     });
 
     return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });

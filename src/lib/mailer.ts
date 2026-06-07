@@ -25,6 +25,10 @@ async function sendViaGmail(params: {
     port: 465,
     secure: true,
     auth: { user, pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+    tls: { rejectUnauthorized: false },
   });
 
   await transporter.sendMail({
