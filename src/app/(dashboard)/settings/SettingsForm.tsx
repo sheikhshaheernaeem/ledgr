@@ -77,7 +77,8 @@ export default function SettingsForm({
   const [defaultTaxRate, setDefaultTaxRate] = useState(String(initialDefaultTaxRate));
   const [savingLocale, setSavingLocale] = useState(false);
 
-  function handleCountryChange(code: string) {
+  function handleCountryChange(code: string | null) {
+    if (!code) return;
     setCountry(code);
     const cfg = COUNTRIES[code];
     if (cfg) {
