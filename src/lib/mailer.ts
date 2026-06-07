@@ -104,7 +104,7 @@ async function sendViaResend(params: {
 }
 
 function resendFrom(name = "Ledgr") {
-  const custom = process.env.RESEND_FROM;
+  const custom = process.env.RESEND_FROM_EMAIL ?? process.env.RESEND_FROM;
   if (custom) return `"${name}" <${custom}>`;
   return `"${name}" <onboarding@resend.dev>`;
 }
@@ -142,23 +142,53 @@ async function dispatch(params: {
   subject: string;
   html: string;
 }) {
+  const errors: string[] = [];
+
   if (hasGmail()) {
-    await sendViaGmail(params);
-    return;
+    try {
+      await sendViaGmail(params);
+      console.log(`[email] sent via Gmail to=${params.to}`);
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`gmail: ${msg}`);
+      console.error(`[email] Gmail failed, falling back. Reason: ${msg}`);
+    }
   }
+
   if (hasBrevo()) {
-    await sendViaBrevo(params);
-    return;
+    try {
+      await sendViaBrevo(params);
+      console.log(`[email] sent via Brevo to=${params.to}`);
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`brevo: ${msg}`);
+      console.error(`[email] Brevo failed, falling back. Reason: ${msg}`);
+    }
   }
+
   if (hasResend()) {
-    await sendViaResend({
-      to: params.to,
-      from: resendFrom(params.senderName),
-      subject: params.subject,
-      html: params.html,
-    });
-    return;
+    try {
+      await sendViaResend({
+        to: params.to,
+        from: resendFrom(params.senderName),
+        subject: params.subject,
+        html: params.html,
+      });
+      console.log(`[email] sent via Resend to=${params.to}`);
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`resend: ${msg}`);
+      console.error(`[email] Resend failed. Reason: ${msg}`);
+    }
   }
+
+  if (errors.length > 0) {
+    throw new Error(`All email providers failed: ${errors.join(" | ")}`);
+  }
+
   console.log(`[EMAIL:demo] to=${params.to} subject="${params.subject}"`);
 }
 
