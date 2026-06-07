@@ -2,34 +2,21 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-async function getBalanceSheet(userId: string) {
-  const headers = { "Content-Type": "application/json" };
-  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3001";
-  const res = await fetch(`${base}/api/balance-sheet`, {
-    headers: { Cookie: "" },
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-  return res.json();
-}
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+import { getUserLocale } from "@/lib/getUserLocale";
 
 export default async function BalanceSheetPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  // Direct prisma computation for reliability in server component
   const { prisma } = await import("@/lib/db");
   const userId = session.user.id as string;
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000);
 
-  const [transactions, invoices] = await Promise.all([
+  const [transactions, invoices, loc] = await Promise.all([
     prisma.transaction.findMany({ where: { userId, status: "APPROVED" } }),
     prisma.invoice.findMany({ where: { userId, status: { in: ["SENT", "OVERDUE"] } } }),
+    getUserLocale(userId),
   ]);
 
   const cash = transactions.reduce((s, t) => t.type === "CREDIT" ? s + t.amount : s - t.amount, 0);
@@ -44,7 +31,7 @@ export default async function BalanceSheetPage() {
   const Row = ({ label, value, bold }: { label: string; value: number; bold?: boolean }) => (
     <div className={`flex justify-between py-2 ${bold ? "font-bold text-foreground border-t border-border mt-1 pt-3" : "text-sm"}`}>
       <span className={bold ? "" : "text-muted-foreground"}>{label}</span>
-      <span className={value < 0 ? "text-red-400" : bold ? "text-foreground" : "text-foreground"}>{fmt(value)}</span>
+      <span className={value < 0 ? "text-red-400" : bold ? "text-foreground" : "text-foreground"}>{loc.fmt(value)}</span>
     </div>
   );
 
@@ -52,7 +39,7 @@ export default async function BalanceSheetPage() {
     <div className="p-8 max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Balance Sheet</h1>
-        <p className="text-muted-foreground mt-1">As of {now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+        <p className="text-muted-foreground mt-1">As of {loc.fmtDate(now)}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

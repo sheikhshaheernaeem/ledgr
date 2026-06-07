@@ -65,6 +65,14 @@ model User {
   // Notification preferences (JSON)
   notificationPrefs String?
 
+  // Regional / locale settings
+  country        String  @default("US")
+  currency       String  @default("USD")
+  locale         String  @default("en-US")
+  timezone       String  @default("America/New_York")
+  taxName        String  @default("Tax")
+  defaultTaxRate Float   @default(0)
+
   // Firm white-label (JSON)
   firmBranding String?
 

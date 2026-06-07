@@ -24,6 +24,12 @@ export default async function SettingsPage() {
       invoiceBrandColor: true,
       invoiceFooterText: true,
       twoFactorEnabled: true,
+      country: true,
+      currency: true,
+      locale: true,
+      timezone: true,
+      taxName: true,
+      defaultTaxRate: true,
     },
   });
 
@@ -82,6 +88,12 @@ export default async function SettingsPage() {
             initialRevenueGoal={user?.revenueGoal ?? null}
             initialInvoiceBrandColor={user?.invoiceBrandColor ?? "#10b981"}
             initialInvoiceFooterText={user?.invoiceFooterText ?? ""}
+            initialCountry={user?.country ?? "US"}
+            initialCurrency={user?.currency ?? "USD"}
+            initialLocale={user?.locale ?? "en-US"}
+            initialTimezone={user?.timezone ?? "America/New_York"}
+            initialTaxName={user?.taxName ?? "Tax"}
+            initialDefaultTaxRate={user?.defaultTaxRate ?? 0}
           />
         </CardContent>
       </Card>

@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Plus, X, Link, Building2, Palette } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, Save, Plus, X, Link, Building2, Palette, Globe } from "lucide-react";
+import { COUNTRY_LIST, COUNTRIES } from "@/lib/countries";
 
 export default function SettingsForm({
   initialName,
@@ -20,6 +22,12 @@ export default function SettingsForm({
   initialRevenueGoal,
   initialInvoiceBrandColor,
   initialInvoiceFooterText,
+  initialCountry,
+  initialCurrency,
+  initialLocale,
+  initialTimezone,
+  initialTaxName,
+  initialDefaultTaxRate,
 }: {
   initialName: string;
   email: string;
@@ -31,6 +39,12 @@ export default function SettingsForm({
   initialRevenueGoal: number | null;
   initialInvoiceBrandColor: string;
   initialInvoiceFooterText: string;
+  initialCountry: string;
+  initialCurrency: string;
+  initialLocale: string;
+  initialTimezone: string;
+  initialTaxName: string;
+  initialDefaultTaxRate: number;
 }) {
   const [name, setName] = useState(initialName);
   const [paymentLink, setPaymentLink] = useState(initialPaymentLink);
@@ -53,6 +67,43 @@ export default function SettingsForm({
   const [invoiceBrandColor, setInvoiceBrandColor] = useState(initialInvoiceBrandColor || "#10b981");
   const [invoiceFooterText, setInvoiceFooterText] = useState(initialInvoiceFooterText);
   const [savingBranding, setSavingBranding] = useState(false);
+
+  // Region & locale state
+  const [country, setCountry] = useState(initialCountry);
+  const [currency, setCurrency] = useState(initialCurrency);
+  const [locale, setLocale] = useState(initialLocale);
+  const [timezone, setTimezone] = useState(initialTimezone);
+  const [taxName, setTaxName] = useState(initialTaxName);
+  const [defaultTaxRate, setDefaultTaxRate] = useState(String(initialDefaultTaxRate));
+  const [savingLocale, setSavingLocale] = useState(false);
+
+  function handleCountryChange(code: string) {
+    setCountry(code);
+    const cfg = COUNTRIES[code];
+    if (cfg) {
+      setCurrency(cfg.currency);
+      setLocale(cfg.locale);
+      setTimezone(cfg.timezone);
+      setTaxName(cfg.taxName);
+      setDefaultTaxRate(String(cfg.defaultTaxRate));
+    }
+  }
+
+  async function saveLocale() {
+    setSavingLocale(true);
+    const res = await fetch("/api/user/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ country, currency, locale, timezone, taxName, defaultTaxRate: parseFloat(defaultTaxRate) || 0 }),
+    });
+    if (res.ok) {
+      toast.success("Region settings saved — reload the page to see updated formatting");
+      window.location.reload();
+    } else {
+      toast.error("Failed to save region settings");
+    }
+    setSavingLocale(false);
+  }
 
   function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -137,6 +188,60 @@ export default function SettingsForm({
 
   return (
     <div className="space-y-6">
+      {/* Region & Currency */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5"><Globe className="h-4 w-4" /> Region &amp; Currency</h3>
+          <p className="text-xs text-muted-foreground mt-1">Controls currency symbol, date format, number format, and default tax rate across all reports and invoices</p>
+        </div>
+        <div className="space-y-2">
+          <Label>Country</Label>
+          <Select value={country} onValueChange={handleCountryChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select country" />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              {COUNTRY_LIST.map(c => (
+                <SelectItem key={c.code} value={c.code}>
+                  {c.flag} {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label>Currency</Label>
+            <Input value={currency} onChange={e => setCurrency(e.target.value.toUpperCase())} placeholder="USD" maxLength={3} />
+          </div>
+          <div className="space-y-2">
+            <Label>Tax Label</Label>
+            <Input value={taxName} onChange={e => setTaxName(e.target.value)} placeholder="VAT" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label>Default Tax Rate (%)</Label>
+            <Input type="number" min="0" max="100" step="0.1" value={defaultTaxRate} onChange={e => setDefaultTaxRate(e.target.value)} placeholder="0" />
+          </div>
+          <div className="space-y-2">
+            <Label>Timezone</Label>
+            <Input value={timezone} onChange={e => setTimezone(e.target.value)} placeholder="America/New_York" />
+          </div>
+        </div>
+        <div className="rounded-lg bg-muted/40 border border-border px-4 py-3 text-xs text-muted-foreground space-y-1">
+          <p className="font-medium text-foreground">Preview with current settings:</p>
+          <p>Currency: {new Intl.NumberFormat(locale, { style: "currency", currency: currency || "USD" }).format(12345.67)}</p>
+          <p>Date: {new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(new Date())}</p>
+          <p>Tax: {taxName || "Tax"} @ {defaultTaxRate}%</p>
+        </div>
+        <Button onClick={saveLocale} disabled={savingLocale} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
+          {savingLocale ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Region Settings
+        </Button>
+      </div>
+
+      <Separator />
+
       {/* Company Profile */}
       <div className="space-y-4">
         <div>

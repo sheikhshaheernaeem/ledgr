@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
+import { getUserLocale } from "@/lib/getUserLocale";
+import { formatDate } from "@/lib/format";
 
 export default async function InvoicePrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,16 +15,16 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
   });
   if (!inv) notFound();
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id as string },
-    select: { name: true, email: true, paymentLink: true, companyName: true, companyAddress: true, companyLogo: true },
-  });
+  const [user, loc] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id as string },
+      select: { name: true, email: true, paymentLink: true, companyName: true, companyAddress: true, companyLogo: true },
+    }),
+    getUserLocale(session.user.id as string),
+  ]);
 
-  const CURRENCY_SYMBOLS: Record<string, string> = {
-    USD: "$", EUR: "€", GBP: "£", PKR: "₨", CAD: "C$", AUD: "A$", AED: "د.إ",
-  };
-  const symbol = CURRENCY_SYMBOLS[inv.currency ?? "USD"] ?? (inv.currency + " ");
-  const fmt = (n: number) => `${symbol}${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmt = loc.fmt;
+  const fmtDate = (d: Date | string) => formatDate(d, loc.locale, loc.timezone);
 
   return (
     <html lang="en">
@@ -110,9 +112,9 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
         </div>
 
         <div className="dates">
-          <div className="date-item"><span>Issue Date</span><strong>{new Date(inv.issueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</strong></div>
-          <div className="date-item"><span>Due Date</span><strong>{new Date(inv.dueDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</strong></div>
-          {inv.paidAt && <div className="date-item"><span>Paid On</span><strong style={{ color: "#059669" }}>{new Date(inv.paidAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</strong></div>}
+          <div className="date-item"><span>Issue Date</span><strong>{fmtDate(inv.issueDate)}</strong></div>
+          <div className="date-item"><span>Due Date</span><strong>{fmtDate(inv.dueDate)}</strong></div>
+          {inv.paidAt && <div className="date-item"><span>Paid On</span><strong style={{ color: "#059669" }}>{fmtDate(inv.paidAt)}</strong></div>}
         </div>
 
         <table>
@@ -150,7 +152,7 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
             <div className="totals-row"><span style={{ color: "#dc2626" }}>Discount</span><span style={{ color: "#dc2626" }}>-{fmt(inv.discountAmount)}</span></div>
           )}
           <div className="totals-row"><span style={{ color: "#666" }}>Subtotal</span><span>{fmt(inv.subtotal)}</span></div>
-          {inv.taxRate > 0 && <div className="totals-row"><span style={{ color: "#666" }}>Tax ({inv.taxRate}%)</span><span>{fmt(inv.taxAmount)}</span></div>}
+          {inv.taxRate > 0 && <div className="totals-row"><span style={{ color: "#666" }}>{loc.taxName} ({inv.taxRate}%)</span><span>{fmt(inv.taxAmount)}</span></div>}
           <div className="totals-row total"><span>Total</span><span>{fmt(inv.total)}</span></div>
         </div>
 

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, MoreHorizontal, Loader2, Receipt, CheckCheck, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Bill {
   id: string;
@@ -35,18 +36,12 @@ const statusStyle: Record<string, string> = {
   VOID: "border-zinc-500/30 text-zinc-400",
 };
 
-const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: "$", EUR: "€", GBP: "£", PKR: "₨", CAD: "C$", AUD: "A$", AED: "د.إ",
-};
-
-function currencySymbol(currency: string): string {
-  return CURRENCY_SYMBOLS[currency] ?? (currency + " ");
-}
 
 const FILTERS = ["All", "Pending", "Paid", "Overdue"] as const;
 type Filter = (typeof FILTERS)[number];
 
 export default function BillsPage() {
+  const { fmt, fmtDate } = useLocale();
   const [bills, setBills] = useState<Bill[]>([]);
   const [filter, setFilter] = useState<Filter>("All");
   const [loading, setLoading] = useState(true);
@@ -102,7 +97,7 @@ export default function BillsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Bills</h1>
           <p className="text-muted-foreground mt-1">
-            {outstandingCount} outstanding — ${outstanding.toLocaleString("en-US", { minimumFractionDigits: 2 })} due
+            {outstandingCount} outstanding — {fmt(outstanding)} due
           </p>
         </div>
         <Link href="/bills/new">
@@ -179,14 +174,13 @@ export default function BillsPage() {
                       )}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(bill.issueDate).toLocaleDateString()}
+                      {fmtDate(bill.issueDate)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {new Date(bill.dueDate).toLocaleDateString()}
+                      {fmtDate(bill.dueDate)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {currencySymbol(bill.currency ?? "USD")}
-                      {bill.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      {fmt(bill.total)}
                     </TableCell>
                     <TableCell>
                       <Badge

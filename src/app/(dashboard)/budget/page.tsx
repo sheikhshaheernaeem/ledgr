@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Save } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface BudgetRow { category: string; budgeted: number; actual: number; variance: number; }
 
@@ -17,6 +18,7 @@ const CATEGORIES = [
 ];
 
 export default function BudgetPage() {
+  const { fmt } = useLocale();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -106,9 +108,9 @@ export default function BudgetPage() {
                         onChange={e => setEdits(p => ({ ...p, [cat]: e.target.value }))}
                         className="h-7 text-xs text-right" />
                     </div>
-                    <div className="col-span-2 text-right text-sm">{actual > 0 ? `$${actual.toFixed(0)}` : "—"}</div>
+                    <div className="col-span-2 text-right text-sm">{actual > 0 ? fmt(actual) : "—"}</div>
                     <div className={`col-span-2 text-right text-sm font-medium ${variance < 0 ? "text-red-400" : variance > 0 ? "text-emerald-400" : "text-muted-foreground"}`}>
-                      {budgeted > 0 ? `${variance >= 0 ? "+" : ""}$${variance.toFixed(0)}` : "—"}
+                      {budgeted > 0 ? `${variance >= 0 ? "+" : ""}${fmt(Math.abs(variance))}` : "—"}
                     </div>
                     <div className="col-span-3">
                       {budgeted > 0 ? (
@@ -122,10 +124,10 @@ export default function BudgetPage() {
               })}
               <div className="grid grid-cols-12 gap-4 items-center py-3 px-2 font-bold text-foreground border-t border-border mt-2">
                 <div className="col-span-3 text-sm">Total</div>
-                <div className="col-span-2 text-right text-sm">${totalBudgeted.toFixed(0)}</div>
-                <div className="col-span-2 text-right text-sm">${totalActual.toFixed(0)}</div>
+                <div className="col-span-2 text-right text-sm">{fmt(totalBudgeted)}</div>
+                <div className="col-span-2 text-right text-sm">{fmt(totalActual)}</div>
                 <div className={`col-span-2 text-right text-sm ${totalBudgeted - totalActual < 0 ? "text-red-400" : "text-emerald-400"}`}>
-                  {totalBudgeted > 0 ? `${totalBudgeted - totalActual >= 0 ? "+" : ""}$${(totalBudgeted - totalActual).toFixed(0)}` : "—"}
+                  {totalBudgeted > 0 ? `${totalBudgeted - totalActual >= 0 ? "+" : ""}${fmt(Math.abs(totalBudgeted - totalActual))}` : "—"}
                 </div>
                 <div className="col-span-3" />
               </div>

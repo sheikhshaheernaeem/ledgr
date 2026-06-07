@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, XCircle } from "lucide-react";
 import PrintButton from "./PrintButton";
+import { getUserLocale } from "@/lib/getUserLocale";
 
 interface TrialBalanceRow {
   accountId: string;
@@ -46,10 +47,6 @@ const TYPE_BADGE: Record<string, string> = {
   EXPENSE: "border-red-500/30 text-red-400",
 };
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2 });
-}
-
 function getDefaultDates() {
   const now = new Date();
   const y = now.getFullYear();
@@ -73,9 +70,11 @@ async function fetchTrialBalance(startDate: string, endDate: string): Promise<Tr
 async function TrialBalanceContent({
   startDate,
   endDate,
+  fmtFn,
 }: {
   startDate: string;
   endDate: string;
+  fmtFn: (n: number) => string;
 }) {
   let data: TrialBalanceData;
   try {
@@ -103,7 +102,7 @@ async function TrialBalanceContent({
           <div className="flex items-center gap-2 text-red-400 text-sm font-medium">
             <XCircle className="h-5 w-5" />
             Trial balance is NOT balanced — difference of{" "}
-            {fmt(Math.abs(data.totalDebit - data.totalCredit))}
+            {fmtFn(Math.abs(data.totalDebit - data.totalCredit))}
           </div>
         )}
         <span className="text-muted-foreground text-xs">
@@ -151,14 +150,14 @@ async function TrialBalanceContent({
                             <TableCell className="text-sm">{row.name}</TableCell>
                             <TableCell className="text-right font-mono text-sm">
                               {row.debit > 0 ? (
-                                <span className="text-red-400">{fmt(row.debit)}</span>
+                                <span className="text-red-400">{fmtFn(row.debit)}</span>
                               ) : (
                                 <span className="text-muted-foreground">—</span>
                               )}
                             </TableCell>
                             <TableCell className="text-right font-mono text-sm">
                               {row.credit > 0 ? (
-                                <span className="text-emerald-400">{fmt(row.credit)}</span>
+                                <span className="text-emerald-400">{fmtFn(row.credit)}</span>
                               ) : (
                                 <span className="text-muted-foreground">—</span>
                               )}
@@ -171,10 +170,10 @@ async function TrialBalanceContent({
                             {TYPE_LABELS[type] ?? type} subtotal
                           </TableCell>
                           <TableCell className="text-right font-mono text-sm font-medium text-red-400">
-                            {sectionDebit > 0 ? fmt(sectionDebit) : "—"}
+                            {sectionDebit > 0 ? fmtFn(sectionDebit) : "—"}
                           </TableCell>
                           <TableCell className="text-right font-mono text-sm font-medium text-emerald-400">
-                            {sectionCredit > 0 ? fmt(sectionCredit) : "—"}
+                            {sectionCredit > 0 ? fmtFn(sectionCredit) : "—"}
                           </TableCell>
                         </TableRow>
                       </React.Fragment>
@@ -194,10 +193,10 @@ async function TrialBalanceContent({
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-mono text-red-400">
-                    {fmt(data.totalDebit)}
+                    {fmtFn(data.totalDebit)}
                   </TableCell>
                   <TableCell className="text-right font-mono text-emerald-400">
-                    {fmt(data.totalCredit)}
+                    {fmtFn(data.totalCredit)}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -221,6 +220,7 @@ export default async function TrialBalancePage({
   const defaults = getDefaultDates();
   const startDate = sp.startDate ?? defaults.startDate;
   const endDate = sp.endDate ?? defaults.endDate;
+  const loc = await getUserLocale(session.user.id as string);
 
   return (
     <div className="p-8 space-y-6">
@@ -288,7 +288,7 @@ export default async function TrialBalancePage({
           </div>
         }
       >
-        <TrialBalanceContent startDate={startDate} endDate={endDate} />
+        <TrialBalanceContent startDate={startDate} endDate={endDate} fmtFn={loc.fmt} />
       </Suspense>
     </div>
   );

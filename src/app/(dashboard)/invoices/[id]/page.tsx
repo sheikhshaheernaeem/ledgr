@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import InvoiceActions from "./InvoiceActions";
 import RecordPayment from "./RecordPayment";
 import Link from "next/link";
+import { getUserLocale } from "@/lib/getUserLocale";
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
@@ -23,10 +24,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   if (!session?.user) redirect("/login");
 
   const { id } = await params;
-  const inv = await prisma.invoice.findFirst({
-    where: { id, userId: session.user.id as string },
-    include: { lineItems: true },
-  });
+  const [inv, loc] = await Promise.all([
+    prisma.invoice.findFirst({
+      where: { id, userId: session.user.id as string },
+      include: { lineItems: true },
+    }),
+    getUserLocale(session.user.id as string),
+  ]);
   if (!inv) notFound();
 
   // Late fee calculation for overdue invoices
@@ -59,9 +63,9 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
       </div>
 
       <div className="grid grid-cols-3 gap-4 text-sm">
-        <div><p className="text-muted-foreground">Issue Date</p><p className="font-medium">{new Date(inv.issueDate).toLocaleDateString()}</p></div>
-        <div><p className="text-muted-foreground">Due Date</p><p className="font-medium">{new Date(inv.dueDate).toLocaleDateString()}</p></div>
-        {inv.paidAt && <div><p className="text-muted-foreground">Paid On</p><p className="font-medium text-emerald-400">{new Date(inv.paidAt).toLocaleDateString()}</p></div>}
+        <div><p className="text-muted-foreground">Issue Date</p><p className="font-medium">{loc.fmtDate(inv.issueDate)}</p></div>
+        <div><p className="text-muted-foreground">Due Date</p><p className="font-medium">{loc.fmtDate(inv.dueDate)}</p></div>
+        {inv.paidAt && <div><p className="text-muted-foreground">Paid On</p><p className="font-medium text-emerald-400">{loc.fmtDate(inv.paidAt)}</p></div>}
       </div>
 
       <Card className="border-border bg-card">
@@ -82,13 +86,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 <TableRow key={item.id}>
                   <TableCell>{item.description}</TableCell>
                   <TableCell className="text-center">{item.quantity}</TableCell>
-                  <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">{loc.fmt(item.unitPrice)}</TableCell>
                   {inv.lineItems.some(li => li.discount > 0) && (
                     <TableCell className="text-right">
                       {item.discount > 0 ? <span className="text-red-400">{item.discount}%</span> : <span className="text-muted-foreground">—</span>}
                     </TableCell>
                   )}
-                  <TableCell className="text-right">${item.amount.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">{loc.fmt(item.amount)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -98,22 +102,22 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
             {inv.discountAmount > 0 && (
               <div className="flex justify-end gap-12 text-muted-foreground">
                 <span>Gross Subtotal</span>
-                <span>${(inv.subtotal + inv.discountAmount).toFixed(2)}</span>
+                <span>{loc.fmt(inv.subtotal + inv.discountAmount)}</span>
               </div>
             )}
             {inv.discountAmount > 0 && (
               <div className="flex justify-end gap-12 text-red-400">
                 <span>Discount</span>
-                <span>-${inv.discountAmount.toFixed(2)}</span>
+                <span>-{loc.fmt(inv.discountAmount)}</span>
               </div>
             )}
-            <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>${inv.subtotal.toFixed(2)}</span></div>
-            {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>Tax ({inv.taxRate}%)</span><span>${inv.taxAmount.toFixed(2)}</span></div>}
-            <div className="flex justify-end gap-12 font-bold text-foreground text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>
+            <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>{loc.fmt(inv.subtotal)}</span></div>
+            {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>{loc.taxName} ({inv.taxRate}%)</span><span>{loc.fmt(inv.taxAmount)}</span></div>}
+            <div className="flex justify-end gap-12 font-bold text-foreground text-base"><span>Total</span><span>{loc.fmt(inv.total)}</span></div>
             {lateFeeAmount !== null && (
               <div className="flex justify-end gap-12 text-red-400 text-xs mt-1">
                 <span>Late fee accrued ({inv.lateFeePct}%/mo)</span>
-                <span>${lateFeeAmount.toFixed(2)}</span>
+                <span>{loc.fmt(lateFeeAmount)}</span>
               </div>
             )}
           </div>

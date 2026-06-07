@@ -8,27 +8,25 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { PrintButton } from "./PrintButton";
+import { getUserLocale } from "@/lib/getUserLocale";
 
-const fmt = (n: number) =>
-  n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-function LineItem({ label, amount, indent = false }: { label: string; amount: number; indent?: boolean }) {
+function LineItem({ label, amount, indent = false, fmtFn }: { label: string; amount: number; indent?: boolean; fmtFn: (n: number) => string }) {
   return (
     <div className={`flex items-center justify-between py-1.5 text-sm ${indent ? "pl-4" : ""}`}>
       <span className={indent ? "text-muted-foreground" : "text-foreground"}>{label}</span>
       <span className={amount < 0 ? "text-red-400" : amount > 0 ? "text-emerald-400" : "text-muted-foreground"}>
-        {amount >= 0 ? "" : "-"}${fmt(Math.abs(amount))}
+        {amount < 0 ? "-" : ""}{fmtFn(Math.abs(amount))}
       </span>
     </div>
   );
 }
 
-function SectionTotal({ label, amount }: { label: string; amount: number }) {
+function SectionTotal({ label, amount, fmtFn }: { label: string; amount: number; fmtFn: (n: number) => string }) {
   return (
     <div className="flex items-center justify-between pt-3 mt-2 border-t border-border">
       <span className="font-semibold text-foreground text-sm">{label}</span>
       <span className={`font-bold text-base ${amount < 0 ? "text-red-400" : "text-emerald-400"}`}>
-        {amount >= 0 ? "" : "-"}${fmt(Math.abs(amount))}
+        {amount < 0 ? "-" : ""}{fmtFn(Math.abs(amount))}
       </span>
     </div>
   );
@@ -53,7 +51,7 @@ export default async function CashFlowStatementPage({
     ? new Date(year, monthParam, 0, 23, 59, 59, 999)
     : new Date(year, 11, 31, 23, 59, 59, 999);
 
-  const [transactions, invoices, bills, fixedAssets, depreciationEntries, reports] =
+  const [transactions, invoices, bills, fixedAssets, depreciationEntries, reports, loc] =
     await Promise.all([
       prisma.transaction.findMany({
         where: { userId, date: { gte: periodStart, lte: periodEnd }, status: "APPROVED" },
@@ -84,7 +82,10 @@ export default async function CashFlowStatementPage({
         where: { userId, year, ...(monthParam ? { month: monthParam } : {}) },
         select: { totalIncome: true, totalExpenses: true, netProfit: true },
       }),
+      getUserLocale(userId),
     ]);
+
+  const fmt = loc.fmt;
 
   // ── Operating ────────────────────────────────────────────────────────────────
   let netIncome = 0;
@@ -202,13 +203,13 @@ export default async function CashFlowStatementPage({
               <p className="text-xs text-muted-foreground">Cash generated from core business operations</p>
             </CardHeader>
             <CardContent>
-              <LineItem label="Net Income" amount={netIncome} />
+              <LineItem label="Net Income" amount={netIncome} fmtFn={fmt} />
               <p className="text-xs text-muted-foreground mt-2 mb-1">Adjustments for non-cash items:</p>
-              <LineItem label="Depreciation & Amortization" amount={depreciation} indent />
+              <LineItem label="Depreciation & Amortization" amount={depreciation} indent fmtFn={fmt} />
               <p className="text-xs text-muted-foreground mt-2 mb-1">Changes in working capital:</p>
-              <LineItem label="Change in Accounts Receivable" amount={arChange} indent />
-              <LineItem label="Change in Accounts Payable" amount={apChange} indent />
-              <SectionTotal label="Net Cash from Operating Activities" amount={operatingTotal} />
+              <LineItem label="Change in Accounts Receivable" amount={arChange} indent fmtFn={fmt} />
+              <LineItem label="Change in Accounts Payable" amount={apChange} indent fmtFn={fmt} />
+              <SectionTotal label="Net Cash from Operating Activities" amount={operatingTotal} fmtFn={fmt} />
             </CardContent>
           </Card>
 
@@ -224,13 +225,13 @@ export default async function CashFlowStatementPage({
             <CardContent>
               {fixedAssets.length > 0 ? (
                 fixedAssets.map((asset, i) => (
-                  <LineItem key={i} label={`Purchase: ${asset.name}`} amount={-asset.purchaseCost} indent />
+                  <LineItem key={i} label={`Purchase: ${asset.name}`} amount={-asset.purchaseCost} indent fmtFn={fmt} />
                 ))
               ) : (
-                <LineItem label="Fixed Asset Purchases" amount={0} indent />
+                <LineItem label="Fixed Asset Purchases" amount={0} indent fmtFn={fmt} />
               )}
-              <LineItem label="Proceeds from Asset Disposals" amount={disposals} indent />
-              <SectionTotal label="Net Cash from Investing Activities" amount={investingTotal} />
+              <LineItem label="Proceeds from Asset Disposals" amount={disposals} indent fmtFn={fmt} />
+              <SectionTotal label="Net Cash from Investing Activities" amount={investingTotal} fmtFn={fmt} />
             </CardContent>
           </Card>
 
@@ -244,10 +245,10 @@ export default async function CashFlowStatementPage({
               <p className="text-xs text-muted-foreground">Cash from debt and equity transactions</p>
             </CardHeader>
             <CardContent>
-              <LineItem label="Owner's Draws" amount={-ownerDraws} indent />
-              <LineItem label="Loan Proceeds" amount={loanProceeds} indent />
-              <LineItem label="Loan Repayments" amount={-loanPayments} indent />
-              <SectionTotal label="Net Cash from Financing Activities" amount={financingTotal} />
+              <LineItem label="Owner&apos;s Draws" amount={-ownerDraws} indent fmtFn={fmt} />
+              <LineItem label="Loan Proceeds" amount={loanProceeds} indent fmtFn={fmt} />
+              <LineItem label="Loan Repayments" amount={-loanPayments} indent fmtFn={fmt} />
+              <SectionTotal label="Net Cash from Financing Activities" amount={financingTotal} fmtFn={fmt} />
             </CardContent>
           </Card>
 
@@ -261,7 +262,7 @@ export default async function CashFlowStatementPage({
                 </div>
                 <div className="text-right">
                   <p className={`text-3xl font-bold ${netChange >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {netChange >= 0 ? "+" : "-"}${fmt(Math.abs(netChange))}
+                    {netChange >= 0 ? "+" : "-"}{fmt(Math.abs(netChange))}
                   </p>
                   <Badge
                     variant="outline"
@@ -276,19 +277,19 @@ export default async function CashFlowStatementPage({
                 <div>
                   <p className="text-muted-foreground">Operating</p>
                   <p className={`font-semibold mt-0.5 ${operatingTotal >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {operatingTotal >= 0 ? "+" : "-"}${fmt(Math.abs(operatingTotal))}
+                    {operatingTotal >= 0 ? "+" : "-"}{fmt(Math.abs(operatingTotal))}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Investing</p>
                   <p className={`font-semibold mt-0.5 ${investingTotal >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {investingTotal >= 0 ? "+" : "-"}${fmt(Math.abs(investingTotal))}
+                    {investingTotal >= 0 ? "+" : "-"}{fmt(Math.abs(investingTotal))}
                   </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Financing</p>
                   <p className={`font-semibold mt-0.5 ${financingTotal >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {financingTotal >= 0 ? "+" : "-"}${fmt(Math.abs(financingTotal))}
+                    {financingTotal >= 0 ? "+" : "-"}{fmt(Math.abs(financingTotal))}
                   </p>
                 </div>
               </div>

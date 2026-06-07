@@ -8,7 +8,7 @@ export async function PATCH(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id as string;
 
-  const { name, currentPassword, newPassword, paymentLink, customCategories, companyName, companyAddress, companyLogo, revenueGoal } = await req.json();
+  const { name, currentPassword, newPassword, paymentLink, customCategories, companyName, companyAddress, companyLogo, revenueGoal, country, currency, locale, timezone, taxName, defaultTaxRate } = await req.json();
 
   if (newPassword) {
     if (!currentPassword) return NextResponse.json({ error: "Current password required" }, { status: 400 });
@@ -27,6 +27,12 @@ export async function PATCH(req: NextRequest) {
     if (companyAddress !== undefined) data.companyAddress = companyAddress;
     if (companyLogo !== undefined) data.companyLogo = companyLogo;
     if (revenueGoal !== undefined) data.revenueGoal = revenueGoal;
+    if (country !== undefined) data.country = country;
+    if (currency !== undefined) data.currency = currency;
+    if (locale !== undefined) data.locale = locale;
+    if (timezone !== undefined) data.timezone = timezone;
+    if (taxName !== undefined) data.taxName = taxName;
+    if (defaultTaxRate !== undefined) data.defaultTaxRate = defaultTaxRate;
     await prisma.user.update({ where: { id: userId }, data });
   }
 

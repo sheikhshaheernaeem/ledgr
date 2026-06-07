@@ -14,9 +14,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { PrintButton } from "./PrintButton";
-
-const fmt = (n: number) =>
-  n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+import { getUserLocale } from "@/lib/getUserLocale";
 
 type AgingBucket = "Current" | "1-30" | "31-60" | "61-90" | "90+";
 
@@ -73,13 +71,17 @@ export default async function APAgingPage({
   const asOfParam = params.asOf;
   const asOf = asOfParam ? new Date(asOfParam + "T23:59:59") : new Date();
 
-  const bills = await prisma.bill.findMany({
-    where: {
-      userId,
-      status: { in: ["PENDING", "OVERDUE"] },
-    },
-    orderBy: { dueDate: "asc" },
-  });
+  const [bills, loc] = await Promise.all([
+    prisma.bill.findMany({
+      where: {
+        userId,
+        status: { in: ["PENDING", "OVERDUE"] },
+      },
+      orderBy: { dueDate: "asc" },
+    }),
+    getUserLocale(userId),
+  ]);
+  const fmt = loc.fmt;
 
   const rows: AgingRow[] = bills.map((bill) => {
     const balance = bill.total - (bill.amountPaid ?? 0);
@@ -114,11 +116,7 @@ export default async function APAgingPage({
   );
 
   const totalOutstanding = rows.reduce((s, r) => s + r.balance, 0);
-  const asOfDisplay = asOf.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const asOfDisplay = loc.fmtDate(asOf);
   const asOfValue = asOfParam ?? new Date().toISOString().slice(0, 10);
 
   return (
@@ -248,10 +246,10 @@ export default async function APAgingPage({
                       </Link>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {row.issueDate.toLocaleDateString("en-US")}
+                      {loc.fmtDate(row.issueDate)}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {row.dueDate.toLocaleDateString("en-US")}
+                      {loc.fmtDate(row.dueDate)}
                     </TableCell>
                     <TableCell className="text-right text-sm">
                       {fmt(row.total)}
@@ -319,11 +317,7 @@ export default async function APAgingPage({
       <div className="hidden print:block mt-8 text-xs text-muted-foreground border-t border-border pt-4">
         <p>
           Report generated on{" "}
-          {new Date().toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })}{" "}
+          {loc.fmtDate(new Date())}{" "}
           · Ledgr AP Aging Report
         </p>
       </div>

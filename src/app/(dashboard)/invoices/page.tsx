@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,19 +32,13 @@ const statusStyle: Record<string, string> = {
   OVERDUE: "border-red-500/30 text-red-400",
 };
 
-const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: "$", EUR: "€", GBP: "£", PKR: "₨", CAD: "C$", AUD: "A$", AED: "د.إ",
-};
-
-function currencySymbol(currency: string): string {
-  return CURRENCY_SYMBOLS[currency] ?? (currency + " ");
-}
 
 const FILTERS = ["All", "Outstanding", "Paid"] as const;
 type Filter = (typeof FILTERS)[number];
 type TabType = "invoices" | "quotes";
 
 export default function InvoicesPage() {
+  const { fmt, fmtDate } = useLocale();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filter, setFilter] = useState<Filter>("All");
   const [tab, setTab] = useState<TabType>("invoices");
@@ -144,8 +139,7 @@ export default function InvoicesPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Invoices</h1>
           <p className="text-muted-foreground mt-1">
-            {invoices.filter(i => ["SENT", "OVERDUE"].includes(i.status) && i.type !== "QUOTE").length} outstanding — $
-            {outstanding.toLocaleString("en-US", { minimumFractionDigits: 2 })} due
+            {invoices.filter(i => ["SENT", "OVERDUE"].includes(i.status) && i.type !== "QUOTE").length} outstanding — {fmt(outstanding)} due
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -286,10 +280,10 @@ export default function InvoicesPage() {
                       <p className="text-sm">{inv.clientName}</p>
                       {inv.clientEmail && <p className="text-xs text-muted-foreground">{inv.clientEmail}</p>}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{new Date(inv.issueDate).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{new Date(inv.dueDate).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{fmtDate(inv.issueDate)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{fmtDate(inv.dueDate)}</TableCell>
                     <TableCell className="text-right font-medium">
-                      {currencySymbol(inv.currency ?? "USD")}{inv.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      {fmt(inv.total)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`text-xs ${statusStyle[inv.status] ?? ""}`}>{inv.status}</Badge>

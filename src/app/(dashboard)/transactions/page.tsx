@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight, Camera, ExternalLink, PlusCircle } from "lucide-react";
 import { QuickExpenseDialog } from "@/components/expenses/QuickExpenseDialog";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const CATEGORIES = [
   "Revenue","Cost of Goods Sold","Payroll & Benefits","Rent & Utilities",
@@ -34,6 +35,7 @@ interface OcrData { vendor: string; date: string; amount: string; description: s
 interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; notes: string; }
 
 export default function TransactionsPage() {
+  const { fmt, fmtDate } = useLocale();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -409,7 +411,7 @@ export default function TransactionsPage() {
                   {transactions.map(tx => (
                     <TableRow key={tx.id} className={selected.has(tx.id) ? "bg-emerald-500/5" : ""}>
                       <TableCell><input type="checkbox" checked={selected.has(tx.id)} onChange={() => toggleSelect(tx.id)} className="rounded border-border" /></TableCell>
-                      <TableCell className="text-muted-foreground text-sm whitespace-nowrap">{new Date(tx.date).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm whitespace-nowrap">{fmtDate(tx.date)}</TableCell>
                       <TableCell className="max-w-[220px]">
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-sm">{tx.description}</p>
@@ -433,7 +435,7 @@ export default function TransactionsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <span className={`font-medium text-sm ${tx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}`}>
-                          {tx.type === "CREDIT" ? "+" : "-"}${tx.amount.toFixed(2)}
+                          {tx.type === "CREDIT" ? "+" : "-"}{fmt(tx.amount)}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -497,7 +499,7 @@ export default function TransactionsPage() {
             <div className="space-y-4 py-2">
               <div className="p-3 rounded-lg bg-muted/30 text-sm">
                 <p className="font-medium truncate">{editTx.description}</p>
-                <p className="text-muted-foreground text-xs mt-0.5">{new Date(editTx.date).toLocaleDateString()} · <span className={editTx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}>{editTx.type === "CREDIT" ? "+" : "-"}${editTx.amount.toFixed(2)}</span></p>
+                <p className="text-muted-foreground text-xs mt-0.5">{fmtDate(editTx.date)} · <span className={editTx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}>{editTx.type === "CREDIT" ? "+" : "-"}{fmt(editTx.amount)}</span></p>
               </div>
 
               <div className="space-y-2">

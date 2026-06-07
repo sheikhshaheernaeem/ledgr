@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { LogOut, MailWarning } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
@@ -8,6 +9,7 @@ import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { AIChatBubble } from "@/components/ai/AIChatBubble";
 import { ResendVerificationButton } from "@/components/layout/ResendVerificationButton";
+import { LocaleProvider } from "@/components/providers/LocaleProvider";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -21,7 +23,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const isAdmin = (session.user as { role?: string }).role === "ADMIN";
   const emailVerified = (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed ?? false;
 
+  const localeSettings = await prisma.user.findUnique({
+    where: { id: session.user.id as string },
+    select: { country: true, currency: true, locale: true, timezone: true, taxName: true, defaultTaxRate: true },
+  });
+
   return (
+    <LocaleProvider settings={localeSettings ?? {}}>
     <div className="min-h-screen bg-background flex">
       {/* Sidebar — desktop only */}
       <aside className="hidden md:flex w-60 border-r border-border flex-col py-6 px-4 shrink-0">
@@ -76,5 +84,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </main>
       <AIChatBubble />
     </div>
+    </LocaleProvider>
   );
 }

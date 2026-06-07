@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { getUserLocale } from "@/lib/getUserLocale";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ export default async function DashboardPage() {
   const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59);
 
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const loc = await getUserLocale(userId);
 
   const [transactions, reports, openInvoices, bankAccounts, lastYearTxs, userGoal, recurringTxs, monthIncomeTxs] = await Promise.all([
     prisma.transaction.findMany({ where: { userId }, orderBy: { date: "desc" }, take: 8 }),
@@ -77,11 +80,11 @@ export default async function DashboardPage() {
   };
 
   const stats = [
-    { label: "Total Income", value: `$${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", yoy: formatPct(incomePct), yoyPositive: incomePct === null ? null : incomePct >= 0 },
-    { label: "Total Expenses", value: `$${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10", yoy: formatPct(expensesPct), yoyPositive: expensesPct === null ? null : expensesPct < 0 },
-    { label: "Net Profit", value: `${netProfit >= 0 ? "+" : ""}$${Math.abs(netProfit).toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: DollarSign, color: netProfit >= 0 ? "text-emerald-400" : "text-red-400", bg: netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10", yoy: formatPct(netPct), yoyPositive: netPct === null ? null : netPct >= 0 },
+    { label: "Total Income", value: loc.fmt(totalIncome), icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", yoy: formatPct(incomePct), yoyPositive: incomePct === null ? null : incomePct >= 0 },
+    { label: "Total Expenses", value: loc.fmt(totalExpenses), icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10", yoy: formatPct(expensesPct), yoyPositive: expensesPct === null ? null : expensesPct < 0 },
+    { label: "Net Profit", value: (netProfit >= 0 ? "+" : "") + loc.fmt(Math.abs(netProfit)), icon: DollarSign, color: netProfit >= 0 ? "text-emerald-400" : "text-red-400", bg: netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10", yoy: formatPct(netPct), yoyPositive: netPct === null ? null : netPct >= 0 },
     { label: "Transactions", value: `${transactions.length}`, icon: ArrowLeftRight, color: "text-blue-400", bg: "bg-blue-500/10", sub: pendingCount > 0 ? `${pendingCount} pending review` : "All reviewed", yoy: null, yoyPositive: null },
-    { label: "Open Invoices", value: `$${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, icon: Receipt, color: "text-yellow-400", bg: "bg-yellow-500/10", sub: `${openInvoices.length} unpaid`, yoy: null, yoyPositive: null },
+    { label: "Open Invoices", value: loc.fmt(openInvoiceTotal), icon: Receipt, color: "text-yellow-400", bg: "bg-yellow-500/10", sub: `${openInvoices.length} unpaid`, yoy: null, yoyPositive: null },
   ];
 
   const onboardingSteps = [
@@ -185,7 +188,7 @@ export default async function DashboardPage() {
                   <div className={`h-full rounded-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  ${monthIncome.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} of ${revenueGoal.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} goal
+                  {loc.fmt(monthIncome)} of {loc.fmt(revenueGoal)} goal
                 </p>
               </CardContent>
             </Card>
@@ -223,13 +226,13 @@ export default async function DashboardPage() {
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">Amount Overdue</p>
                   <p className="text-xl font-bold text-red-400">
-                    ${totalOverdueAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {loc.fmt(totalOverdueAmount)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Open AR</p>
                   <p className="text-lg font-semibold text-amber-400">
-                    ${openInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {loc.fmt(openInvoiceTotal)}
                   </p>
                 </div>
                 <Link href="/invoices">
@@ -299,7 +302,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-3 ml-4 shrink-0">
                       <span className={`text-sm font-medium ${tx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}`}>
-                        {tx.type === "CREDIT" ? "+" : "-"}${tx.amount.toFixed(2)}
+                        {tx.type === "CREDIT" ? "+" : "-"}{loc.fmt(tx.amount)}
                       </span>
                       <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">recurring</Badge>
                     </div>
@@ -333,11 +336,11 @@ export default async function DashboardPage() {
                     <div key={tx.id} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-foreground truncate">{tx.description}</p>
-                        <p className="text-xs text-muted-foreground">{tx.category ?? "Uncategorized"} · {new Date(tx.date).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground">{tx.category ?? "Uncategorized"} · {loc.fmtDate(tx.date)}</p>
                       </div>
                       <div className="flex items-center gap-3 ml-4">
                         <span className={`text-sm font-medium ${tx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}`}>
-                          {tx.type === "CREDIT" ? "+" : "-"}${tx.amount.toFixed(2)}
+                          {tx.type === "CREDIT" ? "+" : "-"}{loc.fmt(tx.amount)}
                         </span>
                         <Badge variant="outline" className={`text-xs ${tx.status === "APPROVED" ? "border-emerald-500/30 text-emerald-400" : tx.status === "EDITED" ? "border-blue-500/30 text-blue-400" : "border-yellow-500/30 text-yellow-400"}`}>
                           {tx.status.toLowerCase()}
@@ -373,14 +376,14 @@ export default async function DashboardPage() {
                       <div className="p-3 rounded-lg border border-border hover:border-emerald-500/30 transition-colors cursor-pointer">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-medium text-foreground">
-                            {new Date(report.year, report.month - 1).toLocaleString("default", { month: "long", year: "numeric" })}
+                            {new Date(report.year, report.month - 1).toLocaleString(loc.locale, { month: "long", year: "numeric" })}
                           </span>
                           <Badge variant="outline" className={`text-xs ${report.status === "SENT" ? "border-emerald-500/30 text-emerald-400" : report.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" : "border-yellow-500/30 text-yellow-400"}`}>
                             {report.status.toLowerCase()}
                           </Badge>
                         </div>
                         <p className={`text-sm font-medium ${report.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                          {report.netProfit >= 0 ? "+" : ""}${Math.abs(report.netProfit).toLocaleString()}
+                          {report.netProfit >= 0 ? "+" : ""}{loc.fmt(Math.abs(report.netProfit))}
                         </p>
                       </div>
                     </Link>
