@@ -132,7 +132,7 @@ export default function WorkflowsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Workflow Name *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Invoice Approval" /></div>
-              <div className="space-y-1"><Label>Entity Type</Label><Select value={form.entityType} onValueChange={v => setForm(f => ({ ...f, entityType: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="INVOICE">Invoice</SelectItem><SelectItem value="BILL">Bill</SelectItem><SelectItem value="JOURNAL_ENTRY">Journal Entry</SelectItem><SelectItem value="EXPENSE_CLAIM">Expense Claim</SelectItem><SelectItem value="PAYROLL">Payroll</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Entity Type</Label><Select value={form.entityType} onValueChange={v => setForm(f => ({ ...f, entityType: v ?? '' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="INVOICE">Invoice</SelectItem><SelectItem value="BILL">Bill</SelectItem><SelectItem value="JOURNAL_ENTRY">Journal Entry</SelectItem><SelectItem value="EXPENSE_CLAIM">Expense Claim</SelectItem><SelectItem value="PAYROLL">Payroll</SelectItem></SelectContent></Select></div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2"><Label>Approval Steps</Label><Button size="sm" variant="outline" onClick={addStep}><Plus className="h-3.5 w-3.5 mr-1" />Add Step</Button></div>
