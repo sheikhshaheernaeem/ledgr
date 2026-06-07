@@ -157,7 +157,7 @@ export default function RevenueRecognitionPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Total Value *</Label><Input type="number" value={form.totalValue} onChange={e => setForm(f => ({ ...f, totalValue: e.target.value }))} placeholder="120000" /></div>
-              <div className="space-y-1"><Label>Recognition Method</Label><Select value={form.recognitionMethod} onValueChange={v => setForm(f => ({ ...f, recognitionMethod: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="STRAIGHT_LINE">Straight-Line</SelectItem><SelectItem value="MILESTONE">Milestone</SelectItem><SelectItem value="PERCENTAGE_COMPLETE">% Complete</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Recognition Method</Label><Select value={form.recognitionMethod} onValueChange={(v: string) => setForm(f => ({ ...f, recognitionMethod: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="STRAIGHT_LINE">Straight-Line</SelectItem><SelectItem value="MILESTONE">Milestone</SelectItem><SelectItem value="PERCENTAGE_COMPLETE">% Complete</SelectItem></SelectContent></Select></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Start Date *</Label><Input type="date" value={form.startDate} onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} /></div>

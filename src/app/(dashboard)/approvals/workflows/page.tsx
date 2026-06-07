@@ -141,7 +141,7 @@ export default function WorkflowsPage() {
                   <div key={idx} className="border rounded-lg p-3 space-y-2">
                     <div className="flex items-center justify-between"><p className="text-sm font-medium">Step {step.stepOrder}</p>{form.steps.length > 1 && <Button size="icon" variant="ghost" onClick={() => removeStep(idx)} className="h-6 w-6 text-destructive"><Trash2 className="h-3 w-3" /></Button>}</div>
                     <div className="grid grid-cols-2 gap-2">
-                      <Select value={step.approverRole} onValueChange={v => setForm(f => ({ ...f, steps: f.steps.map((s, i) => i === idx ? { ...s, approverRole: v } : s) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="OWNER">Owner</SelectItem><SelectItem value="ADMIN">Admin</SelectItem><SelectItem value="CFO">CFO</SelectItem><SelectItem value="CONTROLLER">Controller</SelectItem><SelectItem value="MANAGER">Manager</SelectItem></SelectContent></Select>
+                      <Select value={step.approverRole} onValueChange={v => setForm(f => ({ ...f, steps: f.steps.map((s, i) => i === idx ? { ...s, approverRole: v ?? '' } : s) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="OWNER">Owner</SelectItem><SelectItem value="ADMIN">Admin</SelectItem><SelectItem value="CFO">CFO</SelectItem><SelectItem value="CONTROLLER">Controller</SelectItem><SelectItem value="MANAGER">Manager</SelectItem></SelectContent></Select>
                       <Input value={step.approverEmail} onChange={e => setForm(f => ({ ...f, steps: f.steps.map((s, i) => i === idx ? { ...s, approverEmail: e.target.value } : s) }))} placeholder="approver@company.com" />
                     </div>
                   </div>

@@ -137,7 +137,7 @@ export default function DeferredTaxPage() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1"><Label>Name *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Accelerated depreciation" /></div>
-              <div className="space-y-1"><Label>Type</Label><Select value={form.type} onValueChange={v => setForm(f => ({ ...f, type: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ASSET">Deferred Tax Asset</SelectItem><SelectItem value="LIABILITY">Deferred Tax Liability</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Type</Label><Select value={form.type} onValueChange={(v: string) => setForm(f => ({ ...f, type: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ASSET">Deferred Tax Asset</SelectItem><SelectItem value="LIABILITY">Deferred Tax Liability</SelectItem></SelectContent></Select></div>
             </div>
             <div className="space-y-1"><Label>Description</Label><Input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} /></div>
             <div className="grid grid-cols-3 gap-3">

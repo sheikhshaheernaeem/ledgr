@@ -146,7 +146,7 @@ export default function InventoryItemPage({ params }: { params: Promise<{ id: st
           <DialogHeader><DialogTitle>Record Movement</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1"><Label>Type</Label><Select value={form.type} onValueChange={v => setForm(f => ({ ...f, type: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="PURCHASE">Purchase</SelectItem><SelectItem value="SALE">Sale</SelectItem><SelectItem value="ADJUSTMENT">Adjustment</SelectItem><SelectItem value="TRANSFER">Transfer</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1"><Label>Type</Label><Select value={form.type} onValueChange={(v: string) => setForm(f => ({ ...f, type: v }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="PURCHASE">Purchase</SelectItem><SelectItem value="SALE">Sale</SelectItem><SelectItem value="ADJUSTMENT">Adjustment</SelectItem><SelectItem value="TRANSFER">Transfer</SelectItem></SelectContent></Select></div>
               <div className="space-y-1"><Label>Date</Label><Input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">

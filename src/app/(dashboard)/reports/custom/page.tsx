@@ -143,7 +143,7 @@ export default function CustomReportsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label>Data Source</Label>
-                <Select value={form.dataSource} onValueChange={v => setForm(f => ({ ...f, dataSource: v }))}>
+                <Select value={form.dataSource} onValueChange={(v: string) => setForm(f => ({ ...f, dataSource: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="transactions">Transactions</SelectItem>
@@ -155,7 +155,7 @@ export default function CustomReportsPage() {
               </div>
               <div className="space-y-1">
                 <Label>Report Type</Label>
-                <Select value={form.reportType} onValueChange={v => setForm(f => ({ ...f, reportType: v }))}>
+                <Select value={form.reportType} onValueChange={(v: string) => setForm(f => ({ ...f, reportType: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="TABLE">Table</SelectItem>
