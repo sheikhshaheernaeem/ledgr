@@ -9,33 +9,13 @@ export async function GET() {
   }
 
   const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  // Fetch all APPROVED transactions up to today
-  const transactions = await prisma.transaction.findMany({
-    where: {
-      userId: session.user.id,
-      status: "APPROVED",
-      date: { lte: now },
-    },
-    select: {
-      amount: true,
-      type: true,
-      category: true,
-      date: true,
-    },
+  // BUG 6 FIX: Cash from bank account current balances, not transaction net flows
+  const bankAccounts = await prisma.bankAccount.findMany({
+    where: { userId: session.user.id },
+    select: { currentBalance: true },
   });
-
-  // Cash: sum of all CREDIT - sum of all DEBIT
-  const totalCredits = transactions
-    .filter((t) => t.type === "CREDIT")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalDebits = transactions
-    .filter((t) => t.type === "DEBIT")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const cash = totalCredits - totalDebits;
+  const cash = bankAccounts.reduce((sum, acct) => sum + acct.currentBalance, 0);
 
   // Accounts Receivable: sum of total on SENT + OVERDUE invoices
   const arInvoices = await prisma.invoice.findMany({
@@ -43,22 +23,65 @@ export async function GET() {
       userId: session.user.id,
       status: { in: ["SENT", "OVERDUE"] },
     },
-    select: { total: true },
+    select: { total: true, amountPaid: true },
   });
 
-  const accountsReceivable = arInvoices.reduce((sum, inv) => sum + inv.total, 0);
-
-  const totalAssets = cash + accountsReceivable;
-
-  // Accounts Payable: sum of DEBIT transactions in Professional Services or Banking & Fees in last 30 days
-  const apTransactions = transactions.filter(
-    (t) =>
-      t.type === "DEBIT" &&
-      (t.category === "Professional Services" || t.category === "Banking & Fees") &&
-      new Date(t.date) >= thirtyDaysAgo
+  const accountsReceivable = arInvoices.reduce(
+    (sum, inv) => sum + (inv.total - inv.amountPaid),
+    0
   );
 
-  const accountsPayable = apTransactions.reduce((sum, t) => sum + t.amount, 0);
+  // BUG 7 FIX: Fixed assets — net book value = purchaseCost - salvageValue - accumulated depreciation
+  const fixedAssets = await prisma.fixedAsset.findMany({
+    where: { userId: session.user.id, disposalDate: null },
+    include: { depreciationEntries: true },
+  });
+
+  let totalFixedAssetsNBV = 0;
+  for (const asset of fixedAssets) {
+    const depreciableBase = asset.purchaseCost - asset.salvageValue;
+
+    // Use posted depreciation entries if available; otherwise calculate programmatically
+    const postedDepreciation = asset.depreciationEntries
+      .filter((e) => e.posted)
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    let accumulatedDepreciation: number;
+    if (postedDepreciation > 0) {
+      accumulatedDepreciation = postedDepreciation;
+    } else {
+      // Straight-line: monthly rate × months elapsed since purchase
+      const purchaseDate = new Date(asset.purchaseDate);
+      const monthsElapsed =
+        (now.getFullYear() - purchaseDate.getFullYear()) * 12 +
+        (now.getMonth() - purchaseDate.getMonth());
+      const monthlyDepreciation =
+        asset.usefulLifeMonths > 0 ? depreciableBase / asset.usefulLifeMonths : 0;
+      accumulatedDepreciation = Math.min(
+        monthlyDepreciation * Math.max(0, monthsElapsed),
+        depreciableBase
+      );
+    }
+
+    const nbv = asset.purchaseCost - accumulatedDepreciation;
+    totalFixedAssetsNBV += Math.max(0, nbv);
+  }
+
+  const totalAssets = cash + accountsReceivable + totalFixedAssetsNBV;
+
+  // Accounts Payable: outstanding PENDING/OVERDUE bills
+  const apBills = await prisma.bill.findMany({
+    where: {
+      userId: session.user.id,
+      status: { in: ["PENDING", "OVERDUE"] },
+    },
+    select: { total: true, amountPaid: true },
+  });
+
+  const accountsPayable = apBills.reduce(
+    (sum, bill) => sum + (bill.total - bill.amountPaid),
+    0
+  );
   const totalLiabilities = accountsPayable;
 
   const equity = totalAssets - totalLiabilities;
@@ -68,6 +91,7 @@ export async function GET() {
     assets: {
       cash: parseFloat(cash.toFixed(2)),
       accountsReceivable: parseFloat(accountsReceivable.toFixed(2)),
+      fixedAssets: parseFloat(totalFixedAssetsNBV.toFixed(2)),
       total: parseFloat(totalAssets.toFixed(2)),
     },
     liabilities: {

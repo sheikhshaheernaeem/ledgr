@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const search = searchParams.get("search") ?? "";
   const category = searchParams.get("category") ?? "";
+  const type = searchParams.get("type") ?? "";
   const status = searchParams.get("status") ?? "";
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
 
   if (search) where.description = { contains: search, mode: "insensitive" };
   if (category) where.category = category;
+  if (type) where.type = type;
   if (status) where.status = status;
   if (bankAccountId) where.bankAccountId = bankAccountId;
   if (unreconciled) where.reconciled = false;

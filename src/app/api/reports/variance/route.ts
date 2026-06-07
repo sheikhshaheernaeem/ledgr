@@ -29,11 +29,24 @@ export async function GET(request: Request) {
     },
   });
 
-  // Group actuals by category
+  // Lookup chart of accounts to determine category types (REVENUE vs EXPENSE)
+  const chartOfAccounts = await prisma.chartOfAccount.findMany({
+    where: { userId: session.user.id, isActive: true },
+    select: { name: true, type: true },
+  });
+  const categoryTypeMap: Record<string, string> = {};
+  for (const account of chartOfAccounts) {
+    categoryTypeMap[account.name] = account.type;
+  }
+
+  // Group actuals by category, preserving tx.type for revenue vs expense distinction
   const actualsByCategory: Record<string, number> = {};
+  const categoryTxType: Record<string, string> = {};
   for (const tx of transactions) {
     const cat = tx.category || "Uncategorized";
     actualsByCategory[cat] = (actualsByCategory[cat] || 0) + Math.abs(tx.amount);
+    // Track if this category is primarily CREDIT (revenue) or DEBIT (expense)
+    if (!categoryTxType[cat]) categoryTxType[cat] = tx.type;
   }
 
   // Build variance report
@@ -45,9 +58,18 @@ export async function GET(request: Request) {
   const rows = Array.from(allCategories).map(category => {
     const budgetAmount = budgets.filter(b => b.category === category).reduce((s, b) => s + b.amount, 0);
     const actual = actualsByCategory[category] || 0;
-    const variance = budgetAmount - actual;
+
+    // Determine if this is a revenue or expense category
+    const accountType = categoryTypeMap[category];
+    const isRevenue =
+      accountType === "REVENUE" ||
+      (!accountType && categoryTxType[category] === "CREDIT");
+
+    // Revenue: positive variance = actual exceeded budget (favorable)
+    // Expense: positive variance = actual came in under budget (favorable)
+    const variance = isRevenue ? actual - budgetAmount : budgetAmount - actual;
     const variancePct = budgetAmount > 0 ? (variance / budgetAmount) * 100 : null;
-    const favorable = variance >= 0; // For expenses, under-budget is favorable
+    const favorable = variance >= 0;
 
     return {
       category,
@@ -56,6 +78,7 @@ export async function GET(request: Request) {
       variance,
       variancePct,
       favorable,
+      isRevenue,
     };
   }).sort((a, b) => a.category.localeCompare(b.category));
 
