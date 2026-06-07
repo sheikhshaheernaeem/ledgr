@@ -52,6 +52,38 @@ model User {
   emailVerified        Boolean              @default(false)
   emailVerifications   EmailVerification[]
   passwordResetTokens  PasswordResetToken[]
+
+  // 2FA
+  twoFactorSecret      String?
+  twoFactorEnabled     Boolean @default(false)
+  twoFactorBackupCodes String?
+
+  // Invoice branding
+  invoiceBrandColor String?
+  invoiceFooterText String?
+
+  // Notification preferences (JSON)
+  notificationPrefs String?
+
+  // Firm white-label (JSON)
+  firmBranding String?
+
+  // Stripe billing
+  stripeCustomerId    String?
+  subscriptionStatus  String?
+
+  // New feature relations
+  expenseClaims       ExpenseClaim[]
+  mileageEntries      MileageEntry[]
+  categorizationRules CategorizationRule[]
+  taxCalendarEvents   TaxCalendarEvent[]
+  openingBalances     OpeningBalance[]
+  apiKeys             ApiKey[]
+  webhooks            Webhook[]
+  notifications       Notification[]
+  transactionComments TransactionComment[]
+  teamMembersOwned    TeamMember[]         @relation("TeamOwner")
+  teamMemberOf        TeamMember[]         @relation("TeamMember")
 }
 
 model EmailVerification {
@@ -104,9 +136,22 @@ model Transaction {
   invoice          Invoice? @relation(fields: [invoiceId], references: [id])
   notes            String?
 
+  // Duplicate detection
+  duplicateOfId String?
+
+  // FX / multi-currency
+  exchangeRate        Float?
+  baseCurrencyAmount  Float?
+
+  // Import tracking
+  importId  String?
+  source    String?
+  accountId String?
+
   messages            Message[]
   auditLogs           AuditLog[]
   reconciliationItems ReconciliationItem[]
+  comments            TransactionComment[]
 }
 
 model Report {
@@ -225,7 +270,41 @@ model Invoice {
   lateFeePct        Float    @default(0)
   timeEntries       TimeEntry[]
 
+  // Discount
+  discountAmount Float @default(0)
+
+  // Multi-jurisdiction tax (JSON array of {label, rate, amount})
+  taxLines String?
+
+  // FX
+  exchangeRate       Float?
+  baseCurrencyAmount Float?
+
+  // Credit note / estimate links (self-relation)
+  relatedInvoiceId String?
+  relatedInvoice   Invoice?  @relation("InvoiceRelation", fields: [relatedInvoiceId], references: [id])
+  relatedDocuments Invoice[] @relation("InvoiceRelation")
+
+  // Partial payments
+  payments InvoicePayment[]
+
   @@unique([userId, invoiceNumber])
+}
+
+model InvoicePayment {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  userId      String
+  amount      Float
+  paymentDate DateTime
+  method      String   @default("OTHER")
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([invoiceId])
+  @@index([userId])
 }
 
 model Client {
@@ -256,6 +335,7 @@ model InvoiceLineItem {
   quantity    Float   @default(1)
   unitPrice   Float
   amount      Float
+  discount    Float   @default(0)
   createdAt   DateTime @default(now())
 }
 
@@ -423,6 +503,11 @@ model JournalEntry {
   memo        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Approval workflow
+  pendingApproval Boolean   @default(false)
+  approvedById    String?
+  approvedAt      DateTime?
 
   lines       JournalEntryLine[]
 
@@ -686,4 +771,206 @@ model ManagedClient {
 
   @@unique([accountantId, clientId])
   @@index([accountantId])
+}
+
+// ─── Expense Claims ───────────────────────────────────────────────────────────
+
+model ExpenseClaim {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  claimNumber String
+  description String
+  status      String   @default("DRAFT")
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  paidAt      DateTime?
+  notes       String?
+  totalAmount Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       ExpenseClaimItem[]
+
+  @@index([userId])
+}
+
+model ExpenseClaimItem {
+  id          String       @id @default(cuid())
+  claimId     String
+  claim       ExpenseClaim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  date        DateTime
+  description String
+  category    String?
+  amount      Float
+  receiptData String?
+  createdAt   DateTime     @default(now())
+
+  @@index([claimId])
+}
+
+// ─── Mileage Tracker ─────────────────────────────────────────────────────────
+
+model MileageEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  description String
+  fromAddress String?
+  toAddress   String?
+  miles       Float
+  ratePerMile Float    @default(0.67)
+  amount      Float    @default(0)
+  purpose     String   @default("BUSINESS")
+  clientId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Auto Categorization Rules ───────────────────────────────────────────────
+
+model CategorizationRule {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keyword     String
+  matchType   String   @default("CONTAINS")
+  category    String
+  subcategory String?
+  taxCategory String?
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Tax Calendar ─────────────────────────────────────────────────────────────
+
+model TaxCalendarEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime
+  type        String   @default("FILING")
+  status      String   @default("UPCOMING")
+  amount      Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Opening Balances ─────────────────────────────────────────────────────────
+
+model OpeningBalance {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountCode String
+  accountName String
+  accountType String
+  debit       Float    @default(0)
+  credit      Float    @default(0)
+  asOfDate    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, accountCode])
+  @@index([userId])
+}
+
+// ─── API Keys ─────────────────────────────────────────────────────────────────
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  keyHash    String    @unique
+  prefix     String
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  isActive   Boolean   @default(true)
+  scopes     String    @default("read")
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ─── Webhooks ─────────────────────────────────────────────────────────────────
+
+model Webhook {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url         String
+  events      String
+  secret      String
+  isActive    Boolean   @default(true)
+  description String?
+  lastPingAt  DateTime?
+  failCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+// ─── In-app Notifications ─────────────────────────────────────────────────────
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([userId, readAt])
+}
+
+// ─── Transaction Comments ─────────────────────────────────────────────────────
+
+model TransactionComment {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body          String
+  createdAt     DateTime    @default(now())
+
+  @@index([transactionId])
+  @@index([userId])
+}
+
+// ─── Team Members ─────────────────────────────────────────────────────────────
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       User     @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      User     @relation("TeamMember", fields: [memberId], references: [id], onDelete: Cascade)
+  role        String   @default("VIEWER")
+  permissions String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([ownerId, memberId])
+  @@index([ownerId])
+  @@index([memberId])
 }

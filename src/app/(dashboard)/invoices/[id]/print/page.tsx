@@ -121,6 +121,7 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
               <th>Description</th>
               <th>Qty</th>
               <th>Unit Price</th>
+              {inv.lineItems.some(item => item.discount > 0) && <th style={{ textAlign: "center" }}>Disc %</th>}
               <th>Amount</th>
             </tr>
           </thead>
@@ -130,6 +131,11 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
                 <td>{item.description}</td>
                 <td style={{ textAlign: "center" }}>{item.quantity}</td>
                 <td style={{ textAlign: "right" }}>{fmt(item.unitPrice)}</td>
+                {inv.lineItems.some(li => li.discount > 0) && (
+                  <td style={{ textAlign: "center", color: item.discount > 0 ? "#dc2626" : "#999" }}>
+                    {item.discount > 0 ? `${item.discount}%` : "—"}
+                  </td>
+                )}
                 <td style={{ textAlign: "right" }}>{fmt(item.amount)}</td>
               </tr>
             ))}
@@ -137,6 +143,12 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
         </table>
 
         <div className="totals">
+          {inv.discountAmount > 0 && (
+            <div className="totals-row"><span style={{ color: "#666" }}>Gross Subtotal</span><span>{fmt(inv.subtotal + inv.discountAmount)}</span></div>
+          )}
+          {inv.discountAmount > 0 && (
+            <div className="totals-row"><span style={{ color: "#dc2626" }}>Discount</span><span style={{ color: "#dc2626" }}>-{fmt(inv.discountAmount)}</span></div>
+          )}
           <div className="totals-row"><span style={{ color: "#666" }}>Subtotal</span><span>{fmt(inv.subtotal)}</span></div>
           {inv.taxRate > 0 && <div className="totals-row"><span style={{ color: "#666" }}>Tax ({inv.taxRate}%)</span><span>{fmt(inv.taxAmount)}</span></div>}
           <div className="totals-row total"><span>Total</span><span>{fmt(inv.total)}</span></div>

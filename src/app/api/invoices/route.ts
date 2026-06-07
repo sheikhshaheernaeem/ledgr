@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     taxRate?: number;
     lateFeePct?: number;
     notes?: string;
-    lineItems: Array<{ description: string; quantity: number; unitPrice: number }>;
+    lineItems: Array<{ description: string; quantity: number; unitPrice: number; discount?: number }>;
     isRecurring?: boolean;
     recurringInterval?: string;
     type?: string;
@@ -90,8 +90,12 @@ export async function POST(request: Request) {
 
   // Calculate totals server-side
   const rate = taxRate ?? 0;
+  const discountAmount = lineItems.reduce(
+    (sum, item) => sum + item.quantity * item.unitPrice * ((item.discount ?? 0) / 100),
+    0
+  );
   const subtotal = lineItems.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + item.quantity * item.unitPrice * (1 - (item.discount ?? 0) / 100),
     0
   );
   const taxAmount = subtotal * (rate / 100);
@@ -111,6 +115,7 @@ export async function POST(request: Request) {
       taxAmount,
       subtotal,
       total,
+      discountAmount,
       notes: notes ?? undefined,
       publicToken,
       type: type ?? "INVOICE",
@@ -123,7 +128,8 @@ export async function POST(request: Request) {
           description: item.description,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
-          amount: item.quantity * item.unitPrice,
+          discount: item.discount ?? 0,
+          amount: item.quantity * item.unitPrice * (1 - (item.discount ?? 0) / 100),
         })),
       },
     },

@@ -13,6 +13,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  // If the user still needs to complete 2FA, send them to the challenge page
+  if ((session.user as unknown as { requiresTwoFactor?: boolean }).requiresTwoFactor === true) {
+    redirect("/login/2fa");
+  }
+
   const isAdmin = (session.user as { role?: string }).role === "ADMIN";
   const emailVerified = (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed ?? false;
 

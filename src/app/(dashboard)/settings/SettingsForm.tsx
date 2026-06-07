@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, Plus, X, Link, Building2 } from "lucide-react";
+import { Loader2, Save, Plus, X, Link, Building2, Palette } from "lucide-react";
 
 export default function SettingsForm({
   initialName,
@@ -18,6 +18,8 @@ export default function SettingsForm({
   initialCompanyAddress,
   initialCompanyLogo,
   initialRevenueGoal,
+  initialInvoiceBrandColor,
+  initialInvoiceFooterText,
 }: {
   initialName: string;
   email: string;
@@ -27,6 +29,8 @@ export default function SettingsForm({
   initialCompanyAddress: string;
   initialCompanyLogo: string;
   initialRevenueGoal: number | null;
+  initialInvoiceBrandColor: string;
+  initialInvoiceFooterText: string;
 }) {
   const [name, setName] = useState(initialName);
   const [paymentLink, setPaymentLink] = useState(initialPaymentLink);
@@ -44,6 +48,11 @@ export default function SettingsForm({
   const [revenueGoal, setRevenueGoal] = useState(initialRevenueGoal !== null ? String(initialRevenueGoal) : "");
   const [savingCompany, setSavingCompany] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Invoice branding state
+  const [invoiceBrandColor, setInvoiceBrandColor] = useState(initialInvoiceBrandColor || "#10b981");
+  const [invoiceFooterText, setInvoiceFooterText] = useState(initialInvoiceFooterText);
+  const [savingBranding, setSavingBranding] = useState(false);
 
   function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

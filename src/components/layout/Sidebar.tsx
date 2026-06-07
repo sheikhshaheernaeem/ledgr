@@ -9,6 +9,7 @@ import {
   Users, Calculator, Zap, BarChart2, ScanLine, FolderOpen,
   BookOpen, BookMarked, ListChecks, Clock, Package, Lock, Percent,
   ClipboardList, Briefcase, UserCheck, Wallet, FileCheck, Sparkles, CheckSquare,
+  FileMinus, Car, CalendarCheck, UserPlus, TrendingDown, BookKey, FileEdit,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -23,12 +24,19 @@ const coreNav = [
 
 const financeNav = [
   { href: "/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/estimates", icon: FileEdit, label: "Estimates" },
+  { href: "/credit-notes", icon: FileMinus, label: "Credit Notes" },
   { href: "/receipts", icon: ScanLine, label: "Receipts" },
   { href: "/documents", icon: FolderOpen, label: "Documents" },
   { href: "/clients", icon: Users, label: "Clients" },
   { href: "/accounts", icon: Building2, label: "Bank Accounts" },
   { href: "/balance-sheet", icon: Scale, label: "Balance Sheet" },
+  { href: "/profit-loss", icon: TrendingUp, label: "Profit & Loss" },
+  { href: "/ar-aging", icon: TrendingDown, label: "AR Aging" },
+  { href: "/ap-aging", icon: TrendingDown, label: "AP Aging" },
   { href: "/budget", icon: PiggyBank, label: "Budget vs Actual" },
+  { href: "/expenses", icon: Wallet, label: "Expense Claims" },
+  { href: "/mileage", icon: Car, label: "Mileage" },
   { href: "/tax-summary", icon: Calculator, label: "Tax Summary" },
   { href: "/reconciliation", icon: GitMerge, label: "Reconciliation" },
   { href: "/forecast", icon: TrendingUp, label: "Cash Flow Forecast" },
@@ -37,12 +45,14 @@ const financeNav = [
 
 const accountingNav = [
   { href: "/chart-of-accounts", icon: BookOpen, label: "Chart of Accounts" },
+  { href: "/opening-balances", icon: BookKey, label: "Opening Balances" },
   { href: "/journal-entries", icon: BookMarked, label: "Journal Entries" },
   { href: "/general-ledger", icon: ListChecks, label: "General Ledger" },
   { href: "/trial-balance", icon: Scale, label: "Trial Balance" },
   { href: "/bills", icon: Receipt, label: "Bills (A/P)" },
   { href: "/cash-flow-statement", icon: Wallet, label: "Cash Flow Statement" },
   { href: "/vat-returns", icon: Percent, label: "VAT Returns" },
+  { href: "/tax-calculator", icon: Calculator, label: "Tax Calculator" },
   { href: "/period-locks", icon: Lock, label: "Period Locks" },
   { href: "/workpapers", icon: ClipboardList, label: "Workpapers" },
   { href: "/contractor-1099", icon: FileCheck, label: "1099 Contractors" },
@@ -52,10 +62,12 @@ const opsNav = [
   { href: "/time-tracking", icon: Clock, label: "Time Tracking" },
   { href: "/payroll", icon: UserCheck, label: "Payroll" },
   { href: "/fixed-assets", icon: Package, label: "Fixed Assets" },
+  { href: "/tax-calendar", icon: CalendarCheck, label: "Tax Calendar" },
 ];
 
 const firmNav = [
   { href: "/firm", icon: Briefcase, label: "My Firm" },
+  { href: "/team", icon: UserPlus, label: "Team Members" },
 ];
 
 const systemNav = [

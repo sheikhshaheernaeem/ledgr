@@ -45,11 +45,14 @@ function LoginForm() {
           toast.error("Invalid email or password");
         }
       } else {
-        // Fetch the session to determine the user's role for redirect
+        // Check if 2FA is required
         const sessionRes = await fetch("/api/auth/session");
         const sessionData = sessionRes.ok ? await sessionRes.json() : null;
-        const role = sessionData?.user?.role;
-        router.push("/dashboard");
+        if (sessionData?.user?.requiresTwoFactor) {
+          router.push("/login/2fa");
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       }
     } finally {

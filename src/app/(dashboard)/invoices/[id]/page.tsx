@@ -73,6 +73,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                 <TableHead>Description</TableHead>
                 <TableHead className="text-center">Qty</TableHead>
                 <TableHead className="text-right">Unit Price</TableHead>
+                {inv.lineItems.some(item => item.discount > 0) && <TableHead className="text-right">Disc %</TableHead>}
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
             </TableHeader>
@@ -82,6 +83,11 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                   <TableCell>{item.description}</TableCell>
                   <TableCell className="text-center">{item.quantity}</TableCell>
                   <TableCell className="text-right">${item.unitPrice.toFixed(2)}</TableCell>
+                  {inv.lineItems.some(li => li.discount > 0) && (
+                    <TableCell className="text-right">
+                      {item.discount > 0 ? <span className="text-red-400">{item.discount}%</span> : <span className="text-muted-foreground">—</span>}
+                    </TableCell>
+                  )}
                   <TableCell className="text-right">${item.amount.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
@@ -89,6 +95,18 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
           </Table>
           <Separator className="my-4" />
           <div className="space-y-1 text-sm text-right">
+            {inv.discountAmount > 0 && (
+              <div className="flex justify-end gap-12 text-muted-foreground">
+                <span>Gross Subtotal</span>
+                <span>${(inv.subtotal + inv.discountAmount).toFixed(2)}</span>
+              </div>
+            )}
+            {inv.discountAmount > 0 && (
+              <div className="flex justify-end gap-12 text-red-400">
+                <span>Discount</span>
+                <span>-${inv.discountAmount.toFixed(2)}</span>
+              </div>
+            )}
             <div className="flex justify-end gap-12 text-muted-foreground"><span>Subtotal</span><span>${inv.subtotal.toFixed(2)}</span></div>
             {inv.taxRate > 0 && <div className="flex justify-end gap-12 text-muted-foreground"><span>Tax ({inv.taxRate}%)</span><span>${inv.taxAmount.toFixed(2)}</span></div>}
             <div className="flex justify-end gap-12 font-bold text-foreground text-base"><span>Total</span><span>${inv.total.toFixed(2)}</span></div>

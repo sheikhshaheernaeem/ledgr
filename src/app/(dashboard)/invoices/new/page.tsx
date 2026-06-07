@@ -12,7 +12,7 @@ import { Plus, Trash2, Loader2, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
-interface LineItem { description: string; quantity: string; unitPrice: string; }
+interface LineItem { description: string; quantity: string; unitPrice: string; discount: string; }
 
 export default function NewInvoicePage() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function NewInvoicePage() {
     recurringInterval: "monthly",
     currency: "USD",
   });
-  const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: "1", unitPrice: "" }]);
+  const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: "1", unitPrice: "", discount: "0" }]);
 
   useEffect(() => {
     fetch("/api/invoices/next-number")
@@ -46,10 +46,21 @@ export default function NewInvoicePage() {
   function updateItem(i: number, field: keyof LineItem, val: string) {
     setItems(prev => prev.map((it, idx) => idx === i ? { ...it, [field]: val } : it));
   }
-  function addItem() { setItems(p => [...p, { description: "", quantity: "1", unitPrice: "" }]); }
+  function addItem() { setItems(p => [...p, { description: "", quantity: "1", unitPrice: "", discount: "0" }]); }
   function removeItem(i: number) { setItems(p => p.filter((_, idx) => idx !== i)); }
 
-  const subtotal = items.reduce((s, it) => s + (parseFloat(it.quantity) || 0) * (parseFloat(it.unitPrice) || 0), 0);
+  const subtotal = items.reduce((s, it) => {
+    const qty = parseFloat(it.quantity) || 0;
+    const price = parseFloat(it.unitPrice) || 0;
+    const disc = parseFloat(it.discount) || 0;
+    return s + qty * price * (1 - disc / 100);
+  }, 0);
+  const discountAmount = items.reduce((s, it) => {
+    const qty = parseFloat(it.quantity) || 0;
+    const price = parseFloat(it.unitPrice) || 0;
+    const disc = parseFloat(it.discount) || 0;
+    return s + qty * price * (disc / 100);
+  }, 0);
   const taxRate = parseFloat(form.taxRate) || 0;
   const taxAmount = subtotal * (taxRate / 100);
   const total = subtotal + taxAmount;
@@ -72,6 +83,7 @@ export default function NewInvoicePage() {
             description: it.description,
             quantity: parseFloat(it.quantity) || 1,
             unitPrice: parseFloat(it.unitPrice) || 0,
+            discount: parseFloat(it.discount) || 0,
           })),
         }),
       });
@@ -162,19 +174,21 @@ export default function NewInvoicePage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="grid grid-cols-12 gap-2 text-xs text-muted-foreground px-1">
-              <div className="col-span-5">Description</div>
+              <div className="col-span-4">Description</div>
               <div className="col-span-2 text-center">Qty</div>
               <div className="col-span-2 text-center">Unit Price</div>
+              <div className="col-span-1 text-center">Disc %</div>
               <div className="col-span-2 text-right">Amount</div>
               <div className="col-span-1" />
             </div>
             {items.map((item, i) => (
               <div key={i} className="grid grid-cols-12 gap-2 items-center">
-                <Input className="col-span-5 text-sm" placeholder="Service description" value={item.description} onChange={e => updateItem(i, "description", e.target.value)} />
+                <Input className="col-span-4 text-sm" placeholder="Service description" value={item.description} onChange={e => updateItem(i, "description", e.target.value)} />
                 <Input className="col-span-2 text-sm text-center" type="number" min="0" step="0.01" value={item.quantity} onChange={e => updateItem(i, "quantity", e.target.value)} />
                 <Input className="col-span-2 text-sm" type="number" min="0" step="0.01" placeholder="0.00" value={item.unitPrice} onChange={e => updateItem(i, "unitPrice", e.target.value)} />
+                <Input className="col-span-1 text-sm text-center" type="number" min="0" max="100" step="0.1" placeholder="0" value={item.discount} onChange={e => updateItem(i, "discount", e.target.value)} />
                 <div className="col-span-2 text-right text-sm font-medium">
-                  ${((parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0)).toFixed(2)}
+                  ${((parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0) * (1 - (parseFloat(item.discount) || 0) / 100)).toFixed(2)}
                 </div>
                 <Button type="button" variant="ghost" size="sm" className="col-span-1 px-1" onClick={() => removeItem(i)} disabled={items.length === 1}>
                   <Trash2 className="h-3 w-3 text-muted-foreground" />
@@ -183,6 +197,18 @@ export default function NewInvoicePage() {
             ))}
             <Separator className="my-3" />
             <div className="space-y-1 text-sm text-right">
+              {discountAmount > 0 && (
+                <div className="flex justify-end gap-8 text-muted-foreground">
+                  <span>Gross Subtotal</span>
+                  <span>${(subtotal + discountAmount).toFixed(2)}</span>
+                </div>
+              )}
+              {discountAmount > 0 && (
+                <div className="flex justify-end gap-8 text-red-400">
+                  <span>Discount</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-end gap-8 text-muted-foreground"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
               {taxRate > 0 && <div className="flex justify-end gap-8 text-muted-foreground"><span>Tax ({taxRate}%)</span><span>${taxAmount.toFixed(2)}</span></div>}
               <div className="flex justify-end gap-8 font-bold text-foreground text-base"><span>Total</span><span>${total.toFixed(2)}</span></div>
