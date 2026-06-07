@@ -63,7 +63,28 @@ async function sendViaBrevo(params: {
 }) {
   const key = process.env.BREVO_API_KEY!;
   const senderEmail = process.env.BREVO_FROM ?? "ledgr.notifications@gmail.com";
+  const smtpUser = process.env.BREVO_SMTP_USER;
 
+  // xsmtpsib- keys are SMTP keys — use nodemailer with Brevo SMTP relay
+  // xkeysib- keys are REST API keys — use the HTTP API
+  if (key.startsWith("xsmtpsib-") || smtpUser) {
+    const user = smtpUser ?? senderEmail;
+    const transporter = nodemailer.createTransport({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
+      auth: { user, pass: key },
+    });
+    await transporter.sendMail({
+      from: `"${params.senderName}" <${senderEmail}>`,
+      to: params.to,
+      subject: params.subject,
+      html: params.html,
+    });
+    return;
+  }
+
+  // REST API path for xkeysib- API keys
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {

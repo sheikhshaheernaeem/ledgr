@@ -42,14 +42,16 @@ export async function POST(req: Request) {
 
     const resetUrl = `${getAppUrl(req)}/reset-password?token=${token}`;
 
-    sendPasswordResetEmail({
-      toEmail: email,
-      toName: user.name ?? "there",
-      resetUrl,
-    }).catch((err: unknown) => {
+    try {
+      await sendPasswordResetEmail({
+        toEmail: email,
+        toName: user.name ?? "there",
+        resetUrl,
+      });
+    } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[email:password-reset] FAILED to=${email} err="${msg}" GMAIL_USER_SET=${!!process.env.GMAIL_USER} GMAIL_PASS_SET=${!!process.env.GMAIL_APP_PASSWORD}`);
-    });
+      console.error(`[email:password-reset] FAILED to=${email} err="${msg}"`);
+    }
 
     return NextResponse.json({ ok: true });
   } catch {
