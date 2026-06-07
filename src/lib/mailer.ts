@@ -20,23 +20,38 @@ async function sendViaGmail(params: {
   const user = process.env.GMAIL_USER!;
   const pass = process.env.GMAIL_APP_PASSWORD!;
 
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: { user, pass },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    tls: { rejectUnauthorized: false },
-  });
+  // Try port 587 (STARTTLS) first — more reliable on cloud/serverless
+  // Fall back to port 465 (SSL) if that fails
+  const configs = [
+    { host: "smtp.gmail.com", port: 587, secure: false },
+    { host: "smtp.gmail.com", port: 465, secure: true },
+  ];
 
-  await transporter.sendMail({
-    from: `"${params.senderName}" <${user}>`,
-    to: params.to,
-    subject: params.subject,
-    html: params.html,
-  });
+  let lastError: Error | null = null;
+  for (const cfg of configs) {
+    try {
+      const transporter = nodemailer.createTransport({
+        ...cfg,
+        auth: { user, pass },
+        connectionTimeout: 15000,
+        greetingTimeout: 10000,
+        socketTimeout: 20000,
+        tls: { rejectUnauthorized: false },
+      });
+
+      await transporter.sendMail({
+        from: `"${params.senderName}" <${user}>`,
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+      });
+      return; // success
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      console.error(`[email:gmail] port=${cfg.port} failed: ${lastError.message}`);
+    }
+  }
+  throw lastError;
 }
 
 async function sendViaBrevo(params: {
