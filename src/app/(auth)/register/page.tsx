@@ -16,37 +16,47 @@ import {
 } from "@/components/ui/card";
 import { Loader2, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
 
-// Common domain typo map
-const DOMAIN_TYPOS: Record<string, string> = {
-  "gmal.com": "gmail.com",
-  "gmial.com": "gmail.com",
-  "gmai.com": "gmail.com",
-  "gmali.com": "gmail.com",
-  "gmil.com": "gmail.com",
-  "gamil.com": "gmail.com",
-  "gmaill.com": "gmail.com",
-  "gmailo.com": "gmail.com",
-  "gnail.com": "gmail.com",
-  "gmail.co": "gmail.com",
-  "gmail.con": "gmail.com",
-  "yaho.com": "yahoo.com",
-  "yahooo.com": "yahoo.com",
-  "yaho.co": "yahoo.com",
-  "yahooo.co": "yahoo.com",
-  "yahoo.con": "yahoo.com",
-  "hotmal.com": "hotmail.com",
-  "hotmial.com": "hotmail.com",
-  "hotmai.com": "hotmail.com",
-  "hotmall.com": "hotmail.com",
-  "hotmail.con": "hotmail.com",
-  "outlok.com": "outlook.com",
-  "outloook.com": "outlook.com",
-  "outook.com": "outlook.com",
-  "outlook.con": "outlook.com",
-  "iclod.com": "icloud.com",
-  "icoud.com": "icloud.com",
-  "icloud.con": "icloud.com",
-};
+// Popular domains — fuzzy match against these
+const POPULAR_DOMAINS = [
+  "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
+  "icloud.com", "live.com", "msn.com", "aol.com",
+  "protonmail.com", "ymail.com", "mail.com", "googlemail.com",
+];
+
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1]
+          ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function findDomainTypo(domain: string): string | null {
+  const d = domain.toLowerCase();
+  // Exact match — it's a real domain
+  if (POPULAR_DOMAINS.includes(d)) return null;
+
+  let best: string | null = null;
+  let bestDist = Infinity;
+  for (const popular of POPULAR_DOMAINS) {
+    const dist = levenshtein(d, popular);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = popular;
+    }
+  }
+  // Suggest if close enough (max 3 edits, but tighter for short domains)
+  const threshold = Math.min(3, Math.floor(best!.length / 3));
+  return bestDist <= threshold && bestDist > 0 ? best : null;
+}
 
 const EMAIL_RE =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
@@ -57,11 +67,13 @@ function validateEmail(email: string): {
   suggestion?: string;
 } {
   if (!email) return { valid: false };
-
   if (!email.includes("@"))
     return { valid: false, error: "Must include @" };
 
-  const [local, domain] = email.split("@");
+  const parts = email.split("@");
+  const local = parts[0];
+  const domain = parts[1] ?? "";
+
   if (!local) return { valid: false, error: "Enter something before @" };
   if (!domain || !domain.includes("."))
     return { valid: false, error: "Domain must contain a dot (e.g. gmail.com)" };
@@ -73,9 +85,10 @@ function validateEmail(email: string): {
   if (!EMAIL_RE.test(email))
     return { valid: false, error: "Invalid email format" };
 
-  const domainLower = domain.toLowerCase();
-  if (DOMAIN_TYPOS[domainLower]) {
-    const fixed = `${local}@${DOMAIN_TYPOS[domainLower]}`;
+  // Fuzzy match against popular domains
+  const typo = findDomainTypo(domain);
+  if (typo) {
+    const fixed = `${local}@${typo}`;
     return { valid: false, error: `Did you mean ${fixed}?`, suggestion: fixed };
   }
 
@@ -160,7 +173,7 @@ export default function RegisterPage() {
               <div className="relative">
                 <Input
                   id="email"
-                  type="email"
+                  type="text"
                   placeholder="you@company.com"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -172,7 +185,6 @@ export default function RegisterPage() {
                       ? "border-emerald-500 focus-visible:ring-emerald-500 pr-10"
                       : "pr-10"
                   }
-                  required
                 />
                 {showEmailOk && (
                   <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500 pointer-events-none" />
@@ -182,15 +194,15 @@ export default function RegisterPage() {
                 )}
               </div>
               {showEmailError && (
-                <p className="text-xs text-red-500 flex items-center gap-1">
+                <p className="text-xs text-red-500 flex items-center gap-1 flex-wrap">
                   {emailStatus.error}
                   {emailStatus.suggestion && (
                     <button
                       type="button"
-                      className="underline font-medium"
-                      onClick={() => {
-                        setForm({ ...form, email: emailStatus.suggestion! });
-                      }}
+                      className="underline font-semibold"
+                      onClick={() =>
+                        setForm({ ...form, email: emailStatus.suggestion! })
+                      }
                     >
                       Use this
                     </button>
@@ -252,7 +264,10 @@ export default function RegisterPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
+        <Link
+          href="/login"
+          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300"
+        >
           Sign in
         </Link>
       </p>
