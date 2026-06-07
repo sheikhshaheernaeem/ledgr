@@ -123,9 +123,9 @@ async function seedSaaS(userId: string) {
     { vendor: "Amazon Web Services", num: "BILL-005", issue: d(2026,3,1), status: "PAID", amount: 1956.8, cat: "Software & Subscriptions", paidAt: d(2026,3,10) },
     { vendor: "WeWork Office Space", num: "BILL-006", issue: d(2026,3,1), status: "PAID", amount: 3200, cat: "Rent & Utilities", paidAt: d(2026,3,5) },
     { vendor: "Gusto Payroll", num: "BILL-007", issue: d(2026,3,15), status: "PAID", amount: 12400, cat: "Payroll & Benefits", paidAt: d(2026,3,15) },
-    { vendor: "Amazon Web Services", num: "BILL-008", issue: d(2026,6,1), status: "PENDING", amount: 2134.6, cat: "Software & Subscriptions", paidAt: null },
-    { vendor: "WeWork Office Space", num: "BILL-009", issue: d(2026,6,1), status: "PENDING", amount: 3200, cat: "Rent & Utilities", paidAt: null },
-    { vendor: "Gusto Payroll", num: "BILL-010", issue: d(2026,6,15), status: "PENDING", amount: 12400, cat: "Payroll & Benefits", paidAt: null },
+    { vendor: "Amazon Web Services", num: "BILL-008", issue: d(2026,6,1), status: "PAID", amount: 2134.6, cat: "Software & Subscriptions", paidAt: d(2026,6,1) },
+    { vendor: "WeWork Office Space", num: "BILL-009", issue: d(2026,6,3), status: "PAID", amount: 3200, cat: "Rent & Utilities", paidAt: d(2026,6,3) },
+    { vendor: "Gusto Payroll", num: "BILL-010", issue: d(2026,6,15), status: "PAID", amount: 12400, cat: "Payroll & Benefits", paidAt: d(2026,6,15) },
   ];
   for (const b of bills) {
     await prisma.bill.create({
@@ -173,13 +173,14 @@ async function seedSaaS(userId: string) {
     { date: d(2026,5,15), description: "Client Payment – Horizon Logistics", amount: 4800, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,15), description: "Gusto Payroll Run", amount: 12400, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
     { date: d(2026,5,28), description: "Legal – Contract Review", amount: 750, type: "DEBIT", category: "Professional Services", status: "APPROVED" },
-    // Jun (pending)
-    { date: d(2026,6,1), description: "Client Payment – BlueSky Ventures", amount: 9200, type: "CREDIT", category: "Revenue", status: "PENDING" },
-    { date: d(2026,6,1), description: "AWS – Cloud Hosting", amount: 2134.6, type: "DEBIT", category: "Software & Subscriptions", status: "PENDING" },
-    { date: d(2026,6,3), description: "WeWork – Office Rent", amount: 3200, type: "DEBIT", category: "Rent & Utilities", status: "PENDING" },
+    // Jun
+    { date: d(2026,6,1), description: "Client Payment – BlueSky Ventures", amount: 9200, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,6,1), description: "AWS – Cloud Hosting", amount: 2134.6, type: "DEBIT", category: "Software & Subscriptions", status: "APPROVED" },
+    { date: d(2026,6,3), description: "WeWork – Office Rent", amount: 3200, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
+    { date: d(2026,6,15), description: "Gusto Payroll Run", amount: 12400, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
   ];
   await prisma.transaction.createMany({
-    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: t.status === "APPROVED" ? 0.97 : null })),
+    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: 0.97 })),
   });
 
   // Fixed assets
@@ -255,9 +256,11 @@ async function seedRetail(userId: string) {
     { vendor: "Wholesale Supplies Co.", num: "BILL-005", issue: d(2026,3,1), status: "PAID", amount: 7600, cat: "Cost of Goods Sold", paidAt: d(2026,3,10) },
     { vendor: "Mall Rent – Unit 14B", num: "BILL-006", issue: d(2026,3,1), status: "PAID", amount: 4500, cat: "Rent & Utilities", paidAt: d(2026,3,1) },
     { vendor: "Staff Wages – March", num: "BILL-007", issue: d(2026,3,31), status: "PAID", amount: 6800, cat: "Payroll & Benefits", paidAt: d(2026,3,31) },
-    { vendor: "Wholesale Supplies Co.", num: "BILL-008", issue: d(2026,6,1), status: "PENDING", amount: 9100, cat: "Cost of Goods Sold", paidAt: null },
-    { vendor: "Mall Rent – Unit 14B", num: "BILL-009", issue: d(2026,6,1), status: "PENDING", amount: 4500, cat: "Rent & Utilities", paidAt: null },
-    { vendor: "Staff Wages – June", num: "BILL-010", issue: d(2026,6,30), status: "PENDING", amount: 6800, cat: "Payroll & Benefits", paidAt: null },
+    { vendor: "Staff Wages – April", num: "BILL-008", issue: d(2026,4,30), status: "PAID", amount: 6800, cat: "Payroll & Benefits", paidAt: d(2026,4,30) },
+    { vendor: "Staff Wages – May", num: "BILL-009", issue: d(2026,5,31), status: "PAID", amount: 6800, cat: "Payroll & Benefits", paidAt: d(2026,5,31) },
+    { vendor: "Wholesale Supplies Co.", num: "BILL-010", issue: d(2026,6,1), status: "PAID", amount: 9100, cat: "Cost of Goods Sold", paidAt: d(2026,6,3) },
+    { vendor: "Mall Rent – Unit 14B", num: "BILL-011", issue: d(2026,6,1), status: "PAID", amount: 4500, cat: "Rent & Utilities", paidAt: d(2026,6,1) },
+    { vendor: "Staff Wages – June", num: "BILL-012", issue: d(2026,6,30), status: "PENDING", amount: 6800, cat: "Payroll & Benefits", paidAt: null },
   ];
   for (const b of bills) {
     await prisma.bill.create({
@@ -286,15 +289,18 @@ async function seedRetail(userId: string) {
     { date: d(2026,4,1), description: "Wholesale Supplies Co.", amount: 8900, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
     { date: d(2026,4,1), description: "Mall Rent – Unit 14B", amount: 4500, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
     { date: d(2026,4,15), description: "Point of Sale Hardware", amount: 1200, type: "DEBIT", category: "Software & Subscriptions", status: "APPROVED" },
+    { date: d(2026,4,30), description: "Staff Wages – April", amount: 6800, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
     { date: d(2026,5,6), description: "Shopify Payout May", amount: 11560, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,1), description: "Wholesale Supplies Co.", amount: 7400, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
     { date: d(2026,5,1), description: "Mall Rent – Unit 14B", amount: 4500, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
     { date: d(2026,5,31), description: "Staff Wages – May", amount: 6800, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
-    { date: d(2026,6,3), description: "POS Sales – Week 1 June", amount: 4200, type: "CREDIT", category: "Revenue", status: "PENDING" },
-    { date: d(2026,6,1), description: "Wholesale Supplies Co.", amount: 9100, type: "DEBIT", category: "Cost of Goods Sold", status: "PENDING" },
+    { date: d(2026,6,3), description: "POS Sales – Week 1 June", amount: 4200, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,6,1), description: "Wholesale Supplies Co.", amount: 9100, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
+    { date: d(2026,6,1), description: "Mall Rent – Unit 14B", amount: 4500, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
+    { date: d(2026,6,30), description: "Staff Wages – June", amount: 6800, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
   ];
   await prisma.transaction.createMany({
-    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: t.status === "APPROVED" ? 0.95 : null })),
+    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: 0.95 })),
   });
 
   await prisma.fixedAsset.createMany({
@@ -370,9 +376,11 @@ async function seedAgency(userId: string) {
     { vendor: "Adobe Creative Cloud", num: "BILL-003", issue: d(2026,2,1), status: "PAID", amount: 599, cat: "Software & Subscriptions", paidAt: d(2026,2,3) },
     { vendor: "Contractor Fees – Developers", num: "BILL-004", issue: d(2026,3,31), status: "PAID", amount: 5800, cat: "Professional Services", paidAt: d(2026,3,31) },
     { vendor: "WeWork – Creative Studio", num: "BILL-005", issue: d(2026,3,1), status: "PAID", amount: 2800, cat: "Rent & Utilities", paidAt: d(2026,3,1) },
-    { vendor: "Media Buy – Q2 Campaign", num: "BILL-006", issue: d(2026,4,1), status: "PAID", amount: 8400, cat: "Marketing & Advertising", paidAt: d(2026,4,5) },
-    { vendor: "WeWork – Creative Studio", num: "BILL-007", issue: d(2026,6,1), status: "PENDING", amount: 2800, cat: "Rent & Utilities", paidAt: null },
-    { vendor: "Contractor Fees – June", num: "BILL-008", issue: d(2026,6,30), status: "PENDING", amount: 6200, cat: "Professional Services", paidAt: null },
+    { vendor: "WeWork – Creative Studio", num: "BILL-006", issue: d(2026,4,1), status: "PAID", amount: 2800, cat: "Rent & Utilities", paidAt: d(2026,4,1) },
+    { vendor: "Media Buy – Q2 Campaign", num: "BILL-007", issue: d(2026,4,1), status: "PAID", amount: 8400, cat: "Marketing & Advertising", paidAt: d(2026,4,5) },
+    { vendor: "WeWork – Creative Studio", num: "BILL-008", issue: d(2026,5,1), status: "PAID", amount: 2800, cat: "Rent & Utilities", paidAt: d(2026,5,1) },
+    { vendor: "WeWork – Creative Studio", num: "BILL-009", issue: d(2026,6,1), status: "PAID", amount: 2800, cat: "Rent & Utilities", paidAt: d(2026,6,1) },
+    { vendor: "Contractor Fees – June", num: "BILL-010", issue: d(2026,6,30), status: "PENDING", amount: 6200, cat: "Professional Services", paidAt: null },
   ];
   for (const b of bills) {
     await prisma.bill.create({
@@ -396,17 +404,19 @@ async function seedAgency(userId: string) {
     { date: d(2026,3,14), description: "PeakFit Gyms – Project", amount: 6400, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,3,1), description: "WeWork Creative Studio", amount: 2800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
     { date: d(2026,3,31), description: "Contractor Fees – Developers", amount: 5800, type: "DEBIT", category: "Professional Services", status: "APPROVED" },
+    { date: d(2026,4,1), description: "WeWork Creative Studio", amount: 2800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
     { date: d(2026,4,5), description: "Media Buy – Q2", amount: 8400, type: "DEBIT", category: "Marketing & Advertising", status: "APPROVED" },
-    { date: d(2026,4,15), description: "Meridian Health – Project Start", amount: 12000, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,4,12), description: "Urban Threads – Retainer", amount: 5200, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,4,15), description: "Meridian Health – Project Start", amount: 12000, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,5), description: "Catalyst Brands – Retainer", amount: 8500, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,1), description: "WeWork Creative Studio", amount: 2800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
     { date: d(2026,5,20), description: "Adobe Creative Cloud", amount: 599, type: "DEBIT", category: "Software & Subscriptions", status: "APPROVED" },
-    { date: d(2026,6,5), description: "Catalyst Brands – Retainer", amount: 8500, type: "CREDIT", category: "Revenue", status: "PENDING" },
-    { date: d(2026,6,1), description: "WeWork Creative Studio", amount: 2800, type: "DEBIT", category: "Rent & Utilities", status: "PENDING" },
+    { date: d(2026,6,5), description: "Catalyst Brands – Retainer", amount: 8500, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,6,1), description: "WeWork Creative Studio", amount: 2800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
+    { date: d(2026,6,10), description: "Urban Threads – Retainer", amount: 5200, type: "CREDIT", category: "Revenue", status: "APPROVED" },
   ];
   await prisma.transaction.createMany({
-    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: t.status === "APPROVED" ? 0.96 : null })),
+    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: 0.96 })),
   });
 
   await prisma.fixedAsset.createMany({
@@ -479,9 +489,11 @@ async function seedRestaurant(userId: string) {
     { vendor: "Metro Food Distributors", num: "BILL-005", issue: d(2026,3,1), status: "PAID", amount: 4600, cat: "Cost of Goods Sold", paidAt: d(2026,3,5) },
     { vendor: "Restaurant Lease – Main St", num: "BILL-006", issue: d(2026,3,1), status: "PAID", amount: 3800, cat: "Rent & Utilities", paidAt: d(2026,3,1) },
     { vendor: "Staff Wages – March", num: "BILL-007", issue: d(2026,3,31), status: "PAID", amount: 5600, cat: "Payroll & Benefits", paidAt: d(2026,3,31) },
-    { vendor: "Metro Food Distributors", num: "BILL-008", issue: d(2026,6,1), status: "PENDING", amount: 5100, cat: "Cost of Goods Sold", paidAt: null },
-    { vendor: "Restaurant Lease – Main St", num: "BILL-009", issue: d(2026,6,1), status: "PENDING", amount: 3800, cat: "Rent & Utilities", paidAt: null },
-    { vendor: "Staff Wages – June", num: "BILL-010", issue: d(2026,6,30), status: "PENDING", amount: 5600, cat: "Payroll & Benefits", paidAt: null },
+    { vendor: "Staff Wages – April", num: "BILL-008", issue: d(2026,4,30), status: "PAID", amount: 5600, cat: "Payroll & Benefits", paidAt: d(2026,4,30) },
+    { vendor: "Staff Wages – May", num: "BILL-009", issue: d(2026,5,31), status: "PAID", amount: 5600, cat: "Payroll & Benefits", paidAt: d(2026,5,31) },
+    { vendor: "Metro Food Distributors", num: "BILL-010", issue: d(2026,6,1), status: "PAID", amount: 5100, cat: "Cost of Goods Sold", paidAt: d(2026,6,3) },
+    { vendor: "Restaurant Lease – Main St", num: "BILL-011", issue: d(2026,6,1), status: "PAID", amount: 3800, cat: "Rent & Utilities", paidAt: d(2026,6,1) },
+    { vendor: "Staff Wages – June", num: "BILL-012", issue: d(2026,6,30), status: "PENDING", amount: 5600, cat: "Payroll & Benefits", paidAt: null },
   ];
   for (const b of bills) {
     await prisma.bill.create({
@@ -511,15 +523,20 @@ async function seedRestaurant(userId: string) {
     { date: d(2026,4,7), description: "DoorDash Payout – April", amount: 7240, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,4,1), description: "Metro Food Distributors", amount: 4800, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
     { date: d(2026,4,1), description: "Restaurant Lease – Main St", amount: 3800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
+    { date: d(2026,4,30), description: "Staff Wages – April", amount: 5600, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
     { date: d(2026,5,7), description: "DoorDash Payout – May", amount: 7890, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,7), description: "Uber Eats Payout – May", amount: 4560, type: "CREDIT", category: "Revenue", status: "APPROVED" },
     { date: d(2026,5,1), description: "Metro Food Distributors", amount: 4900, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
     { date: d(2026,5,1), description: "Restaurant Lease – Main St", amount: 3800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
-    { date: d(2026,6,3), description: "DoorDash Payout – Week 1", amount: 2100, type: "CREDIT", category: "Revenue", status: "PENDING" },
-    { date: d(2026,6,1), description: "Metro Food Distributors", amount: 5100, type: "DEBIT", category: "Cost of Goods Sold", status: "PENDING" },
+    { date: d(2026,5,31), description: "Staff Wages – May", amount: 5600, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
+    { date: d(2026,6,3), description: "DoorDash Payout – Week 1", amount: 2100, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,6,7), description: "Uber Eats Payout – Week 1", amount: 1840, type: "CREDIT", category: "Revenue", status: "APPROVED" },
+    { date: d(2026,6,1), description: "Metro Food Distributors", amount: 5100, type: "DEBIT", category: "Cost of Goods Sold", status: "APPROVED" },
+    { date: d(2026,6,1), description: "Restaurant Lease – Main St", amount: 3800, type: "DEBIT", category: "Rent & Utilities", status: "APPROVED" },
+    { date: d(2026,6,30), description: "Staff Wages – June", amount: 5600, type: "DEBIT", category: "Payroll & Benefits", status: "APPROVED" },
   ];
   await prisma.transaction.createMany({
-    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: t.status === "APPROVED" ? 0.95 : null })),
+    data: txns.map((t) => ({ ...t, userId, bankAccountId: bank.id, confidence: 0.95 })),
   });
 
   await prisma.fixedAsset.createMany({

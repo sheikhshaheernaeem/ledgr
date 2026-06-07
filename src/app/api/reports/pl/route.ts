@@ -52,7 +52,7 @@ async function getPLData(
   const transactions = await prisma.transaction.findMany({
     where: {
       userId,
-      status: "APPROVED",
+      status: { in: ["APPROVED", "PENDING"] },
       date: { gte: startDate, lte: endDate },
     },
     orderBy: { date: "asc" },

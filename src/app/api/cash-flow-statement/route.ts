@@ -16,12 +16,11 @@ export async function GET(req: NextRequest) {
 
   const [transactions, invoices, bills, fixedAssets, depreciationEntries, bankAccounts] =
     await Promise.all([
-      // APPROVED transactions only (exclude PENDING)
       prisma.transaction.findMany({
         where: {
           userId,
           date: { gte: yearStart, lte: yearEnd },
-          status: "APPROVED",
+          status: { in: ["APPROVED", "PENDING"] },
         },
         select: { amount: true, type: true },
       }),

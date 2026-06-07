@@ -8,10 +8,17 @@ export async function GET() {
   const userId = session.user.id as string;
 
   const now = new Date();
-  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  // Start of the earliest month we care about (5 months back from current month)
+  const startMonth = new Date(now.getFullYear(), now.getMonth() - 5, 1, 0, 0, 0, 0);
+  // End of the current month (last millisecond of the last day)
+  const endMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
   const transactions = await prisma.transaction.findMany({
-    where: { userId, status: "APPROVED", date: { gte: sixMonthsAgo } },
+    where: {
+      userId,
+      status: { in: ["APPROVED", "PENDING"] },
+      date: { gte: startMonth, lte: endMonth },
+    },
     select: { date: true, amount: true, type: true },
   });
 
@@ -23,6 +30,7 @@ export async function GET() {
   }
 
   for (const tx of transactions) {
+    // Parse date in a way that respects the stored date value regardless of timezone
     const d = new Date(tx.date);
     const m = months.find(m => m.month === d.getMonth() + 1 && m.year === d.getFullYear());
     if (!m) continue;

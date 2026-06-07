@@ -35,15 +35,39 @@ export async function GET(req: NextRequest) {
   if (startDate) dateFilter.gte = new Date(startDate);
   if (endDate) dateFilter.lte = new Date(endDate + "T23:59:59");
 
-  // Query all transactions for the user (optionally date-filtered)
-  const transactions = await prisma.transaction.findMany({
-    where: {
-      userId,
-      ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
-    },
-  });
+  // Run all data queries in parallel for performance
+  const [transactions, bankAccounts, outstandingInvoices, outstandingBills, fixedAssets, accounts] =
+    await Promise.all([
+      // Transactions (optionally date-filtered)
+      prisma.transaction.findMany({
+        where: {
+          userId,
+          ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
+        },
+      }),
+      // Bank accounts — used for real cash balance (overrides transaction-derived cash)
+      prisma.bankAccount.findMany({ where: { userId } }),
+      // Accounts Receivable: unpaid / partially-paid invoices
+      prisma.invoice.findMany({
+        where: { userId, status: { in: ["SENT", "OVERDUE", "PARTIAL"] } },
+      }),
+      // Accounts Payable: unpaid / overdue bills
+      prisma.bill.findMany({
+        where: { userId, status: { in: ["PENDING", "OVERDUE"] } },
+      }),
+      // Fixed Assets with their depreciation entries
+      prisma.fixedAsset.findMany({
+        where: { userId, disposalDate: null },
+        include: { depreciationEntries: true },
+      }),
+      // Chart of accounts
+      prisma.chartOfAccount.findMany({
+        where: { userId, isActive: true },
+        orderBy: { code: "asc" },
+      }),
+    ]);
 
-  // Build ledger map: accountCode -> { debit, credit }
+  // ── Build ledger from transactions (income statement accounts + transaction-derived cash) ──
   const ledger = new Map<string, { debit: number; credit: number }>();
 
   function addToLedger(code: string, side: "debit" | "credit", amount: number) {
@@ -66,58 +90,121 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Get chart of accounts for the user
-  const accounts = await prisma.chartOfAccount.findMany({
-    where: { userId, isActive: true },
-    orderBy: { code: "asc" },
-  });
+  // ── Cash (1000): override with real bank account balances ──
+  // Using actual balances is more accurate than transaction net flow because
+  // opening balances are not journalised in this system.
+  const cashBalance = bankAccounts.reduce((s, b) => s + b.currentBalance, 0);
+  // Replace whatever the transaction loop computed for cash
+  ledger.set("1000", { debit: cashBalance > 0 ? cashBalance : 0, credit: cashBalance < 0 ? Math.abs(cashBalance) : 0 });
 
-  // Build rows — only include accounts that have ledger activity
-  const rows = accounts
-    .filter((a) => ledger.has(a.code))
-    .map((a) => {
-      const { debit, credit } = ledger.get(a.code)!;
-      return {
-        accountId: a.id,
-        code: a.code,
-        name: a.name,
-        type: a.type,
-        normalBalance: a.normalBalance,
-        debit,
-        credit,
-        net: debit - credit,
-      };
+  // ── Accounts Receivable (1100): debit balance ──
+  const arBalance = outstandingInvoices.reduce((s, inv) => s + Math.max(0, inv.total - inv.amountPaid), 0);
+  if (arBalance > 0) {
+    ledger.set("1100", { debit: arBalance, credit: 0 });
+  }
+
+  // ── Fixed Assets (1500): net book value as debit balance ──
+  const fixedAssetsNet = fixedAssets.reduce((s, asset) => {
+    const accDepn = asset.depreciationEntries.reduce((d, e) => d + e.amount, 0);
+    // Fall back to straight-line computed depreciation if no entries have been posted
+    const elapsed = Math.floor(
+      (Date.now() - new Date(asset.purchaseDate).getTime()) / (30.44 * 86400000)
+    );
+    const monthlyDepn =
+      asset.usefulLifeMonths > 0
+        ? (asset.purchaseCost - asset.salvageValue) / asset.usefulLifeMonths
+        : 0;
+    const computedDepn = Math.min(elapsed * monthlyDepn, asset.purchaseCost - asset.salvageValue);
+    const depn = accDepn > 0 ? accDepn : computedDepn;
+    const netValue = asset.purchaseCost - depn;
+    return s + Math.max(0, netValue);
+  }, 0);
+  if (fixedAssetsNet > 0) {
+    ledger.set("1500", { debit: fixedAssetsNet, credit: 0 });
+  }
+
+  // ── Accounts Payable (2000): credit balance ──
+  const apBalance = outstandingBills.reduce((s, bill) => s + Math.max(0, bill.total - bill.amountPaid), 0);
+  if (apBalance > 0) {
+    ledger.set("2000", { debit: 0, credit: apBalance });
+  }
+
+  // ── Equity / Retained Earnings (3000): credit balance (plug) ──
+  // Equity = Total Assets - Total Liabilities
+  // Assets: cash + AR + fixed assets; Liabilities: AP
+  const totalAssets = Math.max(0, cashBalance) + arBalance + fixedAssetsNet;
+  const totalLiabilities = apBalance;
+  const equity = totalAssets - totalLiabilities;
+  if (equity !== 0) {
+    ledger.set("3000", {
+      debit: equity < 0 ? Math.abs(equity) : 0,
+      credit: equity > 0 ? equity : 0,
     });
+  }
 
-  // For any ledger entries whose code doesn't map to a known account, still include them
+  // ── Build output rows ──
+  const rows: {
+    accountId: string;
+    code: string;
+    name: string;
+    type: string;
+    normalBalance: string;
+    debit: number;
+    credit: number;
+    net: number;
+  }[] = [];
+
+  // First, include rows whose code matches a known chart-of-accounts entry
+  for (const a of accounts) {
+    if (!ledger.has(a.code)) continue;
+    const { debit, credit } = ledger.get(a.code)!;
+    rows.push({
+      accountId: a.id,
+      code: a.code,
+      name: a.name,
+      type: a.type,
+      normalBalance: a.normalBalance,
+      debit,
+      credit,
+      net: debit - credit,
+    });
+  }
+
+  // Then, include synthetic rows for any ledger entries not in the chart of accounts
+  const knownCodes = new Set(accounts.map((a) => a.code));
+  const SYNTHETIC: Record<string, { name: string; type: string }> = {
+    "1000": { name: "Cash & Bank",              type: "ASSET"     },
+    "1100": { name: "Accounts Receivable",       type: "ASSET"     },
+    "1500": { name: "Fixed Assets (Net)",        type: "ASSET"     },
+    "2000": { name: "Accounts Payable",          type: "LIABILITY" },
+    "3000": { name: "Retained Earnings / Equity",type: "EQUITY"    },
+    "4000": { name: "Revenue",                   type: "REVENUE"   },
+    "5000": { name: "Cost of Goods Sold",        type: "EXPENSE"   },
+    "6000": { name: "Payroll & Benefits",        type: "EXPENSE"   },
+    "6100": { name: "Rent & Utilities",          type: "EXPENSE"   },
+    "6200": { name: "Marketing & Advertising",   type: "EXPENSE"   },
+    "6300": { name: "Software & Subscriptions",  type: "EXPENSE"   },
+    "6400": { name: "Professional Services",     type: "EXPENSE"   },
+    "6500": { name: "Insurance",                 type: "EXPENSE"   },
+    "6600": { name: "Travel & Meals",            type: "EXPENSE"   },
+    "6700": { name: "Depreciation",              type: "EXPENSE"   },
+  };
+
   for (const [code, { debit, credit }] of ledger.entries()) {
-    if (!accounts.some((a) => a.code === code)) {
-      // Derive a synthetic name/type
-      let name = code;
-      let type = "EXPENSE";
-      if (code === "1000") { name = "Cash & Bank"; type = "ASSET"; }
-      else if (code === "4000") { name = "Revenue"; type = "REVENUE"; }
-      else if (code === "5000") { name = "Cost of Goods Sold"; type = "EXPENSE"; }
-      else if (code === "6000") { name = "Payroll & Benefits"; type = "EXPENSE"; }
-      else if (code === "6100") { name = "Rent & Utilities"; type = "EXPENSE"; }
-      else if (code === "6200") { name = "Marketing & Advertising"; type = "EXPENSE"; }
-      else if (code === "6300") { name = "Software & Subscriptions"; type = "EXPENSE"; }
-      else if (code === "6400") { name = "Professional Services"; type = "EXPENSE"; }
-      else if (code === "6500") { name = "Insurance"; type = "EXPENSE"; }
-      else if (code === "6600") { name = "Travel & Meals"; type = "EXPENSE"; }
-      else if (code === "6700") { name = "Depreciation"; type = "EXPENSE"; }
-
-      rows.push({
-        accountId: code,
-        code,
-        name,
-        type,
-        normalBalance: type === "ASSET" ? "DEBIT" : type === "REVENUE" ? "CREDIT" : "DEBIT",
-        debit,
-        credit,
-        net: debit - credit,
-      });
-    }
+    if (knownCodes.has(code)) continue; // already handled above
+    const meta = SYNTHETIC[code] ?? { name: code, type: "EXPENSE" };
+    const normalBalance =
+      meta.type === "ASSET" || meta.type === "EXPENSE" ? "DEBIT" : "CREDIT";
+    rows.push({
+      accountId: code,
+      code,
+      name: meta.name,
+      type: meta.type,
+      normalBalance,
+      debit,
+      credit,
+      net: debit - credit,
+    });
   }
 
   // Sort rows by code
