@@ -68,6 +68,13 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
         {inv.paidAt && <div><p className="text-muted-foreground">Paid On</p><p className="font-medium text-emerald-400">{loc.fmtDate(inv.paidAt)}</p></div>}
       </div>
 
+      {inv.poNumber && (
+        <div>
+          <span className="text-xs text-muted-foreground">PO Number</span>
+          <p className="text-sm font-medium">{inv.poNumber}</p>
+        </div>
+      )}
+
       <Card className="border-border bg-card">
         <CardHeader><CardTitle className="text-base">Line Items</CardTitle></CardHeader>
         <CardContent>

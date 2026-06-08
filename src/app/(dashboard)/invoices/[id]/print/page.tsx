@@ -93,6 +93,12 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
           <div className="invoice-meta">
             <h1>{inv.type === "QUOTE" ? "QUOTE" : "INVOICE"}</h1>
             <p style={{ fontWeight: 600, color: "#111" }}>{inv.invoiceNumber}</p>
+            {inv.poNumber && (
+              <div style={{ marginTop: "6px" }}>
+                <span className="text-xs text-gray-500" style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "#999" }}>PO No.</span>
+                <p className="text-sm font-semibold" style={{ fontSize: "14px", fontWeight: 600, color: "#111" }}>{inv.poNumber}</p>
+              </div>
+            )}
             <p>
               <span className={`status-badge status-${inv.status}`}>{inv.status}</span>
             </p>

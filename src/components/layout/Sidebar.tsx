@@ -52,6 +52,7 @@ const accountingNav = [
   { href: "/general-ledger", icon: ListChecks, label: "General Ledger" },
   { href: "/trial-balance", icon: Scale, label: "Trial Balance" },
   { href: "/bills", icon: Receipt, label: "Bills (A/P)" },
+  { href: "/vendors", icon: Building2, label: "Vendors" },
   { href: "/cash-flow-statement", icon: Wallet, label: "Cash Flow Statement" },
   { href: "/vat-returns", icon: Percent, label: "VAT Returns" },
   { href: "/tax-calculator", icon: Calculator, label: "Tax Calculator" },

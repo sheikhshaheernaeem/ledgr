@@ -7,13 +7,13 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id as string;
 
-  const clients = await prisma.client.findMany({
+  const vendors = await prisma.vendor.findMany({
     where: { userId },
     orderBy: { name: "asc" },
-    include: { _count: { select: { invoices: true } } },
+    include: { _count: { select: { bills: true } } },
   });
 
-  return NextResponse.json(clients);
+  return NextResponse.json(vendors);
 }
 
 export async function POST(req: NextRequest) {
@@ -21,12 +21,22 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id as string;
 
-  const { name, email, phone, company, address, notes, taxId } = await req.json();
+  const { name, email, phone, company, address, taxId, vatNumber, notes } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 400 });
 
-  const client = await prisma.client.create({
-    data: { userId, name: name.trim(), email: email || null, phone: phone || null, company: company || null, address: address || null, notes: notes || null, taxId: taxId || null },
+  const vendor = await prisma.vendor.create({
+    data: {
+      userId,
+      name: name.trim(),
+      email: email || null,
+      phone: phone || null,
+      company: company || null,
+      address: address || null,
+      taxId: taxId || null,
+      vatNumber: vatNumber || null,
+      notes: notes || null,
+    },
   });
 
-  return NextResponse.json(client, { status: 201 });
+  return NextResponse.json(vendor, { status: 201 });
 }

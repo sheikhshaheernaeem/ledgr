@@ -30,6 +30,7 @@ export default function NewInvoicePage() {
     isRecurring: false,
     recurringInterval: "monthly",
     currency: "USD",
+    poNumber: "",
   });
   const [items, setItems] = useState<LineItem[]>([{ description: "", quantity: "1", unitPrice: "", discount: "0" }]);
 
@@ -79,6 +80,7 @@ export default function NewInvoicePage() {
           lateFeePct: parseFloat(form.lateFeePct) || 0,
           isRecurring: form.isRecurring,
           recurringInterval: form.isRecurring ? form.recurringInterval : undefined,
+          poNumber: form.poNumber || undefined,
           lineItems: items.filter(it => it.description).map(it => ({
             description: it.description,
             quantity: parseFloat(it.quantity) || 1,
@@ -122,6 +124,14 @@ export default function NewInvoicePage() {
                 {autoNumber && <Badge variant="outline" className="text-xs font-normal px-1.5 py-0 border-emerald-500/40 text-emerald-400">(auto)</Badge>}
               </Label>
               <Input value={form.invoiceNumber} onChange={e => { setForm(p => ({ ...p, invoiceNumber: e.target.value })); setAutoNumber(false); }} required />
+            </div>
+            <div className="space-y-2">
+              <Label>PO Number (optional)</Label>
+              <Input
+                placeholder="e.g. PO-2024-001"
+                value={form.poNumber}
+                onChange={e => setForm(p => ({ ...p, poNumber: e.target.value }))}
+              />
             </div>
             <div className="space-y-2">
               <Label>Tax Rate (%)</Label>

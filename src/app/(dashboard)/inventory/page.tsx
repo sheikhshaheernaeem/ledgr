@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Loader2, Package, AlertTriangle, ChevronRight } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface InventoryItem {
   id: string;
@@ -28,9 +29,8 @@ interface InventoryItem {
   _count: { movements: number };
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-
 export default function InventoryPage() {
+  const { fmt } = useLocale();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);

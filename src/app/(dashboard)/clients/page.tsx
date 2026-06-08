@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Plus, Pencil, Trash2, Mail, Phone, Building2, Loader2, FileBarChart2 } from "lucide-react";
+import { Users, Plus, Pencil, Trash2, Mail, Phone, Building2, Loader2, FileBarChart2, Hash } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -19,11 +19,12 @@ interface Client {
   phone: string | null;
   company: string | null;
   address: string | null;
+  taxId: string | null;
   notes: string | null;
   _count: { invoices: number };
 }
 
-const emptyForm = { name: "", email: "", phone: "", company: "", address: "", notes: "" };
+const emptyForm = { name: "", email: "", phone: "", company: "", address: "", notes: "", taxId: "" };
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -52,7 +53,7 @@ export default function ClientsPage() {
 
   function openEdit(c: Client) {
     setEditClient(c);
-    setForm({ name: c.name, email: c.email ?? "", phone: c.phone ?? "", company: c.company ?? "", address: c.address ?? "", notes: c.notes ?? "" });
+    setForm({ name: c.name, email: c.email ?? "", phone: c.phone ?? "", company: c.company ?? "", address: c.address ?? "", notes: c.notes ?? "", taxId: c.taxId ?? "" });
     setDialogOpen(true);
   }
 
@@ -156,6 +157,12 @@ export default function ClientsPage() {
                     <span className="truncate">{client.address}</span>
                   </div>
                 )}
+                {client.taxId && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Hash className="h-3 w-3 shrink-0" />
+                    <span className="font-mono">{client.taxId}</span>
+                  </div>
+                )}
                 <div className="pt-2 flex items-center gap-2 flex-wrap">
                   <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">
                     {client._count.invoices} invoice{client._count.invoices !== 1 ? "s" : ""}
@@ -195,6 +202,10 @@ export default function ClientsPage() {
               <div className="space-y-2">
                 <Label>Company</Label>
                 <Input value={form.company} onChange={e => setForm(f => ({ ...f, company: e.target.value }))} placeholder="Company name" />
+              </div>
+              <div className="space-y-2">
+                <Label>Tax ID / NTN</Label>
+                <Input value={form.taxId} onChange={e => setForm(f => ({ ...f, taxId: e.target.value }))} placeholder="e.g. 1234567-8 (NTN for Pakistan)" />
               </div>
               <div className="space-y-2">
                 <Label>Address</Label>

@@ -5,11 +5,11 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Landmark, Plus, Link2, Loader2 } from "lucide-react";
+import { Landmark, Plus, Link2, Loader2, ArrowLeftRight } from "lucide-react";
 import Link from "next/link";
 
 interface BankAccount {
@@ -38,6 +38,11 @@ export default function AccountsPage() {
     currency: "USD",
   });
 
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [transferring, setTransferring] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+  const [transferForm, setTransferForm] = useState({ fromAccountId: "", toAccountId: "", amount: "", date: today, description: "", reference: "" });
+
   async function load() {
     const res = await fetch("/api/bank-accounts");
     if (res.ok) setAccounts(await res.json());
@@ -45,6 +50,40 @@ export default function AccountsPage() {
   }
 
   useEffect(() => { load(); }, []);
+
+  function fmt(amount: number) {
+    return "$" + amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  async function handleTransfer() {
+    if (!transferForm.fromAccountId || !transferForm.toAccountId || !transferForm.amount) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+    setTransferring(true);
+    const res = await fetch("/api/bank-accounts/transfer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fromAccountId: transferForm.fromAccountId,
+        toAccountId: transferForm.toAccountId,
+        amount: parseFloat(transferForm.amount),
+        date: transferForm.date,
+        description: transferForm.description || undefined,
+        reference: transferForm.reference || undefined,
+      }),
+    });
+    if (res.ok) {
+      toast.success("Transfer completed");
+      setShowTransfer(false);
+      setTransferForm({ fromAccountId: "", toAccountId: "", amount: "", date: today, description: "", reference: "" });
+      load();
+    } else {
+      const d = await res.json();
+      toast.error(d.error ?? "Transfer failed");
+    }
+    setTransferring(false);
+  }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -87,6 +126,9 @@ export default function AccountsPage() {
               <Link2 className="h-4 w-4" /> Connect via Plaid
             </Button>
           </Link>
+          <Button variant="outline" className="gap-2" onClick={() => setShowTransfer(true)}>
+            <ArrowLeftRight className="h-4 w-4" /> Transfer Funds
+          </Button>
           <Button onClick={() => setOpen(true)} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-2">
             <Plus className="h-4 w-4" /> Add Account
           </Button>
@@ -137,6 +179,57 @@ export default function AccountsPage() {
           ))}
         </div>
       )}
+
+      {/* Fund Transfer Dialog */}
+      <Dialog open={showTransfer} onOpenChange={setShowTransfer}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Fund Transfer</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label>From Account</Label>
+              <Select value={transferForm.fromAccountId} onValueChange={v => setTransferForm(f => ({ ...f, fromAccountId: v ?? "" }))}>
+                <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
+                <SelectContent>
+                  {accounts.map(a => <SelectItem key={a.id} value={a.id}>{a.name} ({fmt(a.currentBalance)})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>To Account</Label>
+              <Select value={transferForm.toAccountId} onValueChange={v => setTransferForm(f => ({ ...f, toAccountId: v ?? "" }))}>
+                <SelectTrigger><SelectValue placeholder="Select account..." /></SelectTrigger>
+                <SelectContent>
+                  {accounts.filter(a => a.id !== transferForm.fromAccountId).map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Amount</Label>
+                <Input type="number" min="0.01" step="0.01" value={transferForm.amount} onChange={e => setTransferForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Date</Label>
+                <Input type="date" value={transferForm.date} onChange={e => setTransferForm(f => ({ ...f, date: e.target.value }))} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Description (optional)</Label>
+              <Input value={transferForm.description} onChange={e => setTransferForm(f => ({ ...f, description: e.target.value }))} placeholder="Transfer description" />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Reference (optional)</Label>
+              <Input value={transferForm.reference} onChange={e => setTransferForm(f => ({ ...f, reference: e.target.value }))} placeholder="e.g. TRF-001" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTransfer(false)}>Cancel</Button>
+            <Button onClick={handleTransfer} disabled={transferring} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+              {transferring && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Transfer Funds
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-card border-border">

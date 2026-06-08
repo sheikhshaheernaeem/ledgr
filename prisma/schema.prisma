@@ -109,6 +109,7 @@ model User {
   integrationConfigs   IntegrationConfig[]
   vendorPortalInvites  VendorPortalInvite[]
   anomalyFlags         AnomalyFlag[]
+  vendors              Vendor[]
   cashFlowScenarios    CashFlowScenario[]
   whiteLabelConfig     WhiteLabelConfig?
 }
@@ -171,9 +172,10 @@ model Transaction {
   baseCurrencyAmount  Float?
 
   // Import tracking
-  importId  String?
-  source    String?
-  accountId String?
+  importId    String?
+  source      String?
+  voucherType String?
+  accountId   String?
 
   messages            Message[]
   auditLogs           AuditLog[]
@@ -235,8 +237,10 @@ model BankAccount {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  transactions    Transaction[]
-  reconciliations Reconciliation[]
+  transactions      Transaction[]
+  reconciliations   Reconciliation[]
+  fundTransfersFrom FundTransfer[] @relation("FundTransferFrom")
+  fundTransfersTo   FundTransfer[] @relation("FundTransferTo")
 }
 
 model Reconciliation {
@@ -320,6 +324,8 @@ model Invoice {
   relatedInvoice   Invoice?  @relation("InvoiceRelation", fields: [relatedInvoiceId], references: [id])
   relatedDocuments Invoice[] @relation("InvoiceRelation")
 
+  poNumber String?
+
   // Partial payments
   payments InvoicePayment[]
 
@@ -353,6 +359,7 @@ model Client {
   address   String?
   notes     String?
   vatNumber String?
+  taxId     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   invoices  Invoice[]
@@ -581,6 +588,8 @@ model Bill {
   billNumber  String
   vendorName  String
   vendorEmail String?
+  vendorId    String?
+  vendor      Vendor? @relation(fields: [vendorId], references: [id], onDelete: SetNull)
   issueDate   DateTime
   dueDate     DateTime
   status      String   @default("PENDING")
@@ -615,6 +624,27 @@ model BillLineItem {
   amount      Float
   accountCode String?
   createdAt   DateTime @default(now())
+}
+
+// ─── Vendor ───────────────────────────────────────────────────────────────────
+
+model Vendor {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  address   String?
+  taxId     String?
+  vatNumber String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bills     Bill[]
+
+  @@index([userId])
 }
 
 // ─── Period Locking ───────────────────────────────────────────────────────────
@@ -1587,4 +1617,22 @@ model WhiteLabelConfig {
   hideVercel    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// ─── Fund Transfer ────────────────────────────────────────────────────────────
+
+model FundTransfer {
+  id               String      @id @default(cuid())
+  userId           String
+  fromAccountId    String
+  fromAccount      BankAccount @relation("FundTransferFrom", fields: [fromAccountId], references: [id])
+  toAccountId      String
+  toAccount        BankAccount @relation("FundTransferTo", fields: [toAccountId], references: [id])
+  amount           Float
+  date             DateTime
+  description      String?
+  reference        String?
+  createdAt        DateTime    @default(now())
+
+  @@index([userId])
 }

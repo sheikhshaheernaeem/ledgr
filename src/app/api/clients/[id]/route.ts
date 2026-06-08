@@ -34,7 +34,7 @@ export async function PATCH(
   const existing = await prisma.client.findFirst({ where: { id, userId } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const { name, email, phone, company, address, notes } = await req.json();
+  const { name, email, phone, company, address, notes, taxId } = await req.json();
   const updated = await prisma.client.update({
     where: { id },
     data: {
@@ -44,6 +44,7 @@ export async function PATCH(
       company: company !== undefined ? (company || null) : existing.company,
       address: address !== undefined ? (address || null) : existing.address,
       notes: notes !== undefined ? (notes || null) : existing.notes,
+      taxId: taxId !== undefined ? (taxId || null) : existing.taxId,
     },
   });
 

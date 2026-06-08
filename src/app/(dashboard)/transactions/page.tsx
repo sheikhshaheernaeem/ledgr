@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Loader2, RefreshCw, CheckCircle2, AlertCircle, Download, Repeat2, CheckCheck, XCircle, Search, Filter, Pencil, ChevronLeft, ChevronRight, Camera, ExternalLink, PlusCircle } from "lucide-react";
 import { QuickExpenseDialog } from "@/components/expenses/QuickExpenseDialog";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -27,12 +28,12 @@ interface Transaction {
   type: "DEBIT" | "CREDIT"; category: string | null; subcategory: string | null;
   confidence: number | null; status: "PENDING" | "APPROVED" | "EDITED";
   taxCategory: string | null; isRecurring: boolean; receiptData: string | null;
-  notes: string | null;
+  notes: string | null; voucherType: string | null;
 }
 
 interface OcrData { vendor: string; date: string; amount: string; description: string; }
 
-interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; notes: string; }
+interface EditForm { category: string; subcategory: string; taxCategory: string; status: string; notes: string; voucherType: string | null; }
 
 export default function TransactionsPage() {
   const { fmt, fmtDate } = useLocale();
@@ -57,7 +58,7 @@ export default function TransactionsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const [editTx, setEditTx] = useState<Transaction | null>(null);
-  const [editForm, setEditForm] = useState<EditForm>({ category: "", subcategory: "", taxCategory: "", status: "", notes: "" });
+  const [editForm, setEditForm] = useState<EditForm>({ category: "", subcategory: "", taxCategory: "", status: "", notes: "", voucherType: null });
   const [quickExpenseOpen, setQuickExpenseOpen] = useState(false);
   const [quickIncomeOpen, setQuickIncomeOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -104,7 +105,7 @@ export default function TransactionsPage() {
 
   function openEdit(tx: Transaction) {
     setEditTx(tx);
-    setEditForm({ category: tx.category ?? "", subcategory: tx.subcategory ?? "", taxCategory: tx.taxCategory ?? "", status: tx.status, notes: tx.notes ?? "" });
+    setEditForm({ category: tx.category ?? "", subcategory: tx.subcategory ?? "", taxCategory: tx.taxCategory ?? "", status: tx.status, notes: tx.notes ?? "", voucherType: tx.voucherType ?? null });
     setReceiptOcr(null);
   }
 
@@ -134,7 +135,7 @@ export default function TransactionsPage() {
     const res = await fetch(`/api/transactions/${editTx.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category: editForm.category || null, subcategory: editForm.subcategory || null, taxCategory: editForm.taxCategory || null, status: editForm.status, notes: editForm.notes || null }),
+      body: JSON.stringify({ category: editForm.category || null, subcategory: editForm.subcategory || null, taxCategory: editForm.taxCategory || null, status: editForm.status, notes: editForm.notes || null, voucherType: editForm.voucherType || null }),
     });
     if (res.ok) { toast.success("Transaction updated"); setEditTx(null); loadTransactions(); }
     else toast.error("Failed to update");
@@ -416,6 +417,11 @@ export default function TransactionsPage() {
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-sm">{tx.description}</p>
                           {tx.isRecurring && <Repeat2 className="h-3 w-3 text-blue-400 shrink-0" aria-label="Recurring" />}
+                          {tx.voucherType && (
+                            <span className="ml-2 text-[10px] font-medium px-1.5 py-0.5 rounded border border-border text-muted-foreground">
+                              {tx.voucherType.replace(/_/g, " ")}
+                            </span>
+                          )}
                         </div>
                         {tx.subcategory && <p className="text-xs text-muted-foreground">{tx.subcategory}</p>}
                       </TableCell>
@@ -540,6 +546,22 @@ export default function TransactionsPage() {
                   value={editForm.notes}
                   onChange={e => setEditForm(p => ({ ...p, notes: e.target.value }))}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Voucher Type</Label>
+                <Select value={editForm.voucherType ?? ""} onValueChange={(v) => setEditForm(f => ({ ...f, voucherType: v || null }))}>
+                  <SelectTrigger><SelectValue placeholder="Select type..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">— None —</SelectItem>
+                    <SelectItem value="CASH_PAYMENT">Cash Payment Voucher</SelectItem>
+                    <SelectItem value="BANK_PAYMENT">Bank Payment Voucher</SelectItem>
+                    <SelectItem value="CASH_RECEIPT">Cash Receipt Voucher</SelectItem>
+                    <SelectItem value="BANK_RECEIPT">Bank Receipt Voucher</SelectItem>
+                    <SelectItem value="JOURNAL">Journal Voucher</SelectItem>
+                    <SelectItem value="FUND_TRANSFER">Fund Transfer</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Receipt section */}

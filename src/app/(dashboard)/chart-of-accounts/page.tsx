@@ -160,6 +160,19 @@ export default function ChartOfAccountsPage() {
     return TYPE_MAP[a.type] === filter;
   });
 
+  // Group accounts by subtype, preserving insertion order
+  function groupBySubtype(accounts: Account[]): Map<string, Account[]> {
+    const map = new Map<string, Account[]>();
+    for (const a of accounts) {
+      const key = a.subtype ?? "Other";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(a);
+    }
+    return map;
+  }
+
+  const useGrouped = filter === "Assets" || filter === "Liabilities";
+
   // Summary counts
   const typeCounts: Record<string, number> = {};
   for (const a of accounts) {
@@ -247,65 +260,112 @@ export default function ChartOfAccountsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((a) => (
-                  <TableRow key={a.id} className={!a.isActive ? "opacity-50" : ""}>
-                    <TableCell className="font-mono text-sm text-muted-foreground">{a.code}</TableCell>
-                    <TableCell>
-                      <div>
-                        <span className="text-sm font-medium">{a.name}</span>
-                        {a.subtype && (
-                          <span className="ml-2 text-xs text-muted-foreground">{a.subtype}</span>
-                        )}
-                        {a.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-xs">{a.description}</p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`text-xs ${TYPE_BADGE[a.type] ?? ""}`}>
-                        {a.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${a.normalBalance === "DEBIT" ? "border-zinc-500/30 text-zinc-400" : "border-zinc-500/30 text-zinc-300"}`}
-                      >
-                        {a.normalBalance}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {a.isActive ? (
-                        <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">Active</Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-xs border-zinc-500/30 text-zinc-500">Inactive</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="Edit"
-                          onClick={() => openEdit(a)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title={a.isActive ? "Deactivate" : "Activate"}
-                          onClick={() => toggleActive(a)}
-                        >
-                          {a.isActive
-                            ? <ToggleRight className="h-4 w-4 text-emerald-400" />
-                            : <ToggleLeft className="h-4 w-4 text-muted-foreground" />
-                          }
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {useGrouped
+                  ? Array.from(groupBySubtype(filtered)).flatMap(([subtype, group]) => [
+                      <TableRow key={`header-${subtype}`} className="bg-muted/30">
+                        <TableCell colSpan={6} className="py-2 px-2">
+                          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                            {subtype} ({group.length})
+                          </span>
+                        </TableCell>
+                      </TableRow>,
+                      ...group.map((a) => (
+                        <TableRow key={a.id} className={!a.isActive ? "opacity-50" : ""}>
+                          <TableCell className="font-mono text-sm text-muted-foreground">{a.code}</TableCell>
+                          <TableCell>
+                            <div>
+                              <span className="text-sm font-medium">{a.name}</span>
+                              {a.description && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-xs">{a.description}</p>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={`text-xs ${TYPE_BADGE[a.type] ?? ""}`}>
+                              {a.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${a.normalBalance === "DEBIT" ? "border-zinc-500/30 text-zinc-400" : "border-zinc-500/30 text-zinc-300"}`}
+                            >
+                              {a.normalBalance}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {a.isActive ? (
+                              <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">Active</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs border-zinc-500/30 text-zinc-500">Inactive</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm" title="Edit" onClick={() => openEdit(a)}>
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="sm" title={a.isActive ? "Deactivate" : "Activate"} onClick={() => toggleActive(a)}>
+                                {a.isActive
+                                  ? <ToggleRight className="h-4 w-4 text-emerald-400" />
+                                  : <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+                                }
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )),
+                    ])
+                  : filtered.map((a) => (
+                      <TableRow key={a.id} className={!a.isActive ? "opacity-50" : ""}>
+                        <TableCell className="font-mono text-sm text-muted-foreground">{a.code}</TableCell>
+                        <TableCell>
+                          <div>
+                            <span className="text-sm font-medium">{a.name}</span>
+                            {a.subtype && (
+                              <span className="ml-2 text-xs text-muted-foreground">{a.subtype}</span>
+                            )}
+                            {a.description && (
+                              <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-xs">{a.description}</p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-xs ${TYPE_BADGE[a.type] ?? ""}`}>
+                            {a.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${a.normalBalance === "DEBIT" ? "border-zinc-500/30 text-zinc-400" : "border-zinc-500/30 text-zinc-300"}`}
+                          >
+                            {a.normalBalance}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {a.isActive ? (
+                            <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">Active</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs border-zinc-500/30 text-zinc-500">Inactive</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Button variant="ghost" size="sm" title="Edit" onClick={() => openEdit(a)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="sm" title={a.isActive ? "Deactivate" : "Activate"} onClick={() => toggleActive(a)}>
+                              {a.isActive
+                                ? <ToggleRight className="h-4 w-4 text-emerald-400" />
+                                : <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+                              }
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                }
               </TableBody>
             </Table>
           )}
