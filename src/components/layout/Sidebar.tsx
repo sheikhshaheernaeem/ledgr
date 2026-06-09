@@ -21,6 +21,7 @@ const coreNav = [
   { href: "/approvals", icon: CheckSquare, label: "Approvals" },
   { href: "/reports", icon: FileText, label: "Reports" },
   { href: "/analytics", icon: BarChart2, label: "Analytics" },
+  { href: "/charts", icon: LineChart, label: "Charts" },
   { href: "/ai-assistant", icon: Sparkles, label: "AI Assistant" },
 ];
 
