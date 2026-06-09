@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -141,7 +140,7 @@ function ChartPanel({
             <Pie data={pieData} dataKey="value" nameKey="key" cx="50%" cy="50%" outerRadius="80%" innerRadius={innerRadius} label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
               {pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
             </Pie>
-            <Tooltip formatter={(v: number) => fmt(v)} />
+            <Tooltip formatter={(v) => fmt(Number(v ?? 0))} />
             <Legend />
           </RPieChart>
         </ResponsiveContainer>
@@ -155,10 +154,10 @@ function ChartPanel({
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis dataKey="key" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} angle={-35} textAnchor="end" interval={0} />
             <YAxis tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <Tooltip formatter={(v) => fmt(Number(v ?? 0))} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
             <Legend />
-            <Bar dataKey="budget" name="Budget" fill="#6366f1" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="value" name="Actual" fill="#10b981" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="budget" name="Budget" fill="#6366f1" radius={[3, 3, 0, 0] as [number, number, number, number]} />
+            <Bar dataKey="value" name="Actual" fill="#10b981" radius={[3, 3, 0, 0] as [number, number, number, number]} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -171,8 +170,8 @@ function ChartPanel({
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis type="number" tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
             <YAxis type="category" dataKey="key" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={80} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
-            <Bar dataKey="value" name={metricLabel} fill="#10b981" radius={[0, 3, 3, 0]} />
+            <Tooltip formatter={(v) => fmt(Number(v ?? 0))} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <Bar dataKey="value" name={metricLabel} fill="#10b981" radius={[0, 3, 3, 0] as [number, number, number, number]} />
           </BarChart>
         </ResponsiveContainer>
       );
@@ -185,7 +184,7 @@ function ChartPanel({
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis dataKey="key" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
             <YAxis tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <Tooltip formatter={(v) => fmt(Number(v ?? 0))} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
             <Legend />
             <Line type="monotone" dataKey="value" name={metricLabel} stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
             {metric2 && <Line type="monotone" dataKey="value2" name={metric2Label} stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />}
@@ -211,7 +210,7 @@ function ChartPanel({
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis dataKey="key" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
             <YAxis tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <Tooltip formatter={(v) => fmt(Number(v ?? 0))} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
             <Legend />
             <Area type="monotone" dataKey="value" name={metricLabel} stroke="#10b981" fill="url(#g1)" strokeWidth={2} />
             {metric2 && <Area type="monotone" dataKey="value2" name={metric2Label} stroke="#3b82f6" fill="url(#g2)" strokeWidth={2} />}
@@ -227,10 +226,10 @@ function ChartPanel({
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis dataKey="key" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
           <YAxis tickFormatter={formatTick} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
+          <Tooltip formatter={(v) => fmt(Number(v ?? 0))} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }} />
           <Legend />
-          <Bar dataKey="value" name={metricLabel} fill="#10b981" radius={[3, 3, 0, 0]} />
-          {metric2 && !isBreakdown && <Bar dataKey="value2" name={metric2Label} fill="#3b82f6" radius={[3, 3, 0, 0]} />}
+          <Bar dataKey="value" name={metricLabel} fill="#10b981" radius={[3, 3, 0, 0] as [number, number, number, number]} />
+          {metric2 && !isBreakdown && <Bar dataKey="value2" name={metric2Label} fill="#3b82f6" radius={[3, 3, 0, 0] as [number, number, number, number]} />}
         </BarChart>
       </ResponsiveContainer>
     );
