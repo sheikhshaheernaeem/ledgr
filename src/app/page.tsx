@@ -152,6 +152,23 @@ export default function Landing() {
           {/* grid */}
           <div className="absolute inset-0 opacity-[0.018] dark:opacity-[0.035]"
             style={{ backgroundImage: "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+          {/* falling lines */}
+          {[
+            { left: "8%",  delay: 0,   dur: 4.2, h: 160, color: "from-emerald-400/60 to-transparent" },
+            { left: "19%", delay: 1.1, dur: 3.7, h: 220, color: "from-blue-400/40 to-transparent" },
+            { left: "34%", delay: 0.4, dur: 5.0, h: 130, color: "from-emerald-300/50 to-transparent" },
+            { left: "51%", delay: 2.3, dur: 3.9, h: 190, color: "from-teal-400/45 to-transparent" },
+            { left: "63%", delay: 0.8, dur: 4.6, h: 150, color: "from-violet-400/35 to-transparent" },
+            { left: "77%", delay: 1.7, dur: 3.5, h: 200, color: "from-emerald-400/55 to-transparent" },
+            { left: "89%", delay: 3.1, dur: 4.8, h: 110, color: "from-blue-300/40 to-transparent" },
+          ].map((l, i) => (
+            <motion.div key={i}
+              style={{ left: l.left, top: "-30%", width: 1, height: l.h }}
+              animate={{ y: ["0%", "160%"], opacity: [0, 1, 1, 0] }}
+              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: l.delay * 0.5 }}
+              className={`absolute bg-gradient-to-b ${l.color} rounded-full`}
+            />
+          ))}
         </div>
 
         {/* badge */}
@@ -210,6 +227,16 @@ export default function Landing() {
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />{t}
             </span>
           ))}
+        </motion.div>
+
+        {/* Scroll down indicator */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0 }}
+          className="flex flex-col items-center gap-2 mb-12">
+          <span className="text-[11px] font-medium text-muted-foreground/50 tracking-widest uppercase">Scroll</span>
+          <div className="relative w-5 h-8 rounded-full border border-border/40 flex items-start justify-center pt-1.5">
+            <motion.div animate={{ y: [0, 10, 0], opacity: [1, 0, 1] }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1 h-2 rounded-full bg-emerald-400" />
+          </div>
         </motion.div>
 
         {/* Hero visual — dashboard mockup */}
