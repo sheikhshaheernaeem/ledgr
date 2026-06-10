@@ -51,8 +51,8 @@ export default function UploadPage() {
   useEffect(() => { fetchHistory(); }, []);
 
   async function upload(file: File) {
-    if (!file.name.endsWith(".csv")) {
-      toast.error("Please upload a CSV file");
+    if (!file.name.toLowerCase().endsWith(".csv")) {
+      toast.error("Please upload a CSV file (.csv)");
       return;
     }
     setUploading(true);
@@ -123,7 +123,7 @@ export default function UploadPage() {
               </Button>
             </>
           )}
-          <input ref={inputRef} type="file" accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+          <input ref={inputRef} type="file" accept=".csv,.CSV,text/csv" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
         </CardContent>
       </Card>
 
