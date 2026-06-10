@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +48,7 @@ export default function UploadPage() {
     finally { setLoadingHistory(false); }
   }
 
-  useState(() => { fetchHistory(); });
+  useEffect(() => { fetchHistory(); }, []);
 
   async function upload(file: File) {
     if (!file.name.endsWith(".csv")) {
