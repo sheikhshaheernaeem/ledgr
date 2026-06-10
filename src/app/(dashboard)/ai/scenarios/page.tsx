@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Plus, TrendingUp, TrendingDown, Minus, Brain, Trash2 } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Scenario {
   id: string;
@@ -22,7 +23,6 @@ interface Scenario {
   createdAt: string;
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 const fmtPct = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 
 const DEFAULT_ASSUMPTIONS = [
@@ -35,6 +35,7 @@ const DEFAULT_ASSUMPTIONS = [
 ];
 
 export default function ScenariosPage() {
+  const { fmt } = useLocale();
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);

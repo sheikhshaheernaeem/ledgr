@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Download, Car } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface MileageEntry {
   id: string;
@@ -28,9 +29,8 @@ const purposeStyle: Record<string, string> = {
   CHARITY: "border-purple-500/30 text-purple-400",
 };
 
-const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-
 export default function MileagePage() {
+  const { fmt } = useLocale();
   const [entries, setEntries] = useState<MileageEntry[]>([]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [loading, setLoading] = useState(true);

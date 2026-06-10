@@ -14,17 +14,24 @@ const statusStyle: Record<string, string> = {
   APPLIED: "border-emerald-500/30 text-emerald-400",
 };
 
-const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-
 export default async function CreditNotesPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const notes = await prisma.invoice.findMany({
-    where: { userId: session.user.id as string, type: "CREDIT_NOTE" },
-    include: { relatedInvoice: { select: { invoiceNumber: true } } },
-    orderBy: { createdAt: "desc" },
-  });
+  const userId = session.user.id as string;
+
+  const [notes, user] = await Promise.all([
+    prisma.invoice.findMany({
+      where: { userId, type: "CREDIT_NOTE" },
+      include: { relatedInvoice: { select: { invoiceNumber: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.findUnique({ where: { id: userId }, select: { currency: true, locale: true } }),
+  ]);
+
+  const currency = user?.currency ?? "USD";
+  const locale = user?.locale ?? "en-US";
+  const fmt = (n: number) => n.toLocaleString(locale, { style: "currency", currency });
 
   return (
     <div className="p-8 space-y-6">
@@ -72,7 +79,7 @@ export default async function CreditNotesPage() {
                       {cn.relatedInvoice?.invoiceNumber ?? "—"}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">
-                      {new Date(cn.issueDate).toLocaleDateString()}
+                      {new Date(cn.issueDate).toLocaleDateString(locale)}
                     </TableCell>
                     <TableCell className="text-right font-medium text-red-400">
                       ({fmt(cn.total)})

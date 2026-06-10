@@ -12,11 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Loader2, ArrowLeft, Package, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Movement { id: string; date: string; type: string; quantity: number; unitCost: number; totalCost: number; reference: string | null; notes: string | null }
 interface Item { id: string; sku: string; name: string; category: string | null; costMethod: string; costPrice: number; sellPrice: number; quantityOnHand: number; unitOfMeasure: string; reorderPoint: number | null; isActive: boolean; movements: Movement[] }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 const typeColors: Record<string, string> = {
   PURCHASE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
   SALE: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
@@ -26,6 +26,7 @@ const typeColors: Record<string, string> = {
 
 export default function InventoryItemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { fmt } = useLocale();
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);

@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Loader2, Briefcase, ChevronRight } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Project {
   id: string;
@@ -39,9 +40,8 @@ const statusColors: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(n);
-
 export default function ProjectsPage() {
+  const { fmt } = useLocale();
   const [projects, setProjects] = useState<Project[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);

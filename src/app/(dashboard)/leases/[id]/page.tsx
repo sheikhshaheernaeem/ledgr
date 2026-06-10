@@ -8,15 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, ArrowLeft, DollarSign, CreditCard } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface AmortRow { period: string; payment: number; interest: number; principal: number; balance: number }
 interface Payment { id: string; paymentDate: string; amount: number; principal: number; interest: number; balance: number }
 interface Lease { id: string; leaseNumber: string; lessorName: string; assetDescription: string; leaseType: string; commencementDate: string; endDate: string; monthlyPayment: number; incrementalBorrowingRate: number; rightOfUseAsset: number; leaseLiability: number; remainingLiability: number; status: string; payments: Payment[]; amortizationSchedule: AmortRow[] }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-
 export default function LeaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { fmt } = useLocale();
   const [lease, setLease] = useState<Lease | null>(null);
   const [schedule, setSchedule] = useState<AmortRow[]>([]);
   const [loading, setLoading] = useState(true);

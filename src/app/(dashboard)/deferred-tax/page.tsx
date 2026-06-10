@@ -11,12 +11,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Loader2, Calculator, Trash2 } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface DeferredTaxItem { id: string; name: string; type: string; description: string | null; bookValue: number; taxValue: number; temporaryDiff: number; taxRate: number; deferredAmount: number; period: string }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-
 export default function DeferredTaxPage() {
+  const { fmt } = useLocale();
   const [data, setData] = useState<{ items: DeferredTaxItem[]; totals: { totalAssets: number; totalLiabilities: number }; netDeferredTax: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);

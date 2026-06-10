@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Users } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface CohortData {
   cohort: string;
@@ -30,9 +31,8 @@ function getHeatmapColor(pct: number): string {
   return "bg-muted text-muted-foreground";
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
-
 export default function CohortAnalysisPage() {
+  const { fmt, locale } = useLocale();
   const [data, setData] = useState<CohortResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"clients" | "mrr">("mrr");
@@ -52,7 +52,7 @@ export default function CohortAnalysisPage() {
 
   const formatMonth = (ym: string) => {
     try {
-      return new Date(ym + "-01").toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+      return new Date(ym + "-01").toLocaleDateString(locale, { month: "short", year: "2-digit" });
     } catch { return ym; }
   };
 

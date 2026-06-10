@@ -186,16 +186,16 @@ export default function Sidebar({ email, isAdmin }: { email: string; isAdmin: bo
         )}
       </nav>
 
-      {/* Subscribe CTA */}
-      <a href="https://buymeacoffee.com/alsmartech" target="_blank" rel="noreferrer" className="block mx-1 mb-3">
+      {/* Upgrade CTA */}
+      <Link href="/upgrade" className="block mx-1 mb-3">
         <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 hover:bg-emerald-500/15 transition-colors cursor-pointer">
           <div className="flex items-center gap-2 mb-1">
             <Zap className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Subscribe to Ledgr</span>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Upgrade to Pro</span>
           </div>
-          <p className="text-[11px] text-muted-foreground leading-snug">Unlock all features · Support development</p>
+          <p className="text-[11px] text-muted-foreground leading-snug">Unlock all features · $29/month</p>
         </div>
-      </a>
+      </Link>
 
       <Separator className="my-3" />
       <div className="px-2 space-y-2">

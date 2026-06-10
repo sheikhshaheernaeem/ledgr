@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Loader2, Home, ChevronRight } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Lease {
   id: string;
@@ -28,7 +29,6 @@ interface Lease {
   status: string;
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 const statusColors: Record<string, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
   TERMINATED: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
@@ -36,6 +36,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function LeasesPage() {
+  const { fmt } = useLocale();
   const [leases, setLeases] = useState<Lease[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);

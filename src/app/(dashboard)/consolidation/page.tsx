@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, GitMerge, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface ConsolidatedData {
   reportType: string;
@@ -19,9 +20,8 @@ interface ConsolidatedData {
   interCompanyTransactions: Array<{ id: string; fromEntityId: string; toEntityId: string; amount: number; description: string; eliminated: boolean }>;
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-
 export default function ConsolidationPage() {
+  const { fmt } = useLocale();
   const [data, setData] = useState<ConsolidatedData | null>(null);
   const [loading, setLoading] = useState(false);
   const [reportType, setReportType] = useState("PL");

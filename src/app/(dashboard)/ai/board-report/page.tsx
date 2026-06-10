@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Brain, TrendingUp, TrendingDown, DollarSign, Users, FileText, Download } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface Metrics {
   revenue: number;
@@ -26,9 +27,8 @@ interface BoardReport {
   generatedAt: string;
 }
 
-const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
-
 export default function BoardReportPage() {
+  const { fmt } = useLocale();
   const [report, setReport] = useState<BoardReport | null>(null);
   const [generating, setGenerating] = useState(false);
   const [period, setPeriod] = useState(() => {
