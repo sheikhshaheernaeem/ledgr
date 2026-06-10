@@ -25,7 +25,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 /* ─── animation helpers ─── */
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" as const } },
 };
 
 const fadeIn = {
@@ -186,7 +186,7 @@ export default function LandingPage() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.65, delay: 0.2, ease: "easeOut" }}
           className="text-5xl sm:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.05]"
         >
           Your accounting,
