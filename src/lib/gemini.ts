@@ -80,24 +80,24 @@ function mockCategorize(tx: RawTransaction): CategorizedTransaction {
   };
 }
 
-async function realCategorize(
+const CATEGORIES = [
+  "Revenue", "Cost of Goods Sold", "Payroll & Benefits", "Rent & Utilities",
+  "Software & Subscriptions", "Marketing & Advertising", "Professional Services",
+  "Office Supplies", "Travel & Entertainment", "Banking & Fees", "Taxes",
+  "Insurance", "Other Expense", "Other Income",
+];
+
+async function realCategorizeBatch(
   transactions: RawTransaction[]
 ): Promise<CategorizedTransaction[]> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-  const CATEGORIES = [
-    "Revenue", "Cost of Goods Sold", "Payroll & Benefits", "Rent & Utilities",
-    "Software & Subscriptions", "Marketing & Advertising", "Professional Services",
-    "Office Supplies", "Travel & Entertainment", "Banking & Fees", "Taxes",
-    "Insurance", "Other Expense", "Other Income",
-  ];
-
   const prompt = `You are a professional bookkeeper. Categorize these bank transactions for a small business.
 Available categories: ${CATEGORIES.join(", ")}
 For each transaction return a JSON array with: date, description, amount, type, category, subcategory, confidence (0-1), aiNotes.
-Transactions: ${JSON.stringify(transactions, null, 2)}
-Respond ONLY with valid JSON array, no markdown.`;
+Transactions: ${JSON.stringify(transactions)}
+Respond ONLY with valid JSON array, no markdown, no explanation.`;
 
   const result = await model.generateContent(prompt);
   const text = result.response.text().trim();
@@ -105,6 +105,22 @@ Respond ONLY with valid JSON array, no markdown.`;
     ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
     : text;
   return JSON.parse(json) as CategorizedTransaction[];
+}
+
+async function realCategorize(
+  transactions: RawTransaction[]
+): Promise<CategorizedTransaction[]> {
+  // Process in batches of 50 to avoid token limits
+  const BATCH_SIZE = 50;
+  const results: CategorizedTransaction[] = [];
+
+  for (let i = 0; i < transactions.length; i += BATCH_SIZE) {
+    const batch = transactions.slice(i, i + BATCH_SIZE);
+    const categorized = await realCategorizeBatch(batch);
+    results.push(...categorized);
+  }
+
+  return results;
 }
 
 export async function categorizeTransactions(
@@ -116,7 +132,14 @@ export async function categorizeTransactions(
   ) {
     return transactions.map(mockCategorize);
   }
-  return realCategorize(transactions);
+
+  try {
+    return await realCategorize(transactions);
+  } catch (err) {
+    // Gemini unavailable or key invalid — fall back to keyword matching
+    console.error("[gemini] categorize failed, using mock fallback:", err);
+    return transactions.map(mockCategorize);
+  }
 }
 
 export async function generatePLSummary(

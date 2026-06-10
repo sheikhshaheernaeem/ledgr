@@ -266,11 +266,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ statementId: statement.id, rowCount: raw.length, status: "CATEGORIZED" });
   } catch (err) {
+    console.error("[statements] processing failed:", err);
     await prisma.statement.update({
       where: { id: statement.id },
       data: { status: "ERROR", errorMsg: String(err) },
     });
-    return NextResponse.json({ error: "Failed to process transactions. Please try again." }, { status: 500 });
+    return NextResponse.json({
+      error: "Failed to save transactions. Please try again.",
+      detail: process.env.NODE_ENV === "development" ? String(err) : undefined,
+    }, { status: 500 });
   }
 }
 
