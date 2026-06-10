@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  FileText, CheckCircle2, Clock, TrendingUp, TrendingDown, ExternalLink,
+  FileText, CheckCircle2, Clock, TrendingUp, TrendingDown, ExternalLink, Upload,
 } from "lucide-react";
 
 const fmt = (n: number) =>
@@ -23,6 +23,13 @@ export default async function ClientDashboardPage() {
   if (role !== "CLIENT") redirect("/dashboard");
 
   const userId = session.user.id;
+
+  // Latest statement
+  const latestStatement = await prisma.statement.findFirst({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, status: true, filename: true, createdAt: true },
+  });
 
   // Open invoices
   const openInvoices = await prisma.invoice.findMany({
@@ -93,6 +100,40 @@ export default async function ClientDashboardPage() {
         </Card>
       </div>
 
+      {/* Upload banner */}
+      <Card className={`border ${latestStatement?.status === "CATEGORIZED" ? "border-emerald-500/30 bg-emerald-500/5" : "border-blue-500/30 bg-blue-500/5"}`}>
+        <CardContent className="py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {latestStatement?.status === "CATEGORIZED" ? (
+              <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+            ) : (
+              <Upload className="h-5 w-5 text-blue-400 shrink-0" />
+            )}
+            <div>
+              {latestStatement ? (
+                <>
+                  <p className="text-sm font-semibold text-foreground">
+                    {latestStatement.status === "CATEGORIZED" ? "Statement processed — report coming soon" : `Processing: ${latestStatement.filename}`}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Uploaded {new Date(latestStatement.createdAt).toLocaleDateString()}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold text-foreground">Upload your bank statement</p>
+                  <p className="text-xs text-muted-foreground">Export as CSV from your bank · we'll categorize every transaction automatically</p>
+                </>
+              )}
+            </div>
+          </div>
+          <Link href="/client/upload">
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white gap-1.5 shrink-0">
+              <Upload className="h-3.5 w-3.5" />
+              {latestStatement ? "Upload New" : "Upload Now"}
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
         <Link href="/client/invoices">
@@ -103,6 +144,11 @@ export default async function ClientDashboardPage() {
         <Link href="/client/reports">
           <Button variant="outline" className="gap-2">
             <CheckCircle2 className="h-4 w-4" /> Approve Reports
+          </Button>
+        </Link>
+        <Link href="/client/upload">
+          <Button variant="outline" className="gap-2">
+            <Upload className="h-4 w-4" /> Upload Statement
           </Button>
         </Link>
       </div>

@@ -112,6 +112,7 @@ model User {
   vendors              Vendor[]
   cashFlowScenarios    CashFlowScenario[]
   whiteLabelConfig     WhiteLabelConfig?
+  statements           Statement[]
 }
 
 model EmailVerification {
@@ -1617,6 +1618,24 @@ model WhiteLabelConfig {
   hideVercel    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// ─── Service Pipeline ─────────────────────────────────────────────────────────
+
+model Statement {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename    String
+  periodStart DateTime?
+  periodEnd   DateTime?
+  rowCount    Int       @default(0)
+  status      String    @default("PROCESSING")
+  errorMsg    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 // ─── Fund Transfer ────────────────────────────────────────────────────────────

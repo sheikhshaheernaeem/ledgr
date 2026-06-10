@@ -410,3 +410,131 @@ export function reportApprovalEmail(p: ReportApprovalParams): string {
 </body>
 </html>`;
 }
+
+interface MonthlyReportParams {
+  clientName: string;
+  companyName: string;
+  accountantName: string;
+  month: string;
+  totalIncome: number;
+  totalExpenses: number;
+  netProfit: number;
+  currency: string;
+  topExpenses: { category: string; amount: number }[];
+  narrative: string;
+  approvalUrl: string;
+  dashboardUrl: string;
+}
+
+export function monthlyReportEmail(p: MonthlyReportParams): string {
+  const isProfit = p.netProfit >= 0;
+  const netColor = isProfit ? "#059669" : "#dc2626";
+  const netLabel = isProfit ? "Net Profit" : "Net Loss";
+
+  const topExpensesRows = p.topExpenses
+    .slice(0, 5)
+    .map(
+      (e) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #f0f0f0;color:#374151;font-size:14px;">${e.category}</td>
+      <td style="padding:8px 0;border-bottom:1px solid #f0f0f0;color:#374151;font-size:14px;text-align:right;font-weight:600;">${fmtCurrency(e.amount, p.currency)}</td>
+    </tr>`
+    )
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <!-- Header -->
+        <tr><td style="background:#111827;padding:32px 40px;">
+          <p style="margin:0;color:#10b981;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Ledgr · Monthly Report</p>
+          <h1 style="margin:8px 0 0;color:#ffffff;font-size:24px;font-weight:700;">${p.month} Financial Summary</h1>
+          <p style="margin:6px 0 0;color:#9ca3af;font-size:14px;">${p.companyName || p.clientName}</p>
+        </td></tr>
+
+        <!-- Greeting -->
+        <tr><td style="padding:32px 40px 0;">
+          <p style="margin:0;color:#374151;font-size:15px;line-height:1.6;">Hi ${p.clientName},</p>
+          <p style="margin:12px 0 0;color:#6b7280;font-size:14px;line-height:1.6;">
+            Here's your <strong>${p.month}</strong> financial report prepared by <strong>${p.accountantName}</strong>.
+          </p>
+        </td></tr>
+
+        <!-- AI Narrative -->
+        <tr><td style="padding:24px 40px 0;">
+          <div style="background:#f0fdf4;border-left:4px solid #10b981;border-radius:0 8px 8px 0;padding:16px 20px;">
+            <p style="margin:0;color:#065f46;font-size:14px;line-height:1.7;">${p.narrative}</p>
+          </div>
+        </td></tr>
+
+        <!-- P&L Cards -->
+        <tr><td style="padding:24px 40px 0;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="32%" style="background:#f0fdf4;border-radius:8px;padding:16px;text-align:center;">
+                <p style="margin:0;color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Revenue</p>
+                <p style="margin:8px 0 0;color:#059669;font-size:22px;font-weight:700;">${fmtCurrency(p.totalIncome, p.currency)}</p>
+              </td>
+              <td width="4%"></td>
+              <td width="32%" style="background:#fff5f5;border-radius:8px;padding:16px;text-align:center;">
+                <p style="margin:0;color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Expenses</p>
+                <p style="margin:8px 0 0;color:#dc2626;font-size:22px;font-weight:700;">${fmtCurrency(p.totalExpenses, p.currency)}</p>
+              </td>
+              <td width="4%"></td>
+              <td width="32%" style="background:#f8f8f8;border-radius:8px;padding:16px;text-align:center;border:2px solid ${netColor}20;">
+                <p style="margin:0;color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">${netLabel}</p>
+                <p style="margin:8px 0 0;color:${netColor};font-size:22px;font-weight:700;">${fmtCurrency(Math.abs(p.netProfit), p.currency)}</p>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Top Expenses -->
+        ${
+          p.topExpenses.length > 0
+            ? `<tr><td style="padding:24px 40px 0;">
+          <p style="margin:0 0 12px;color:#111827;font-size:14px;font-weight:700;">Top Expense Categories</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            ${topExpensesRows}
+          </table>
+        </td></tr>`
+            : ""
+        }
+
+        <!-- CTA Buttons -->
+        <tr><td style="padding:32px 40px;">
+          <table cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="padding-right:12px;">
+                <a href="${p.approvalUrl}"
+                   style="background:#059669;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;display:inline-block;">
+                  Approve Report
+                </a>
+              </td>
+              <td>
+                <a href="${p.dashboardUrl}"
+                   style="background:#f3f4f6;color:#374151;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;display:inline-block;border:1px solid #e5e7eb;">
+                  View Dashboard
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
+          <p style="margin:0;color:#9ca3af;font-size:12px;">
+            Prepared by ${p.accountantName} via <a href="https://ledgr.app" style="color:#10b981;text-decoration:none;">Ledgr</a>.
+            Questions? Reply to this email.
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}

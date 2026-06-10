@@ -12,6 +12,7 @@ import {
   FileMinus, Car, CalendarCheck, UserPlus, TrendingDown, BookKey, FileEdit,
   Network, Layers, FolderKanban, Box, GitPullRequest, BookCheck, HomeIcon,
   AlertTriangle, LineChart, PieChart, BarChart3, Send, Brain, Wand2, Users2, Paintbrush,
+  Activity,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -98,6 +99,7 @@ const aiNav = [
 ];
 
 const firmNav = [
+  { href: "/service", icon: Activity, label: "Service Ops" },
   { href: "/firm", icon: Briefcase, label: "My Firm" },
   { href: "/team", icon: UserPlus, label: "Team Members" },
 ];
