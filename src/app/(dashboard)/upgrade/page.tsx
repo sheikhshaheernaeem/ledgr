@@ -11,7 +11,7 @@ const plans = [
     description: "For freelancers and solopreneurs getting started",
     badge: null,
     cta: "Get Started",
-    ctaHref: "/signup",
+    ctaHref: "/register",
     ctaVariant: "outline" as const,
     features: [
       { text: "Up to 100 transactions/month", included: true },
@@ -33,7 +33,7 @@ const plans = [
     description: "For growing businesses that need the full picture",
     badge: "Most Popular",
     cta: "Start Free Trial",
-    ctaHref: "/signup?plan=pro",
+    ctaHref: "/register?plan=pro",
     ctaVariant: "default" as const,
     features: [
       { text: "Unlimited transactions", included: true },
