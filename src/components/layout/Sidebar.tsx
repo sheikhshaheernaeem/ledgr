@@ -99,6 +99,7 @@ const aiNav = [
 ];
 
 const firmNav = [
+  { href: "/bookkeeping-clients", icon: Users, label: "Clients" },
   { href: "/service", icon: Activity, label: "Service Ops" },
   { href: "/firm", icon: Briefcase, label: "My Firm" },
   { href: "/team", icon: UserPlus, label: "Team Members" },

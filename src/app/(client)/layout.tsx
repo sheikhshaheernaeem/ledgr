@@ -3,7 +3,7 @@ import { auth, signOut } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LogOut, LayoutDashboard, FileText, BarChart2, Upload } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3 } from "lucide-react";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -32,7 +32,17 @@ export default async function ClientLayout({ children }: { children: React.React
             </Link>
             <Link href="/client/upload">
               <Button variant="ghost" size="sm" className="gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-500">
-                <Upload className="h-3.5 w-3.5" /> Upload Statement
+                <Upload className="h-3.5 w-3.5" /> Upload
+              </Button>
+            </Link>
+            <Link href="/client/transactions">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <List className="h-3.5 w-3.5" /> Transactions
+              </Button>
+            </Link>
+            <Link href="/client/analytics">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <BarChart3 className="h-3.5 w-3.5" /> Analytics
               </Button>
             </Link>
             <Link href="/client/reports">
@@ -77,6 +87,16 @@ export default async function ClientLayout({ children }: { children: React.React
           <Link href="/client/upload">
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 shrink-0">
               <Upload className="h-3 w-3" /> Upload
+            </Button>
+          </Link>
+          <Link href="/client/transactions">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <List className="h-3 w-3" /> Txns
+            </Button>
+          </Link>
+          <Link href="/client/analytics">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <BarChart3 className="h-3 w-3" /> Analytics
             </Button>
           </Link>
           <Link href="/client/reports">
