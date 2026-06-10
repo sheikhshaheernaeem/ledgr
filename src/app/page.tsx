@@ -152,23 +152,27 @@ export default function Landing() {
           {/* grid */}
           <div className="absolute inset-0 opacity-[0.018] dark:opacity-[0.035]"
             style={{ backgroundImage: "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-          {/* falling lines — start at y:0 (within overflow bounds) and animate downward */}
+          {/* falling lines — pure CSS animation */}
+          <style>{`@keyframes ledgrFall{from{transform:translateY(0)}to{transform:translateY(1000px)}}`}</style>
           {[
-            { left: "8%",  delay: 0,   dur: 4.2, h: 180, color: "from-emerald-400 to-transparent" },
-            { left: "19%", delay: 1.1, dur: 3.7, h: 240, color: "from-blue-400 to-transparent" },
-            { left: "34%", delay: 0.4, dur: 5.0, h: 150, color: "from-emerald-300 to-transparent" },
-            { left: "51%", delay: 2.3, dur: 3.9, h: 200, color: "from-teal-400 to-transparent" },
-            { left: "63%", delay: 0.8, dur: 4.6, h: 160, color: "from-violet-400 to-transparent" },
-            { left: "77%", delay: 1.7, dur: 3.5, h: 220, color: "from-emerald-400 to-transparent" },
-            { left: "89%", delay: 3.1, dur: 4.8, h: 130, color: "from-blue-300 to-transparent" },
+            { left: "8%",  delay: 0,   dur: 4.2, h: 180, rgba: "52,211,153" },
+            { left: "19%", delay: 1.1, dur: 3.7, h: 240, rgba: "96,165,250" },
+            { left: "34%", delay: 0.4, dur: 5.0, h: 150, rgba: "110,231,183" },
+            { left: "51%", delay: 2.3, dur: 3.9, h: 200, rgba: "45,212,191" },
+            { left: "63%", delay: 0.8, dur: 4.6, h: 160, rgba: "167,139,250" },
+            { left: "77%", delay: 1.7, dur: 3.5, h: 220, rgba: "52,211,153" },
+            { left: "89%", delay: 3.1, dur: 4.8, h: 130, rgba: "147,197,253" },
           ].map((l, i) => (
-            <motion.div key={i}
-              style={{ left: l.left, top: 0, width: 3, height: l.h, position: "absolute", opacity: 0.7 }}
-              initial={{ y: 0 }}
-              animate={{ y: 950 }}
-              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: 0.6 }}
-              className={`bg-gradient-to-b ${l.color} rounded-full`}
-            />
+            <div key={i} style={{
+              position: "absolute",
+              left: l.left,
+              top: 0,
+              width: 4,
+              height: l.h,
+              borderRadius: "9999px",
+              background: `linear-gradient(to bottom, rgba(${l.rgba},0.85), transparent)`,
+              animation: `ledgrFall ${l.dur}s linear ${l.delay}s infinite`,
+            }} />
           ))}
         </div>
 
