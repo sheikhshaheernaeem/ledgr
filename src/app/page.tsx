@@ -152,20 +152,21 @@ export default function Landing() {
           {/* grid */}
           <div className="absolute inset-0 opacity-[0.018] dark:opacity-[0.035]"
             style={{ backgroundImage: "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-          {/* falling lines */}
+          {/* falling lines — start at y:0 (within overflow bounds) and animate downward */}
           {[
-            { left: "8%",  delay: 0,   dur: 4.2, h: 160, color: "from-emerald-400/70 to-transparent" },
-            { left: "19%", delay: 1.1, dur: 3.7, h: 220, color: "from-blue-400/60 to-transparent" },
-            { left: "34%", delay: 0.4, dur: 5.0, h: 130, color: "from-emerald-300/65 to-transparent" },
-            { left: "51%", delay: 2.3, dur: 3.9, h: 190, color: "from-teal-400/60 to-transparent" },
-            { left: "63%", delay: 0.8, dur: 4.6, h: 150, color: "from-violet-400/55 to-transparent" },
-            { left: "77%", delay: 1.7, dur: 3.5, h: 200, color: "from-emerald-400/70 to-transparent" },
-            { left: "89%", delay: 3.1, dur: 4.8, h: 110, color: "from-blue-300/60 to-transparent" },
+            { left: "8%",  delay: 0,   dur: 4.2, h: 180, color: "from-emerald-400 to-transparent" },
+            { left: "19%", delay: 1.1, dur: 3.7, h: 240, color: "from-blue-400 to-transparent" },
+            { left: "34%", delay: 0.4, dur: 5.0, h: 150, color: "from-emerald-300 to-transparent" },
+            { left: "51%", delay: 2.3, dur: 3.9, h: 200, color: "from-teal-400 to-transparent" },
+            { left: "63%", delay: 0.8, dur: 4.6, h: 160, color: "from-violet-400 to-transparent" },
+            { left: "77%", delay: 1.7, dur: 3.5, h: 220, color: "from-emerald-400 to-transparent" },
+            { left: "89%", delay: 3.1, dur: 4.8, h: 130, color: "from-blue-300 to-transparent" },
           ].map((l, i) => (
             <motion.div key={i}
-              style={{ left: l.left, top: 0, width: 2, height: l.h, position: "absolute" }}
-              animate={{ y: [-l.h, 900], opacity: [0, 1, 0.9, 0] }}
-              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: 0.4 }}
+              style={{ left: l.left, top: 0, width: 3, height: l.h, position: "absolute", opacity: 0.7 }}
+              initial={{ y: 0 }}
+              animate={{ y: 950 }}
+              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: 0.6 }}
               className={`bg-gradient-to-b ${l.color} rounded-full`}
             />
           ))}
@@ -362,12 +363,12 @@ export default function Landing() {
                 {i < 3 && <ChevronRight className="absolute -right-2 top-6 h-4 w-4 text-border/50 hidden sm:block z-10" />}
                 <div className={`h-full rounded-2xl border p-5 flex flex-col gap-2.5 transition-all duration-300 ${
                   e.dim
-                    ? "border-border/30 bg-card/20 opacity-40"
+                    ? "border-border/50 bg-card/40 opacity-75"
                     : "border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-teal-500/5 shadow-xl shadow-emerald-500/10 ring-1 ring-emerald-500/20"
                 }`}>
-                  <span className={`text-[10px] font-black uppercase tracking-[0.12em] ${e.dim ? "text-muted-foreground/50" : "text-emerald-500 dark:text-emerald-400"}`}>{e.era}</span>
-                  <p className={`font-bold text-sm ${e.dim ? "text-foreground/40" : "text-foreground"}`}>{e.label}</p>
-                  <p className={`text-xs leading-relaxed ${e.dim ? "text-muted-foreground/40" : "text-muted-foreground"}`}>{e.desc}</p>
+                  <span className={`text-[10px] font-black uppercase tracking-[0.12em] ${e.dim ? "text-muted-foreground/80" : "text-emerald-500 dark:text-emerald-400"}`}>{e.era}</span>
+                  <p className={`font-bold text-sm ${e.dim ? "text-foreground/80" : "text-foreground"}`}>{e.label}</p>
+                  <p className={`text-xs leading-relaxed ${e.dim ? "text-muted-foreground/70" : "text-muted-foreground"}`}>{e.desc}</p>
                   {!e.dim && (
                     <div className="mt-auto pt-1">
                       <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
