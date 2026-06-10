@@ -350,10 +350,10 @@ export default function LandingPage() {
               <Sparkles className="h-7 w-7 text-blue-400" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-              Powered by Claude — the most capable AI model
+              AI that actually knows your numbers
             </h2>
             <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-xl mx-auto">
-              Your books are analysed by Claude claude-opus-4-7 — Anthropic&apos;s most capable model. Ask it anything: cash
+              Ledgr AI runs on Llama 3.3 70B — open-source and built into your account at no extra cost. Ask it anything: cash
               position, tax exposure, unexplained charges, runway. It has live access to
               your financial data and gives you real answers, not generic advice.
             </p>

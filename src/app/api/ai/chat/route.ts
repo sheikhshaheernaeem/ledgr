@@ -1,10 +1,11 @@
 import { streamText } from "ai";
-import { createAnthropic } from "@ai-sdk/anthropic";
+import { createOpenAI } from "@ai-sdk/openai";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const anthropic = createAnthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY ?? "",
+const groq = createOpenAI({
+  apiKey: process.env.GROQ_API_KEY ?? "",
+  baseURL: "https://api.groq.com/openai/v1",
 });
 
 async function buildContext(userId: string): Promise<string> {
@@ -227,9 +228,9 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return new Response("Unauthorized", { status: 401 });
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.GROQ_API_KEY) {
     return new Response(
-      JSON.stringify({ error: "AI assistant not configured. Set ANTHROPIC_API_KEY." }),
+      JSON.stringify({ error: "AI assistant not configured. Set GROQ_API_KEY." }),
       { status: 503, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -239,7 +240,7 @@ export async function POST(req: Request) {
   const context = await buildContext(userId);
 
   const result = streamText({
-    model: anthropic("claude-opus-4-7"),
+    model: groq("llama-3.3-70b-versatile"),
     system: `You are Ledgr AI — the built-in financial intelligence of Ledgr, an AI-native accounting firm.
 
 Ledgr is not software — it is an AI-native accounting firm that does the work for clients. You are the client's always-on AI accountant with live access to their books.

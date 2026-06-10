@@ -59,9 +59,9 @@ export default function AIAssistantPage() {
           <div>
             <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
               Ledgr AI
-              <Badge className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 font-medium">Claude claude-opus-4-7</Badge>
+              <Badge className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 font-medium">Llama 3.3</Badge>
             </h1>
-            <p className="text-xs text-muted-foreground">Your AI accountant · Live access to your books · Powered by Claude claude-opus-4-7</p>
+            <p className="text-xs text-muted-foreground">Your AI accountant · Live access to your books · Powered by Llama 3.3 70B</p>
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function AIAssistantPage() {
             </div>
             <h2 className="text-xl font-bold text-foreground mb-2">Your AI accountant is ready</h2>
             <p className="text-sm text-muted-foreground max-w-sm mb-8">
-              I&apos;m Ledgr AI, powered by Claude claude-opus-4-7. I have live access to your books and can answer any accounting, tax, or cash flow question with your real numbers.
+              I&apos;m Ledgr AI, powered by Llama 3.3 70B. I have live access to your books and can answer any accounting, tax, or cash flow question with your real numbers.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl">
               {SUGGESTIONS.map((s) => (
@@ -136,7 +136,7 @@ export default function AIAssistantPage() {
           </Button>
         </form>
         <p className="text-center text-[11px] text-muted-foreground mt-2">
-          Powered by Claude claude-opus-4-7 · Your Ledgr accountant reviews all reports before delivery.
+          Powered by Llama 3.3 70B (open source) · Your Ledgr accountant reviews all reports before delivery.
         </p>
       </div>
     </div>
