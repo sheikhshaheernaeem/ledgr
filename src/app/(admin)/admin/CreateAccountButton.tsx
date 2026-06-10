@@ -24,8 +24,15 @@ import {
 import { UserPlus, Loader2, Copy, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 const ROLES = [
+  { value: "CLIENT", label: "Client — accesses client portal" },
   { value: "ACCOUNTANT", label: "Accountant — can review and approve reports" },
   { value: "ADMIN", label: "Admin — full platform access" },
+];
+
+const PLANS = [
+  { value: "STARTER", label: "Starter — $299/mo" },
+  { value: "GROWTH", label: "Growth — $599/mo" },
+  { value: "CFO", label: "CFO — $1,499/mo" },
 ];
 
 function generatePassword(): string {
@@ -53,11 +60,13 @@ export function CreateAccountButton() {
     name: "",
     email: "",
     password: generatePassword(),
-    role: "ACCOUNTANT",
+    role: "CLIENT",
+    companyName: "",
+    subscriptionStatus: "STARTER",
   });
 
   function resetForm() {
-    setForm({ name: "", email: "", password: generatePassword(), role: "ACCOUNTANT" });
+    setForm({ name: "", email: "", password: generatePassword(), role: "CLIENT", companyName: "", subscriptionStatus: "STARTER" });
     setCreated(null);
     setCopied(false);
     setShowPassword(false);
@@ -101,7 +110,7 @@ export function CreateAccountButton() {
         className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-xs font-medium transition-colors"
       >
         <UserPlus className="h-3.5 w-3.5" />
-        Add Team Account
+        Add Account
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
@@ -153,9 +162,9 @@ export function CreateAccountButton() {
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Add Team Account</DialogTitle>
+              <DialogTitle>Add Account</DialogTitle>
               <DialogDescription>
-                Create a login for a team member. Account is verified immediately — no email required.
+                Create a client or team member account. Verified immediately — no email required.
               </DialogDescription>
             </DialogHeader>
 
@@ -187,7 +196,7 @@ export function CreateAccountButton() {
                 <Label>Role</Label>
                 <Select
                   value={form.role}
-                  onValueChange={(v) => setForm({ ...form, role: v ?? "ACCOUNTANT" })}
+                  onValueChange={(v) => setForm({ ...form, role: v ?? "CLIENT" })}
                 >
                   <SelectTrigger className="w-full">
                     {ROLES.find((r) => r.value === form.role)?.label ?? form.role}
@@ -201,6 +210,39 @@ export function CreateAccountButton() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {form.role === "CLIENT" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="ca-company">Company Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
+                    <Input
+                      id="ca-company"
+                      placeholder="Acme Corp"
+                      value={form.companyName}
+                      onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Plan</Label>
+                    <Select
+                      value={form.subscriptionStatus}
+                      onValueChange={(v) => setForm({ ...form, subscriptionStatus: v ?? "STARTER" })}
+                    >
+                      <SelectTrigger className="w-full">
+                        {PLANS.find((p) => p.value === form.subscriptionStatus)?.label ?? form.subscriptionStatus}
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PLANS.map((p) => (
+                          <SelectItem key={p.value} value={p.value}>
+                            {p.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">

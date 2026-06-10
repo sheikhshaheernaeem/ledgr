@@ -13,11 +13,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 
-  const { name, email, password, role } = body as {
+  const { name, email, password, role, companyName, subscriptionStatus } = body as {
     name?: string;
     email?: string;
     password?: string;
     role?: string;
+    companyName?: string;
+    subscriptionStatus?: string;
   };
 
   if (!name?.trim()) return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -26,9 +28,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
   }
 
-  const ALLOWED_ROLES = ["ADMIN", "ACCOUNTANT"] as const;
+  const ALLOWED_ROLES = ["ADMIN", "ACCOUNTANT", "CLIENT"] as const;
   if (!role || !ALLOWED_ROLES.includes(role as typeof ALLOWED_ROLES[number])) {
-    return NextResponse.json({ error: "Role must be ADMIN or ACCOUNTANT" }, { status: 400 });
+    return NextResponse.json({ error: "Role must be ADMIN, ACCOUNTANT, or CLIENT" }, { status: 400 });
   }
 
   const existing = await prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
@@ -41,10 +43,12 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: hashed,
-      role: role as "ADMIN" | "ACCOUNTANT",
+      role: role as "ADMIN" | "ACCOUNTANT" | "CLIENT",
       emailVerified: true,
+      ...(companyName?.trim() ? { companyName: companyName.trim() } : {}),
+      ...(subscriptionStatus?.trim() ? { subscriptionStatus: subscriptionStatus.trim().toUpperCase() } : {}),
     },
-    select: { id: true, name: true, email: true, role: true, createdAt: true },
+    select: { id: true, name: true, email: true, role: true, createdAt: true, companyName: true },
   });
 
   return NextResponse.json(user, { status: 201 });
