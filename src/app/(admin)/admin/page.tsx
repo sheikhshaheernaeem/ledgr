@@ -16,6 +16,7 @@ import {
 import { AdminRoleButton } from "./AdminRoleButton";
 import { AdminDeleteButton } from "./AdminDeleteButton";
 import { AdminVerifyButton } from "./AdminVerifyButton";
+import { CreateAccountButton } from "./CreateAccountButton";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -88,6 +89,7 @@ export default async function AdminPage() {
               <CardTitle className="text-base">All Users ({allUsers.length})</CardTitle>
               <CardDescription>Every registered account — admins, accountants, and clients</CardDescription>
             </div>
+            <CreateAccountButton />
           </div>
         </CardHeader>
         <CardContent className="p-0">
