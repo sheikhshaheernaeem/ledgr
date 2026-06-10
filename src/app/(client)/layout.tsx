@@ -3,7 +3,7 @@ import { auth, signOut } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LogOut, LayoutDashboard, FileText, BarChart2 } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, BarChart2, Upload } from "lucide-react";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -30,14 +30,19 @@ export default async function ClientLayout({ children }: { children: React.React
                 <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
               </Button>
             </Link>
-            <Link href="/client/invoices">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
-                <FileText className="h-3.5 w-3.5" /> Invoices
+            <Link href="/client/upload">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-500">
+                <Upload className="h-3.5 w-3.5" /> Upload Statement
               </Button>
             </Link>
             <Link href="/client/reports">
               <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
                 <BarChart2 className="h-3.5 w-3.5" /> Reports
+              </Button>
+            </Link>
+            <Link href="/client/invoices">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <FileText className="h-3.5 w-3.5" /> Invoices
               </Button>
             </Link>
           </nav>
@@ -63,20 +68,25 @@ export default async function ClientLayout({ children }: { children: React.React
         </div>
 
         {/* Mobile nav */}
-        <div className="sm:hidden flex items-center gap-1 px-4 pb-2">
+        <div className="sm:hidden flex items-center gap-1 px-4 pb-2 overflow-x-auto">
           <Link href="/client">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
-              <LayoutDashboard className="h-3 w-3" /> Dashboard
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <LayoutDashboard className="h-3 w-3" /> Home
             </Button>
           </Link>
-          <Link href="/client/invoices">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
-              <FileText className="h-3 w-3" /> Invoices
+          <Link href="/client/upload">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 shrink-0">
+              <Upload className="h-3 w-3" /> Upload
             </Button>
           </Link>
           <Link href="/client/reports">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
               <BarChart2 className="h-3 w-3" /> Reports
+            </Button>
+          </Link>
+          <Link href="/client/invoices">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <FileText className="h-3 w-3" /> Invoices
             </Button>
           </Link>
         </div>

@@ -45,11 +45,13 @@ function LoginForm() {
           toast.error("Invalid email or password");
         }
       } else {
-        // Check if 2FA is required
+        // Check role and 2FA to route correctly
         const sessionRes = await fetch("/api/auth/session");
         const sessionData = sessionRes.ok ? await sessionRes.json() : null;
         if (sessionData?.user?.requiresTwoFactor) {
           router.push("/login/2fa");
+        } else if (sessionData?.user?.role === "CLIENT") {
+          router.push("/client");
         } else {
           router.push("/dashboard");
         }

@@ -178,7 +178,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap gap-6 items-center justify-center text-sm text-muted-foreground">
           <span className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            Bench alternative — we onboard refugees in 24 hours
+            Bench alternative — migrate in 24 hours
           </span>
           <Separator orientation="vertical" className="h-4 hidden sm:block" />
           <span className="flex items-center gap-2">

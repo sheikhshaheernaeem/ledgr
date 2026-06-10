@@ -5,10 +5,13 @@ import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
 
+const VALID_PLANS = ["starter", "growth", "cfo"] as const;
+
 const schema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
+  plan: z.string().optional(),
 });
 
 function getAppUrl(req: Request): string {
@@ -25,7 +28,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name, email, password } = parsed.data;
+    const { name, email, password, plan } = parsed.data;
+    const subscriptionStatus = VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
+      ? plan!.toUpperCase()
+      : "STARTER";
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -37,7 +43,7 @@ export async function POST(req: Request) {
 
     const hashed = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { name, email, password: hashed, emailVerified: false },
+      data: { name, email, password: hashed, emailVerified: false, subscriptionStatus },
     });
 
     // Create verification token (expires in 24h)

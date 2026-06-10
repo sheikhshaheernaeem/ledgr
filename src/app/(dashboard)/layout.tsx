@@ -20,7 +20,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect("/login/2fa");
   }
 
-  const isAdmin = (session.user as { role?: string }).role === "ADMIN";
+  const role = (session.user as { role?: string }).role;
+  if (role === "CLIENT") redirect("/client");
+
+  const isAdmin = role === "ADMIN";
   const emailVerified = (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed ?? false;
 
   const localeSettings = await prisma.user.findUnique({
