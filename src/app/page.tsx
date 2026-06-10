@@ -58,6 +58,7 @@ const pricing = [
     name: "Starter",
     price: 299,
     description: "For freelancers & solopreneurs",
+    slug: "starter",
     features: [
       "Up to 200 transactions/month",
       "Monthly P&L report",
@@ -72,6 +73,7 @@ const pricing = [
     name: "Growth",
     price: 599,
     description: "For small businesses $10K–$100K/mo",
+    slug: "growth",
     features: [
       "Up to 500 transactions/month",
       "Monthly P&L + quarterly review",
@@ -86,6 +88,7 @@ const pricing = [
     name: "CFO",
     price: 1499,
     description: "For growing companies needing more",
+    slug: "cfo",
     features: [
       "Unlimited transactions",
       "Full CFO-lite service",
@@ -149,7 +152,7 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/register">
+          <Link href="/register?plan=starter">
             <Button
               size="lg"
               className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-base px-8"
@@ -313,7 +316,7 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/register">
+              <Link href={`/register?plan=${plan.slug}`}>
                 <Button
                   className={`w-full ${
                     plan.highlighted
@@ -339,7 +342,7 @@ export default function LandingPage() {
           <p className="text-muted-foreground text-lg mb-8">
             Join businesses saving $900+ per month. First month completely free.
           </p>
-          <Link href="/register">
+          <Link href="/register?plan=starter">
             <Button
               size="lg"
               className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-base px-10"

@@ -2,11 +2,12 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -15,6 +16,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
+
+const PLAN_LABELS: Record<string, { name: string; price: string; color: string }> = {
+  starter: { name: "Starter", price: "$299/mo", color: "border-zinc-500/30 text-zinc-400" },
+  growth: { name: "Growth", price: "$599/mo", color: "border-emerald-500/30 text-emerald-400" },
+  cfo: { name: "CFO", price: "$1,499/mo", color: "border-blue-500/30 text-blue-400" },
+};
 
 // Popular domains — fuzzy match against these
 const POPULAR_DOMAINS = [
@@ -97,6 +104,9 @@ function validateEmail(email: string): {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const planParam = searchParams.get("plan")?.toLowerCase() ?? "";
+  const planInfo = PLAN_LABELS[planParam] ?? null;
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -150,10 +160,19 @@ export default function RegisterPage() {
         </p>
       </div>
 
+      {planInfo && (
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <span className="text-muted-foreground">Selected plan:</span>
+          <Badge variant="outline" className={planInfo.color}>
+            {planInfo.name} · {planInfo.price}
+          </Badge>
+        </div>
+      )}
+
       <Card className="border-border bg-card">
         <CardHeader>
-          <CardTitle>Get started for free</CardTitle>
-          <CardDescription>First month completely free. No credit card required.</CardDescription>
+          <CardTitle>Get started free</CardTitle>
+          <CardDescription>First month completely free. Upload your bank statement, we handle the rest.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

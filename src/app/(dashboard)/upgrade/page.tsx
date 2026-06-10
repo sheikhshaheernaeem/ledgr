@@ -1,82 +1,65 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Zap, X, ArrowRight, Building2, Brain, Shield, Users } from "lucide-react";
+import { CheckCircle2, ArrowRight, Mail, Clock, Shield, Brain } from "lucide-react";
 import Link from "next/link";
 
 const plans = [
   {
     name: "Starter",
-    price: "Free",
-    description: "For freelancers and solopreneurs getting started",
+    price: 299,
+    description: "For freelancers & solopreneurs",
     badge: null,
-    cta: "Get Started",
-    ctaHref: "/register",
+    cta: "Upgrade to Starter",
+    ctaHref: "mailto:shaheer@ledgr.app?subject=Upgrade to Starter Plan",
     ctaVariant: "outline" as const,
     features: [
-      { text: "Up to 100 transactions/month", included: true },
-      { text: "Invoices & estimates", included: true },
-      { text: "Basic P&L and balance sheet", included: true },
-      { text: "Client management", included: true },
-      { text: "Bank account tracking", included: true },
-      { text: "AI assistant (10 queries/day)", included: true },
-      { text: "Multi-currency support", included: false },
-      { text: "Payroll & time tracking", included: false },
-      { text: "Advanced AI insights", included: false },
-      { text: "Team members", included: false },
+      "Up to 200 transactions/month",
+      "Monthly P&L report",
+      "AI categorization + human review",
+      "Email delivery on the 5th",
+      "Dedicated support",
     ],
   },
   {
-    name: "Pro",
-    price: "$29",
-    period: "/month",
-    description: "For growing businesses that need the full picture",
+    name: "Growth",
+    price: 599,
+    description: "For small businesses $10K–$100K/mo",
     badge: "Most Popular",
-    cta: "Start Free Trial",
-    ctaHref: "/register?plan=pro",
+    cta: "Upgrade to Growth",
+    ctaHref: "mailto:shaheer@ledgr.app?subject=Upgrade to Growth Plan",
     ctaVariant: "default" as const,
     features: [
-      { text: "Unlimited transactions", included: true },
-      { text: "Everything in Starter", included: true },
-      { text: "Multi-currency & FX", included: true },
-      { text: "Payroll & time tracking", included: true },
-      { text: "Fixed assets & depreciation", included: true },
-      { text: "AI assistant (unlimited)", included: true },
-      { text: "Anomaly detection & risk scoring", included: true },
-      { text: "AI board reports & cohort analysis", included: true },
-      { text: "Up to 3 team members", included: true },
-      { text: "Multi-entity consolidation", included: false },
+      "Up to 500 transactions/month",
+      "Monthly P&L + quarterly review",
+      "Tax prep assistance",
+      "Cash flow forecasting",
+      "Priority support (24h response)",
     ],
   },
   {
-    name: "Enterprise",
-    price: "$99",
-    period: "/month",
-    description: "For accounting firms and complex businesses",
+    name: "CFO",
+    price: 1499,
+    description: "For growing companies needing more",
     badge: null,
-    cta: "Contact Sales",
-    ctaHref: "mailto:shaheer@ledgr.app",
+    cta: "Talk to Us",
+    ctaHref: "mailto:shaheer@ledgr.app?subject=CFO Plan Enquiry",
     ctaVariant: "outline" as const,
     features: [
-      { text: "Everything in Pro", included: true },
-      { text: "Unlimited team members", included: true },
-      { text: "Multi-entity consolidation", included: true },
-      { text: "White-label branding", included: true },
-      { text: "Revenue recognition (ASC 606)", included: true },
-      { text: "Lease accounting (ASC 842)", included: true },
-      { text: "Segregation of Duties compliance", included: true },
-      { text: "Custom API & webhooks", included: true },
-      { text: "Dedicated onboarding", included: true },
-      { text: "SLA & priority support", included: true },
+      "Unlimited transactions",
+      "Full CFO-lite service",
+      "Dedicated human accountant",
+      "Weekly check-ins",
+      "Board-ready financials",
     ],
   },
 ];
 
 const trust = [
-  { icon: Brain, title: "Truly AI-Native", body: "Not AI-bolted-on. Every workflow is designed around AI — categorisation, anomaly detection, cash flow forecasting, board reports." },
-  { icon: Shield, title: "Audit-Ready", body: "Double-entry GL, period locks, SoD compliance, full audit log. Built for accountants, not just founders." },
-  { icon: Building2, title: "Global by Default", body: "Multi-currency, locale-aware formatting, VAT/GST/Sales Tax support across 150+ countries." },
-  { icon: Users, title: "Built for Teams", body: "Invite your accountant, CFO, or bookkeeper. Role-based access for every permission level." },
+  { icon: Brain, title: "AI-Categorized", body: "Every transaction categorized by AI on the same day you upload your CSV." },
+  { icon: Shield, title: "Human-Reviewed", body: "Our team checks every report before it goes out. No raw AI output — ever." },
+  { icon: Clock, title: "Delivered by the 5th", body: "Clean P&L in your inbox every month, without you lifting a finger." },
+  { icon: Mail, title: "Reply-Based Support", body: "Questions? Just reply to your report email. We respond within 24 hours." },
 ];
 
 export default function UpgradePage() {
@@ -84,11 +67,11 @@ export default function UpgradePage() {
     <div className="p-6 max-w-5xl mx-auto space-y-12">
       <div className="text-center space-y-3">
         <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-xs">
-          <Zap className="h-3 w-3 mr-1" /> Early Access Pricing
+          AI Bookkeeping Service
         </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">Simple, transparent pricing</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Your books, done for you</h1>
         <p className="text-muted-foreground max-w-lg mx-auto text-base">
-          Start free. Upgrade when you need more. No hidden fees, no per-seat surprises.
+          Upload your bank statement. We handle everything else — categorization, review, and delivery. First month free.
         </p>
       </div>
 
@@ -103,27 +86,25 @@ export default function UpgradePage() {
             <CardHeader className="pb-4">
               <CardTitle className="text-lg">{plan.name}</CardTitle>
               <div className="flex items-baseline gap-1 mt-1">
-                <span className="text-3xl font-bold">{plan.price}</span>
-                {plan.period && <span className="text-muted-foreground text-sm">{plan.period}</span>}
+                <span className="text-3xl font-bold">${plan.price}</span>
+                <span className="text-muted-foreground text-sm">/month</span>
               </div>
               <CardDescription className="text-xs mt-1">{plan.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4">
               <ul className="space-y-2.5 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f.text} className="flex items-start gap-2.5">
-                    {f.included
-                      ? <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                      : <X className="h-4 w-4 text-muted-foreground/40 shrink-0 mt-0.5" />}
-                    <span className={`text-sm ${f.included ? "text-foreground" : "text-muted-foreground/50"}`}>{f.text}</span>
+                  <li key={f} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-sm text-foreground">{f}</span>
                   </li>
                 ))}
               </ul>
-              <Link href={plan.ctaHref}>
+              <a href={plan.ctaHref}>
                 <Button variant={plan.ctaVariant} className={`w-full gap-1.5 ${plan.badge ? "bg-emerald-500 hover:bg-emerald-400 text-black font-semibold" : ""}`}>
                   {plan.cta} <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
-              </Link>
+              </a>
             </CardContent>
           </Card>
         ))}
@@ -140,8 +121,8 @@ export default function UpgradePage() {
       </div>
 
       <div className="text-center p-8 rounded-2xl border border-border bg-gradient-to-br from-emerald-500/5 to-transparent space-y-4">
-        <h2 className="text-2xl font-bold">Questions about Enterprise?</h2>
-        <p className="text-muted-foreground text-sm">We set up a custom plan for accounting firms managing multiple clients.</p>
+        <h2 className="text-2xl font-bold">Questions about your plan?</h2>
+        <p className="text-muted-foreground text-sm">Reply to any report email or reach out directly — we respond same day.</p>
         <a href="mailto:shaheer@ledgr.app">
           <Button variant="outline" className="gap-2">
             Talk to the founder <ArrowRight className="h-4 w-4" />
