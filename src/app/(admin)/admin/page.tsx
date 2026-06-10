@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Users, FileText, AlertCircle, CheckCircle2, Shield, UserCheck, Clock,
+  Users, FileText, AlertCircle, CheckCircle2, Shield, UserCheck, Clock, Upload,
 } from "lucide-react";
 import { AdminRoleButton } from "./AdminRoleButton";
 import { AdminDeleteButton } from "./AdminDeleteButton";
@@ -23,7 +23,7 @@ export default async function AdminPage() {
   if (!session?.user) redirect("/login");
   if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
 
-  const [allUsers, pendingReports, pendingTransactions] = await Promise.all([
+  const [allUsers, pendingReports, pendingTransactions, recentStatements] = await Promise.all([
     prisma.user.findMany({
       include: {
         _count: { select: { transactions: true, reports: true, invoices: true } },
@@ -41,6 +41,11 @@ export default async function AdminPage() {
       include: { user: { select: { name: true, email: true } } },
       orderBy: { createdAt: "desc" },
       take: 20,
+    }),
+    prisma.statement.findMany({
+      include: { user: { select: { name: true, email: true, companyName: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 30,
     }),
   ]);
 
@@ -258,6 +263,83 @@ export default async function AdminPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Uploads */}
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Upload className="h-4 w-4" /> Client Uploads ({recentStatements.length})
+              </CardTitle>
+              <CardDescription>All CSV bank statement uploads across every client account</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {recentStatements.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">No uploads yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead>Client</TableHead>
+                  <TableHead>File</TableHead>
+                  <TableHead className="text-center">Rows</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Uploaded</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentStatements.map((s) => {
+                  const statusColor =
+                    s.status === "CATEGORIZED" ? "border-emerald-500/30 text-emerald-400" :
+                    s.status === "PROCESSING"  ? "border-yellow-500/30 text-yellow-400" :
+                    s.status === "ERROR"       ? "border-red-500/30 text-red-400" :
+                    "border-border text-muted-foreground";
+                  return (
+                    <TableRow key={s.id} className="border-border">
+                      <TableCell>
+                        <p className="text-sm font-medium text-foreground">
+                          {s.user.companyName || s.user.name || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{s.user.email}</p>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-foreground font-mono">{s.filename}</p>
+                        {s.periodStart && s.periodEnd && (
+                          <p className="text-[10px] text-muted-foreground">
+                            {new Date(s.periodStart).toLocaleDateString()} – {new Date(s.periodEnd).toLocaleDateString()}
+                          </p>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center text-sm text-muted-foreground">
+                        {s.rowCount}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={`text-xs ${statusColor}`}>
+                          {s.status.toLowerCase()}
+                        </Badge>
+                        {s.status === "ERROR" && s.errorMsg && (
+                          <p className="text-[10px] text-red-400 mt-0.5 max-w-[180px] truncate">{s.errorMsg}</p>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {new Date(s.createdAt).toLocaleDateString("en-US", {
+                            month: "short", day: "numeric", year: "numeric",
+                          })}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Reports + Pending Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
