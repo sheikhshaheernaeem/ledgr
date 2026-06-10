@@ -10,12 +10,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Loader2, Sparkles, TrendingUp, FileText, Clock, Receipt, BookOpen, Calculator } from "lucide-react";
 
 const SUGGESTIONS = [
-  { icon: TrendingUp, text: "What's my current cash position?", label: "Cash Flow" },
+  { icon: TrendingUp, text: "What's my current cash position and runway?", label: "Cash Flow" },
   { icon: Receipt, text: "Do I have any overdue invoices or bills?", label: "Invoices" },
-  { icon: FileText, text: "Summarize my financial performance this month", label: "Summary" },
-  { icon: Clock, text: "How many uninvoiced hours do I have?", label: "Time" },
-  { icon: BookOpen, text: "How do I record a depreciation journal entry?", label: "Accounting" },
-  { icon: Calculator, text: "What expenses might be tax deductible?", label: "Tax" },
+  { icon: FileText, text: "Summarise my financial performance this month vs last month", label: "Summary" },
+  { icon: Clock, text: "How many uninvoiced hours do I have and what's the value?", label: "Time" },
+  { icon: Calculator, text: "What expenses might be tax deductible this year?", label: "Tax" },
+  { icon: BookOpen, text: "Are there any anomalies or unusual transactions I should know about?", label: "Alerts" },
 ];
 
 function MessageBubble({ role, content }: { role: string; content: string }) {
@@ -59,9 +59,9 @@ export default function AIAssistantPage() {
           <div>
             <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
               Ledgr AI
-              <Badge className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 font-medium">BETA</Badge>
+              <Badge className="text-[10px] bg-blue-500/20 text-blue-400 border-blue-500/30 font-medium">Claude claude-opus-4-7</Badge>
             </h1>
-            <p className="text-xs text-muted-foreground">Powered by Claude · Has access to your live financial data</p>
+            <p className="text-xs text-muted-foreground">Your AI accountant · Live access to your books · Powered by Claude claude-opus-4-7</p>
           </div>
         </div>
       </div>
@@ -73,9 +73,9 @@ export default function AIAssistantPage() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-500/20 flex items-center justify-center mb-4">
               <Bot className="h-8 w-8 text-blue-400" />
             </div>
-            <h2 className="text-xl font-bold text-foreground mb-2">Hi, I&apos;m Ledgr AI</h2>
+            <h2 className="text-xl font-bold text-foreground mb-2">Your AI accountant is ready</h2>
             <p className="text-sm text-muted-foreground max-w-sm mb-8">
-              I can answer accounting questions, analyze your finances, and help you work smarter — all with access to your live books.
+              I&apos;m Ledgr AI, powered by Claude claude-opus-4-7. I have live access to your books and can answer any accounting, tax, or cash flow question with your real numbers.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl">
               {SUGGESTIONS.map((s) => (
@@ -136,7 +136,7 @@ export default function AIAssistantPage() {
           </Button>
         </form>
         <p className="text-center text-[11px] text-muted-foreground mt-2">
-          AI can make mistakes. Verify important financial decisions with a qualified accountant.
+          Powered by Claude claude-opus-4-7 · Your Ledgr accountant reviews all reports before delivery.
         </p>
       </div>
     </div>

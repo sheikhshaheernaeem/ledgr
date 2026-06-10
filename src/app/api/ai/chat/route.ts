@@ -1,11 +1,10 @@
 import { streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const groq = createOpenAI({
-  apiKey: process.env.GROQ_API_KEY ?? "",
-  baseURL: "https://api.groq.com/openai/v1",
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY ?? "",
 });
 
 async function buildContext(userId: string): Promise<string> {
@@ -228,9 +227,9 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return new Response("Unauthorized", { status: 401 });
 
-  if (!process.env.GROQ_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY) {
     return new Response(
-      JSON.stringify({ error: "AI assistant not configured. Set GROQ_API_KEY." }),
+      JSON.stringify({ error: "AI assistant not configured. Set ANTHROPIC_API_KEY." }),
       { status: 503, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -240,26 +239,29 @@ export async function POST(req: Request) {
   const context = await buildContext(userId);
 
   const result = streamText({
-    model: groq("llama-3.3-70b-versatile"),
-    system: `You are Ledgr AI — the built-in financial intelligence of Ledgr, an AI-native bookkeeping platform.
+    model: anthropic("claude-opus-4-7"),
+    system: `You are Ledgr AI — the built-in financial intelligence of Ledgr, an AI-native accounting firm.
+
+Ledgr is not software — it is an AI-native accounting firm that does the work for clients. You are the client's always-on AI accountant with live access to their books.
 
 Your capabilities:
-- Real-time financial analysis using the user's live data below
+- Real-time financial analysis using the client's live data below
 - Accounting guidance (double-entry, journal entries, reconciliation, accruals, deferrals)
-- Tax optimization and deduction identification
-- Cash flow analysis and forecasting
-- Anomaly explanation and fraud detection
+- Tax optimisation and deduction identification
+- Cash flow analysis and runway forecasting
+- Anomaly detection and fraud pattern explanation
 - Invoice, bill, and payroll management advice
-- Budget variance analysis
+- Budget variance analysis and recommendations
 - Inventory and fixed asset guidance
 
 Communication style:
-- Be direct, specific, and actionable
-- Always reference the user's actual numbers — never generic advice
-- Format currency amounts consistently with the user's locale
+- Be direct, specific, and actionable — you are their accountant, not a generic chatbot
+- Always reference the client's actual numbers — never give generic advice when you have real data
+- Format currency amounts consistently with the client's locale
 - When suggesting actions, name the exact Ledgr page (e.g. "Go to Journal Entries → New Entry")
-- If you spot something concerning (overdue invoices, budget overruns, anomalies), proactively mention it
+- Proactively surface concerns: overdue invoices, budget overruns, anomalies, upcoming tax deadlines
 - Keep responses concise but complete — no filler, no repetition
+- You represent an AI-native firm. Your goal is to make the client feel like they have a brilliant CFO in their corner 24/7.
 
 ${context}`,
     messages,

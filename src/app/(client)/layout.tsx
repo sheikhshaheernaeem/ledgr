@@ -20,7 +20,7 @@ export default async function ClientLayout({ children }: { children: React.React
           {/* Brand */}
           <Link href="/client" className="shrink-0">
             <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
-            <span className="ml-2 text-xs text-muted-foreground font-normal">Client Portal</span>
+            <span className="ml-2 text-xs text-muted-foreground font-normal">Your accounting, done.</span>
           </Link>
 
           {/* Nav links */}
