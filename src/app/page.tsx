@@ -154,19 +154,19 @@ export default function Landing() {
             style={{ backgroundImage: "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
           {/* falling lines */}
           {[
-            { left: "8%",  delay: 0,   dur: 4.2, h: 160, color: "from-emerald-400/60 to-transparent" },
-            { left: "19%", delay: 1.1, dur: 3.7, h: 220, color: "from-blue-400/40 to-transparent" },
-            { left: "34%", delay: 0.4, dur: 5.0, h: 130, color: "from-emerald-300/50 to-transparent" },
-            { left: "51%", delay: 2.3, dur: 3.9, h: 190, color: "from-teal-400/45 to-transparent" },
-            { left: "63%", delay: 0.8, dur: 4.6, h: 150, color: "from-violet-400/35 to-transparent" },
-            { left: "77%", delay: 1.7, dur: 3.5, h: 200, color: "from-emerald-400/55 to-transparent" },
-            { left: "89%", delay: 3.1, dur: 4.8, h: 110, color: "from-blue-300/40 to-transparent" },
+            { left: "8%",  delay: 0,   dur: 4.2, h: 160, color: "from-emerald-400/70 to-transparent" },
+            { left: "19%", delay: 1.1, dur: 3.7, h: 220, color: "from-blue-400/60 to-transparent" },
+            { left: "34%", delay: 0.4, dur: 5.0, h: 130, color: "from-emerald-300/65 to-transparent" },
+            { left: "51%", delay: 2.3, dur: 3.9, h: 190, color: "from-teal-400/60 to-transparent" },
+            { left: "63%", delay: 0.8, dur: 4.6, h: 150, color: "from-violet-400/55 to-transparent" },
+            { left: "77%", delay: 1.7, dur: 3.5, h: 200, color: "from-emerald-400/70 to-transparent" },
+            { left: "89%", delay: 3.1, dur: 4.8, h: 110, color: "from-blue-300/60 to-transparent" },
           ].map((l, i) => (
             <motion.div key={i}
-              style={{ left: l.left, top: "-30%", width: 1, height: l.h }}
-              animate={{ y: ["0%", "160%"], opacity: [0, 1, 1, 0] }}
-              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: l.delay * 0.5 }}
-              className={`absolute bg-gradient-to-b ${l.color} rounded-full`}
+              style={{ left: l.left, top: 0, width: 2, height: l.h, position: "absolute" }}
+              animate={{ y: [-l.h, 900], opacity: [0, 1, 0.9, 0] }}
+              transition={{ duration: l.dur, delay: l.delay, repeat: Infinity, ease: "linear", repeatDelay: 0.4 }}
+              className={`bg-gradient-to-b ${l.color} rounded-full`}
             />
           ))}
         </div>
