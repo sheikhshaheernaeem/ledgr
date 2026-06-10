@@ -152,25 +152,30 @@ export default function Landing() {
           {/* grid */}
           <div className="absolute inset-0 opacity-[0.018] dark:opacity-[0.035]"
             style={{ backgroundImage: "linear-gradient(to right, #10b981 1px, transparent 1px), linear-gradient(to bottom, #10b981 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-          {/* falling lines — pure CSS animation */}
-          <style>{`@keyframes ledgrFall{from{transform:translateY(0)}to{transform:translateY(1000px)}}`}</style>
+        </div>
+
+        {/* falling lines — outside -z-10 stack, in front of background, behind text */}
+        <style>{`@keyframes ledgrFall{0%{transform:translateY(-50px);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(1100px);opacity:0}}`}</style>
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {[
-            { left: "8%",  delay: 0,   dur: 4.2, h: 180, rgba: "52,211,153" },
-            { left: "19%", delay: 1.1, dur: 3.7, h: 240, rgba: "96,165,250" },
-            { left: "34%", delay: 0.4, dur: 5.0, h: 150, rgba: "110,231,183" },
-            { left: "51%", delay: 2.3, dur: 3.9, h: 200, rgba: "45,212,191" },
-            { left: "63%", delay: 0.8, dur: 4.6, h: 160, rgba: "167,139,250" },
-            { left: "77%", delay: 1.7, dur: 3.5, h: 220, rgba: "52,211,153" },
-            { left: "89%", delay: 3.1, dur: 4.8, h: 130, rgba: "147,197,253" },
+            { left: "6%",  delay: 0,   dur: 4.2, h: 200, rgba: "52,211,153" },
+            { left: "17%", delay: 1.1, dur: 3.7, h: 260, rgba: "96,165,250" },
+            { left: "29%", delay: 0.4, dur: 5.0, h: 170, rgba: "110,231,183" },
+            { left: "42%", delay: 2.3, dur: 3.9, h: 220, rgba: "45,212,191" },
+            { left: "58%", delay: 0.8, dur: 4.6, h: 180, rgba: "167,139,250" },
+            { left: "71%", delay: 1.7, dur: 3.5, h: 240, rgba: "52,211,153" },
+            { left: "84%", delay: 3.1, dur: 4.8, h: 150, rgba: "147,197,253" },
+            { left: "94%", delay: 2.0, dur: 4.4, h: 190, rgba: "52,211,153" },
           ].map((l, i) => (
             <div key={i} style={{
               position: "absolute",
               left: l.left,
               top: 0,
-              width: 4,
+              width: 6,
               height: l.h,
               borderRadius: "9999px",
-              background: `linear-gradient(to bottom, rgba(${l.rgba},0.85), transparent)`,
+              background: `linear-gradient(to bottom, rgba(${l.rgba},1), rgba(${l.rgba},0.4) 50%, transparent)`,
+              boxShadow: `0 0 12px 2px rgba(${l.rgba},0.6)`,
               animation: `ledgrFall ${l.dur}s linear ${l.delay}s infinite`,
             }} />
           ))}
