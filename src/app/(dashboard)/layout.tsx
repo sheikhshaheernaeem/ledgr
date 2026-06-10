@@ -3,12 +3,11 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { LogOut, MailWarning } from "lucide-react";
+import { LogOut } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { AIChatBubble } from "@/components/ai/AIChatBubble";
-import { ResendVerificationButton } from "@/components/layout/ResendVerificationButton";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +23,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (role === "CLIENT") redirect("/client");
 
   const isAdmin = role === "ADMIN";
-  const emailVerified = (session.user as unknown as { emailConfirmed?: boolean }).emailConfirmed ?? false;
 
   const localeSettings = await prisma.user.findUnique({
     where: { id: session.user.id as string },
@@ -62,13 +60,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        {!emailVerified && (
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-yellow-500/10 border-b border-yellow-500/20 text-yellow-400 text-xs">
-            <MailWarning className="h-4 w-4 shrink-0" />
-            <span className="flex-1">Please verify your email address to secure your account.</span>
-            <ResendVerificationButton email={session.user.email ?? ""} />
-          </div>
-        )}
         {/* Mobile header */}
         <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border">
           <Link href="/">

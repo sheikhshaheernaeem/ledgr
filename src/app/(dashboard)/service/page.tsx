@@ -176,8 +176,8 @@ export default async function ServiceDashboardPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Link href={`/reports?client=${client.id}`}>
-                          <Button variant="ghost" size="sm" className="text-xs">View</Button>
+                        <Link href={`/firm/${client.id}`}>
+                          <Button variant="outline" size="sm" className="text-xs">Open Workspace</Button>
                         </Link>
                       </TableCell>
                     </TableRow>

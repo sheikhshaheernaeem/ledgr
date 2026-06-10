@@ -8,24 +8,44 @@ export async function GET(
 ) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const accountantId = session.user.id as string;
+  const userId = session.user.id as string;
+  const role = (session.user as { role?: string }).role;
+  const isAdmin = role === "ADMIN" || role === "ACCOUNTANT";
   const { clientId } = await params;
 
-  // Verify the managed client relationship
-  const mc = await prisma.managedClient.findUnique({
-    where: { accountantId_clientId: { accountantId, clientId } },
-    include: { client: { select: { id: true, name: true, email: true, companyName: true } } },
-  });
+  // Admins/accountants can view any client; others need a managed relationship
+  let clientInfo: { id: string; name: string | null; email: string; companyName: string | null } | null = null;
 
-  if (!mc || !mc.isActive) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (isAdmin) {
+    clientInfo = await prisma.user.findUnique({
+      where: { id: clientId },
+      select: { id: true, name: true, email: true, companyName: true },
+    });
+  } else {
+    const mc = await prisma.managedClient.findUnique({
+      where: { accountantId_clientId: { accountantId: userId, clientId } },
+      include: { client: { select: { id: true, name: true, email: true, companyName: true } } },
+    });
+    if (mc?.isActive) clientInfo = mc.client;
+  }
+
+  if (!clientInfo) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const now = new Date();
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const [transactions, invoices, reports] = await Promise.all([
+  const [transactions, allTransactions, invoices, reports, statements] = await Promise.all([
+    // This-month summary
     prisma.transaction.findMany({
       where: { userId: clientId, date: { gte: thisMonthStart } },
       select: { amount: true, type: true, category: true, date: true },
+    }),
+    // All transactions for the transactions tab
+    prisma.transaction.findMany({
+      where: { userId: clientId },
+      orderBy: { date: "desc" },
+      take: 200,
+      select: { id: true, date: true, description: true, amount: true, type: true, category: true, subcategory: true, status: true, confidence: true },
     }),
     prisma.invoice.findMany({
       where: { userId: clientId, status: { in: ["SENT", "OVERDUE", "DRAFT"] } },
@@ -34,25 +54,38 @@ export async function GET(
     prisma.report.findMany({
       where: { userId: clientId },
       orderBy: [{ year: "desc" }, { month: "desc" }],
-      take: 1,
-      select: { month: true, year: true, totalIncome: true, totalExpenses: true, netProfit: true, status: true },
+      take: 6,
+      select: { id: true, month: true, year: true, totalIncome: true, totalExpenses: true, netProfit: true, status: true, clientApprovedAt: true },
+    }),
+    prisma.statement.findMany({
+      where: { userId: clientId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, filename: true, rowCount: true, status: true, periodStart: true, periodEnd: true, createdAt: true, errorMsg: true },
     }),
   ]);
 
   const revenue = transactions.filter((t) => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
   const expenses = transactions.filter((t) => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
-  const netProfit = revenue - expenses;
+
+  // Category breakdown for expense analysis
+  const categoryMap: Record<string, number> = {};
+  allTransactions
+    .filter((t) => t.type === "DEBIT")
+    .forEach((t) => { const cat = t.category ?? "Other"; categoryMap[cat] = (categoryMap[cat] ?? 0) + t.amount; });
+  const categoryBreakdown = Object.entries(categoryMap)
+    .sort((a, b) => b[1] - a[1])
+    .map(([category, amount]) => ({ category, amount }));
 
   const openInvoices = invoices.filter((i) => i.status === "SENT" || i.status === "OVERDUE");
   const overdueInvoices = invoices.filter((i) => i.status === "OVERDUE");
 
   return NextResponse.json({
-    client: mc.client,
+    client: clientInfo,
     summary: {
       thisMonth: {
         revenue,
         expenses,
-        netProfit,
+        netProfit: revenue - expenses,
         transactionCount: transactions.length,
       },
       invoices: {
@@ -63,6 +96,10 @@ export async function GET(
       },
       lastReport: reports[0] ?? null,
     },
+    statements,
+    transactions: allTransactions,
+    categoryBreakdown,
+    reports,
   });
 }
 
@@ -81,7 +118,6 @@ export async function DELETE(
 
   if (!mc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Soft delete — mark inactive rather than truly deleting
   await prisma.managedClient.update({
     where: { id: mc.id },
     data: { isActive: false },
