@@ -1,11 +1,10 @@
 import { streamText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createGroq } from "@ai-sdk/groq";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const groq = createOpenAI({
+const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY ?? "",
-  baseURL: "https://api.groq.com/openai/v1",
 });
 
 async function buildContext(userId: string): Promise<string> {

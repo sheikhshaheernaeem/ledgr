@@ -1,442 +1,919 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  ArrowLeft, TrendingUp, TrendingDown, DollarSign, FileText,
-  AlertTriangle, Building2, Upload, CheckCircle2, Clock, BarChart3,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  ArrowLeft, AlertTriangle, Building2, Upload, CheckCircle2, Clock,
+  Send, Edit3, X, Sparkles, FileText, Hash, Mail, Pencil,
 } from "lucide-react";
 
+/* ── types ── */
 interface Transaction {
   id: string;
   date: string;
   description: string;
   amount: number;
   type: "DEBIT" | "CREDIT";
-  category: string;
-  subcategory: string;
+  category: string | null;
+  subcategory: string | null;
   status: string;
-  confidence: number;
+  confidence: number | null;
+  notes: string | null;
+  reconciled: boolean;
 }
-
 interface Statement {
-  id: string;
-  filename: string;
-  rowCount: number;
-  status: string;
-  periodStart: string | null;
-  periodEnd: string | null;
-  createdAt: string;
-  errorMsg: string | null;
+  id: string; filename: string; rowCount: number; status: string;
+  periodStart: string | null; periodEnd: string | null; createdAt: string; errorMsg: string | null;
 }
-
 interface Report {
-  id: string;
-  month: number;
-  year: number;
-  totalIncome: number;
-  totalExpenses: number;
-  netProfit: number;
-  status: string;
+  id: string; month: number; year: number;
+  totalIncome: number; totalExpenses: number; netProfit: number;
+  status: string; aiSummary: string | null;
+  draftedAt: string | null;
+  accountantApprovedAt: string | null;
+  accountantApprovedById: string | null;
   clientApprovedAt: string | null;
+  sentAt: string | null;
+  createdAt: string;
 }
-
+interface Anomaly {
+  id: string; transactionId: string | null; entityType: string; entityId: string;
+  reason: string; severity: string; riskScore: number; createdAt: string;
+}
+interface Message {
+  id: string; body: string; role: string; readAt: string | null;
+  createdAt: string; reportId: string | null; transactionId: string | null;
+}
 interface ClientData {
-  client: { id: string; name: string | null; email: string; companyName: string | null };
+  client: { id: string; name: string | null; email: string; companyName: string | null; createdAt: string };
   summary: {
     thisMonth: { revenue: number; expenses: number; netProfit: number; transactionCount: number };
-    invoices: { open: number; overdue: number; openAmount: number; recentOpen: Array<{ id: string; status: string; total: number; dueDate: string; clientName: string }> };
-    lastReport: { month: number; year: number; totalIncome: number; totalExpenses: number; netProfit: number; status: string } | null;
+    invoices: { open: number; overdue: number; openAmount: number };
+    lastReport: Report | null;
+    pendingApprovalCount: number;
+    anomalyCount: number;
+    uncategorizedCount: number;
+    unreadMessages: number;
   };
   statements: Statement[];
   transactions: Transaction[];
   categoryBreakdown: { category: string; amount: number }[];
   reports: Report[];
+  anomalies: Anomaly[];
+  messages: Message[];
 }
+
+const CATEGORIES = [
+  "Revenue", "Sales", "Refunds",
+  "Cost of Goods Sold", "Salaries & Wages", "Contractors",
+  "Rent", "Utilities", "Software & SaaS", "Marketing", "Advertising",
+  "Travel", "Meals", "Office Supplies", "Insurance", "Legal & Professional",
+  "Bank Fees", "Interest", "Taxes", "Equipment", "Repairs",
+  "Other Income", "Other Expense", "Uncategorized",
+];
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const fmtD = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtDate = (s: string) => new Date(s).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const monthName = (m: number, y: number) => new Date(y, m - 1).toLocaleString("en-US", { month: "long", year: "numeric" });
 
-const stmtColor: Record<string, string> = {
-  CATEGORIZED: "border-emerald-500/30 text-emerald-400",
-  PROCESSING: "border-yellow-500/30 text-yellow-400",
-  ERROR: "border-red-500/30 text-red-400",
+const severityBadge: Record<string, string> = {
+  HIGH: "border-rose-500/40 bg-rose-500/10 text-rose-400",
+  MEDIUM: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+  LOW: "border-blue-500/40 bg-blue-500/10 text-blue-400",
 };
 
-const reportColor: Record<string, string> = {
-  APPROVED: "border-emerald-500/30 text-emerald-400",
-  SENT: "border-blue-500/30 text-blue-400",
-  REVIEWED: "border-purple-500/30 text-purple-400",
-  DRAFT: "border-yellow-500/30 text-yellow-400",
+const reportStatusBadge: Record<string, string> = {
+  DRAFT: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+  ACCOUNTANT_APPROVED: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+  SENT: "border-violet-500/40 bg-violet-500/10 text-violet-400",
+  REVIEWED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
+  APPROVED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 };
+
+type Tab = "overview" | "transactions" | "anomalies" | "reports" | "statements" | "notes";
 
 export default function ClientWorkspacePage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = use(params);
   const [data, setData] = useState<ClientData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>("overview");
+  const [editingTxId, setEditingTxId] = useState<string | null>(null);
+  const [approveReport, setApproveReport] = useState<Report | null>(null);
+  const [revisionNotes, setRevisionNotes] = useState("");
+  const [sendingToClient, setSendingToClient] = useState(false);
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/managed-clients/${clientId}`);
-        if (!res.ok) {
-          if (res.status === 404) toast.error("Client not found or access revoked");
-          else throw new Error();
-          return;
-        }
-        setData(await res.json());
-      } catch {
-        toast.error("Failed to load client data");
-      } finally {
-        setLoading(false);
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/managed-clients/${clientId}`);
+      if (!res.ok) {
+        if (res.status === 404) toast.error("Client not found or access revoked");
+        else throw new Error();
+        return;
       }
+      setData(await res.json());
+    } catch {
+      toast.error("Failed to load client data");
+    } finally {
+      setLoading(false);
     }
-    load();
   }, [clientId]);
 
-  if (loading) return <div className="p-8 text-muted-foreground text-sm">Loading client workspace…</div>;
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load(); }, [load]);
+
+  async function updateTxCategory(txId: string, category: string) {
+    try {
+      const res = await fetch(`/api/transactions/${txId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, status: "APPROVED" }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success(`Category updated → ${category}`);
+      setEditingTxId(null);
+      load();
+    } catch {
+      toast.error("Failed to update category");
+    }
+  }
+
+  async function dismissAnomaly(anomalyId: string) {
+    try {
+      const res = await fetch(`/api/anomaly-flags/${anomalyId}/dismiss`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      toast.success("Anomaly dismissed");
+      load();
+    } catch {
+      toast.error("Failed to dismiss anomaly");
+    }
+  }
+
+  async function approveAndSend(report: Report, sendToClient: boolean) {
+    setSendingToClient(true);
+    try {
+      const res = await fetch(`/api/reports/${report.id}/accountant-approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sendToClient,
+          revisionNotes: revisionNotes.trim() || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || "Failed to approve");
+      }
+      toast.success(sendToClient ? "Report approved and sent to client" : "Report approved");
+      setApproveReport(null);
+      setRevisionNotes("");
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to approve");
+    } finally {
+      setSendingToClient(false);
+    }
+  }
+
+  if (loading) return (
+    <div className="p-12 text-center text-sm text-muted-foreground font-mono">
+      <Clock className="h-5 w-5 animate-spin mx-auto mb-3" />
+      loading client workspace…
+    </div>
+  );
   if (!data) return (
-    <div className="p-8 space-y-4">
-      <Link href="/service" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-        <ArrowLeft className="h-3.5 w-3.5" /> Back
+    <div className="p-8 space-y-4 max-w-6xl mx-auto">
+      <Link href="/firm" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+        <ArrowLeft className="h-3.5 w-3.5" /> back to clients
       </Link>
       <p className="text-muted-foreground">Client not found or you no longer have access.</p>
     </div>
   );
 
-  const { client, summary, statements, transactions, categoryBreakdown, reports } = data;
+  const { client, summary, statements, transactions, reports, anomalies } = data;
   const displayName = client.companyName || client.name || client.email;
-  const credits = transactions.filter((t) => t.type === "CREDIT");
-  const debits = transactions.filter((t) => t.type === "DEBIT");
-  const totalRevenue = credits.reduce((s, t) => s + t.amount, 0);
-  const totalExpenses = debits.reduce((s, t) => s + t.amount, 0);
+  const totalRevenue = transactions.filter((t) => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
+  const totalExpenses = transactions.filter((t) => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
+  const actionsNeeded = summary.pendingApprovalCount + summary.anomalyCount + summary.uncategorizedCount;
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div>
-        <Link href="/service" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-3">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Service Ops
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+
+        {/* breadcrumb */}
+        <Link href="/firm" className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 font-mono">
+          <ArrowLeft className="h-3 w-3" /> firm / clients / <span className="text-foreground">{displayName.toLowerCase()}</span>
         </Link>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold">{displayName}</h1>
-            {client.companyName && client.name && (
-              <div className="flex items-center gap-1.5 mt-1 text-muted-foreground text-sm">
-                <Building2 className="h-3.5 w-3.5" /> {client.name} · {client.email}
+
+        {/* header */}
+        <div className="flex items-start justify-between gap-4 flex-wrap border-b border-border/60 pb-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-lg border border-border bg-card flex items-center justify-center shrink-0">
+              <Building2 className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">{displayName}</h1>
+              <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-3 font-mono">
+                <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{client.email}</span>
+                <span>·</span>
+                <span>since {fmtDate(client.createdAt)}</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <MonoBadge>
+              <Hash className="h-3 w-3" />{transactions.length} txns
+            </MonoBadge>
+            <MonoBadge>
+              <Upload className="h-3 w-3" />{statements.length} uploads
+            </MonoBadge>
+            <MonoBadge>
+              <FileText className="h-3 w-3" />{reports.length} reports
+            </MonoBadge>
+          </div>
+        </div>
+
+        {/* Action banner */}
+        {actionsNeeded > 0 && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">
+                {actionsNeeded} action{actionsNeeded > 1 ? "s" : ""} need your attention
+              </p>
+              <div className="flex flex-wrap gap-3 mt-2 text-xs font-mono">
+                {summary.pendingApprovalCount > 0 && (
+                  <button onClick={() => setTab("reports")} className="text-amber-400 hover:text-amber-300 underline-offset-2 hover:underline">
+                    → {summary.pendingApprovalCount} report{summary.pendingApprovalCount > 1 ? "s" : ""} awaiting your approval
+                  </button>
+                )}
+                {summary.anomalyCount > 0 && (
+                  <button onClick={() => setTab("anomalies")} className="text-amber-400 hover:text-amber-300 underline-offset-2 hover:underline">
+                    → {summary.anomalyCount} anomal{summary.anomalyCount > 1 ? "ies" : "y"} to review
+                  </button>
+                )}
+                {summary.uncategorizedCount > 0 && (
+                  <button onClick={() => setTab("transactions")} className="text-amber-400 hover:text-amber-300 underline-offset-2 hover:underline">
+                    → {summary.uncategorizedCount} uncategorized txn{summary.uncategorizedCount > 1 ? "s" : ""}
+                  </button>
+                )}
               </div>
-            )}
-            {!client.companyName && (
-              <p className="text-muted-foreground text-sm mt-0.5">{client.email}</p>
-            )}
+            </div>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">
-              {statements.length} upload{statements.length !== 1 ? "s" : ""}
-            </Badge>
-            <Badge variant="outline" className="text-xs border-emerald-500/30 text-emerald-400">
-              {transactions.length} transactions
-            </Badge>
-          </div>
+        )}
+
+        {/* KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
+          <Kpi label="revenue_mtd" value={fmt(summary.thisMonth.revenue)} color="text-emerald-400" sub={`${summary.thisMonth.transactionCount} txns`} />
+          <Kpi label="expenses_mtd" value={fmt(summary.thisMonth.expenses)} color="text-rose-400" />
+          <Kpi
+            label="net_mtd"
+            value={fmt(Math.abs(summary.thisMonth.netProfit))}
+            color={summary.thisMonth.netProfit >= 0 ? "text-emerald-400" : "text-rose-400"}
+            sub={summary.thisMonth.netProfit >= 0 ? "profit" : "loss"}
+          />
+          <Kpi
+            label="open_invoices"
+            value={summary.invoices.open.toString()}
+            color="text-foreground"
+            sub={summary.invoices.overdue > 0 ? `${summary.invoices.overdue} overdue` : "all current"}
+          />
+        </div>
+
+        {/* tabs */}
+        <div className="border-b border-border/60 flex gap-1 -mb-px overflow-x-auto">
+          <TabBtn label="overview" active={tab === "overview"} onClick={() => setTab("overview")} />
+          <TabBtn label={`transactions (${transactions.length})`} active={tab === "transactions"} onClick={() => setTab("transactions")} />
+          <TabBtn label={`anomalies (${anomalies.length})`} active={tab === "anomalies"} onClick={() => setTab("anomalies")} badge={anomalies.length > 0} />
+          <TabBtn label={`reports (${reports.length})`} active={tab === "reports"} onClick={() => setTab("reports")} badge={summary.pendingApprovalCount > 0} />
+          <TabBtn label={`statements (${statements.length})`} active={tab === "statements"} onClick={() => setTab("statements")} />
+          <TabBtn label="notes" active={tab === "notes"} onClick={() => setTab("notes")} />
+        </div>
+
+        {/* tab content */}
+        <div className="pt-2">
+          {tab === "overview" && (
+            <OverviewTab data={data} totalRevenue={totalRevenue} totalExpenses={totalExpenses} onGoTab={setTab} />
+          )}
+          {tab === "transactions" && (
+            <TransactionsTab
+              transactions={transactions}
+              editingTxId={editingTxId}
+              onStartEdit={setEditingTxId}
+              onSaveCategory={updateTxCategory}
+            />
+          )}
+          {tab === "anomalies" && (
+            <AnomaliesTab anomalies={anomalies} txns={transactions} onDismiss={dismissAnomaly} />
+          )}
+          {tab === "reports" && (
+            <ReportsTab reports={reports} onApprove={(r) => setApproveReport(r)} />
+          )}
+          {tab === "statements" && (
+            <StatementsTab statements={statements} />
+          )}
+          {tab === "notes" && (
+            <NotesTab messages={data.messages} clientId={clientId} onSent={load} />
+          )}
         </div>
       </div>
 
-      {/* KPI strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Revenue (MTD)</p>
-              <TrendingUp className="h-4 w-4 text-emerald-400" />
+      {/* Approve report dialog */}
+      <Dialog open={!!approveReport} onOpenChange={(open) => { if (!open) { setApproveReport(null); setRevisionNotes(""); } }}>
+        <DialogContent>
+          {approveReport && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                  Approve {monthName(approveReport.month, approveReport.year)} report
+                </DialogTitle>
+                <DialogDescription>
+                  Your sign-off marks this report as accountant-reviewed. You can save it as approved internally, or approve and send to the client.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div className="rounded-lg border border-border bg-card p-3">
+                    <p className="text-[10px] font-mono text-muted-foreground uppercase">revenue</p>
+                    <p className="font-semibold text-emerald-400">{fmtD(approveReport.totalIncome)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-3">
+                    <p className="text-[10px] font-mono text-muted-foreground uppercase">expenses</p>
+                    <p className="font-semibold text-rose-400">{fmtD(approveReport.totalExpenses)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border bg-card p-3">
+                    <p className="text-[10px] font-mono text-muted-foreground uppercase">net</p>
+                    <p className={`font-semibold ${approveReport.netProfit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                      {fmtD(approveReport.netProfit)}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground mb-1.5 block">
+                    Note for the client <span className="text-muted-foreground">(optional)</span>
+                  </label>
+                  <Textarea
+                    value={revisionNotes}
+                    onChange={(e) => setRevisionNotes(e.target.value)}
+                    placeholder="e.g. Q1 looking solid — runway extended to ~14 months. Flagged 2 vendor charges to review."
+                    className="text-sm font-normal"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <DialogFooter className="gap-2">
+                <Button variant="outline" onClick={() => approveAndSend(approveReport, false)} disabled={sendingToClient}>
+                  Approve only
+                </Button>
+                <Button
+                  className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold"
+                  onClick={() => approveAndSend(approveReport, true)}
+                  disabled={sendingToClient}
+                >
+                  <Send className="h-3.5 w-3.5 mr-1.5" />
+                  {sendingToClient ? "Sending..." : "Approve & send to client"}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+/* ── subcomponents ── */
+
+function MonoBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider border border-border bg-card/60 text-muted-foreground px-2 py-1 rounded-md">
+      {children}
+    </span>
+  );
+}
+
+function Kpi({ label, value, color = "text-foreground", sub }: { label: string; value: string; color?: string; sub?: string }) {
+  return (
+    <div className="bg-card p-4">
+      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">{label}</p>
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      {sub && <p className="font-mono text-[10px] text-muted-foreground mt-1">{sub}</p>}
+    </div>
+  );
+}
+
+function TabBtn({ label, active, onClick, badge }: { label: string; active: boolean; onClick: () => void; badge?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+        active
+          ? "border-emerald-400 text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {label}
+      {badge && (
+        <span className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
+      )}
+    </button>
+  );
+}
+
+/* Overview tab — action items + summary */
+function OverviewTab({
+  data, totalRevenue, totalExpenses, onGoTab,
+}: {
+  data: ClientData; totalRevenue: number; totalExpenses: number; onGoTab: (t: Tab) => void;
+}) {
+  const recentTxns = data.transactions.slice(0, 5);
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* Action queue */}
+      <div className="lg:col-span-2 space-y-4">
+        <Card title="action_queue">
+          {data.summary.pendingApprovalCount === 0 && data.summary.anomalyCount === 0 && data.summary.uncategorizedCount === 0 ? (
+            <div className="p-8 text-center">
+              <CheckCircle2 className="h-8 w-8 mx-auto text-emerald-400 mb-2" />
+              <p className="text-sm font-medium text-foreground">All clear</p>
+              <p className="text-xs text-muted-foreground mt-1 font-mono">no pending actions for this client</p>
             </div>
-            <p className="text-2xl font-bold text-emerald-400">{fmt(summary.thisMonth.revenue)}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{summary.thisMonth.transactionCount} txns</p>
-          </CardContent>
+          ) : (
+            <ul className="divide-y divide-border/60">
+              {data.summary.pendingApprovalCount > 0 && (
+                <ActionRow
+                  icon={FileText}
+                  label={`${data.summary.pendingApprovalCount} report${data.summary.pendingApprovalCount > 1 ? "s" : ""} awaiting your approval`}
+                  sub="Review the AI-drafted P&L and approve before sending to the client"
+                  onClick={() => onGoTab("reports")}
+                />
+              )}
+              {data.summary.anomalyCount > 0 && (
+                <ActionRow
+                  icon={AlertTriangle}
+                  label={`${data.summary.anomalyCount} anomaly flag${data.summary.anomalyCount > 1 ? "s" : ""}`}
+                  sub="Unusual transactions, duplicates, or large variances flagged for your attention"
+                  onClick={() => onGoTab("anomalies")}
+                />
+              )}
+              {data.summary.uncategorizedCount > 0 && (
+                <ActionRow
+                  icon={Edit3}
+                  label={`${data.summary.uncategorizedCount} uncategorized transaction${data.summary.uncategorizedCount > 1 ? "s" : ""}`}
+                  sub="Recent uploads that haven't been categorized — categorize before month-end close"
+                  onClick={() => onGoTab("transactions")}
+                />
+              )}
+            </ul>
+          )}
         </Card>
-        <Card>
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Expenses (MTD)</p>
-              <TrendingDown className="h-4 w-4 text-red-400" />
-            </div>
-            <p className="text-2xl font-bold text-red-400">{fmt(summary.thisMonth.expenses)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Net (MTD)</p>
-              <DollarSign className={`h-4 w-4 ${summary.thisMonth.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`} />
-            </div>
-            <p className={`text-2xl font-bold ${summary.thisMonth.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-              {fmt(Math.abs(summary.thisMonth.netProfit))}
-            </p>
-            <p className="text-xs text-muted-foreground">{summary.thisMonth.netProfit >= 0 ? "profit" : "loss"}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">Open Invoices</p>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <p className="text-2xl font-bold">{summary.invoices.open}</p>
-            {summary.invoices.overdue > 0 && (
-              <p className="text-xs text-red-400 flex items-center gap-1 mt-0.5">
-                <AlertTriangle className="h-3 w-3" /> {summary.invoices.overdue} overdue
-              </p>
-            )}
-          </CardContent>
+
+        <Card title="recent_activity">
+          {recentTxns.length === 0 ? (
+            <p className="p-6 text-sm text-muted-foreground">No transactions yet.</p>
+          ) : (
+            <ul className="divide-y divide-border/60">
+              {recentTxns.map((tx) => (
+                <li key={tx.id} className="px-4 py-3 flex items-center gap-3 text-sm">
+                  <div className="font-mono text-[11px] text-muted-foreground w-16 shrink-0">
+                    {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate">{tx.description}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">{tx.category ?? "uncategorized"}</p>
+                  </div>
+                  <div className={`font-mono text-sm font-medium ${tx.type === "CREDIT" ? "text-emerald-400" : "text-rose-400"}`}>
+                    {tx.type === "CREDIT" ? "+" : "-"}{fmtD(tx.amount)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
       </div>
 
-      <Tabs defaultValue="transactions">
-        <TabsList className="bg-card border border-border">
-          <TabsTrigger value="transactions">Transactions ({transactions.length})</TabsTrigger>
-          <TabsTrigger value="breakdown">Category Breakdown</TabsTrigger>
-          <TabsTrigger value="statements">Uploads ({statements.length})</TabsTrigger>
-          <TabsTrigger value="reports">Reports ({reports.length})</TabsTrigger>
-        </TabsList>
-
-        {/* ── Transactions ── */}
-        <TabsContent value="transactions" className="mt-4">
-          {statements.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
-                <Upload className="h-8 w-8 mx-auto mb-3 opacity-20" />
-                <p className="font-medium">No uploads yet</p>
-                <p className="text-sm mt-1">Client hasn&apos;t uploaded a bank statement yet.</p>
-              </CardContent>
-            </Card>
-          ) : transactions.length === 0 ? (
-            <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">No transactions found.</CardContent></Card>
+      {/* P&L panel */}
+      <div className="space-y-4">
+        <Card title="pl_all_time">
+          <div className="p-4 space-y-3 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">revenue</span><span className="font-mono text-emerald-400">{fmtD(totalRevenue)}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">expenses</span><span className="font-mono text-rose-400">{fmtD(totalExpenses)}</span></div>
+            <div className="border-t border-border/60 pt-3 flex justify-between font-semibold">
+              <span>net</span>
+              <span className={`font-mono ${totalRevenue - totalExpenses >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                {totalRevenue - totalExpenses >= 0 ? "+" : ""}{fmtD(totalRevenue - totalExpenses)}
+              </span>
+            </div>
+          </div>
+        </Card>
+        <Card title="expense_categories">
+          {data.categoryBreakdown.length === 0 ? (
+            <p className="p-4 text-sm text-muted-foreground">No expenses yet.</p>
           ) : (
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border hover:bg-transparent">
-                      <TableHead>Date</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead>Type</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactions.map((tx) => (
-                      <TableRow key={tx.id} className="border-border">
-                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                          {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                        </TableCell>
-                        <TableCell className="text-sm max-w-[220px]">
-                          <p className="truncate">{tx.description}</p>
-                          {tx.subcategory && <p className="text-xs text-muted-foreground">{tx.subcategory}</p>}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs border-border text-muted-foreground">
-                            {tx.category}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-sm font-medium">
-                          <span className={tx.type === "CREDIT" ? "text-emerald-400" : "text-red-400"}>
-                            {tx.type === "CREDIT" ? "+" : "-"}{fmtD(tx.amount)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`text-xs ${tx.type === "CREDIT" ? "border-emerald-500/30 text-emerald-400" : "border-red-500/30 text-red-400"}`}>
-                            {tx.type.toLowerCase()}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="px-4 py-3 border-t border-border grid grid-cols-3 text-sm">
-                  <div><span className="text-muted-foreground">Total Revenue</span><p className="font-bold text-emerald-400">{fmtD(totalRevenue)}</p></div>
-                  <div><span className="text-muted-foreground">Total Expenses</span><p className="font-bold text-red-400">{fmtD(totalExpenses)}</p></div>
-                  <div><span className="text-muted-foreground">Net Profit</span><p className={`font-bold ${totalRevenue - totalExpenses >= 0 ? "text-emerald-400" : "text-red-400"}`}>{fmtD(totalRevenue - totalExpenses)}</p></div>
-                </div>
-              </CardContent>
-            </Card>
+            <ul className="p-3 space-y-2">
+              {data.categoryBreakdown.slice(0, 6).map(({ category, amount }) => {
+                const pct = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
+                return (
+                  <li key={category} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="truncate">{category}</span>
+                      <span className="font-mono text-muted-foreground">{fmt(amount)}</span>
+                    </div>
+                    <div className="h-1 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
-        </TabsContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
 
-        {/* ── Category Breakdown ── */}
-        <TabsContent value="breakdown" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4" />Expense by Category</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                {categoryBreakdown.length === 0 ? (
-                  <p className="px-6 pb-6 text-sm text-muted-foreground">No expense data yet.</p>
-                ) : (
-                  <div className="divide-y divide-border">
-                    {categoryBreakdown.map(({ category, amount }) => {
-                      const pct = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
-                      return (
-                        <div key={category} className="px-6 py-3">
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-sm text-foreground">{category}</span>
-                            <span className="text-sm font-semibold text-foreground">{fmtD(amount)}</span>
-                          </div>
-                          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
-                          </div>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">{pct.toFixed(1)}% of expenses</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-card/40 overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-border/60 bg-card/60">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{title}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">P&amp;L Summary (All Time)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">Total Revenue</span>
-                  <span className="font-bold text-emerald-400">{fmtD(totalRevenue)}</span>
+function ActionRow({ icon: Icon, label, sub, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; sub: string; onClick: () => void }) {
+  return (
+    <li>
+      <button onClick={onClick} className="w-full px-4 py-3 hover:bg-card/60 text-left flex items-start gap-3 transition-colors">
+        <div className="w-8 h-8 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
+          <Icon className="h-3.5 w-3.5 text-amber-400" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-foreground">{label}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>
+        </div>
+        <span className="text-xs text-muted-foreground font-mono mt-1">→</span>
+      </button>
+    </li>
+  );
+}
+
+/* Transactions tab with inline category edit */
+function TransactionsTab({
+  transactions, editingTxId, onStartEdit, onSaveCategory,
+}: {
+  transactions: Transaction[];
+  editingTxId: string | null;
+  onStartEdit: (id: string | null) => void;
+  onSaveCategory: (id: string, category: string) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "uncategorized" | "credits" | "debits">("all");
+  const filtered = useMemo(() => {
+    return transactions.filter((t) => {
+      if (filter === "uncategorized" && t.category && t.category !== "Uncategorized") return false;
+      if (filter === "credits" && t.type !== "CREDIT") return false;
+      if (filter === "debits" && t.type !== "DEBIT") return false;
+      if (search && !t.description.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [transactions, search, filter]);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2 items-center">
+        <Input
+          placeholder="Search description..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs h-9 text-sm"
+        />
+        <div className="flex gap-1 text-xs font-mono">
+          {(["all", "uncategorized", "credits", "debits"] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-2.5 py-1.5 rounded-md border transition-colors ${
+                filter === f ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400" : "border-border bg-card/60 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+        <span className="ml-auto text-xs text-muted-foreground font-mono">{filtered.length} of {transactions.length}</span>
+      </div>
+
+      <div className="rounded-lg border border-border/60 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-card/60 border-b border-border/60">
+            <tr className="text-left">
+              <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">date</th>
+              <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">description</th>
+              <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">category</th>
+              <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground text-right">amount</th>
+              <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">conf.</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/40">
+            {filtered.map((tx) => (
+              <tr key={tx.id} className="hover:bg-card/30">
+                <td className="px-3 py-2 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                  {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </td>
+                <td className="px-3 py-2 max-w-[280px]">
+                  <p className="truncate text-foreground">{tx.description}</p>
+                  {tx.subcategory && <p className="text-[11px] text-muted-foreground font-mono">{tx.subcategory}</p>}
+                </td>
+                <td className="px-3 py-2 min-w-[180px]">
+                  {editingTxId === tx.id ? (
+                    <div className="flex items-center gap-1">
+                      <select
+                        defaultValue={tx.category ?? "Uncategorized"}
+                        onChange={(e) => onSaveCategory(tx.id, e.target.value)}
+                        className="text-xs border border-emerald-500/40 bg-card rounded px-2 py-1 font-mono flex-1"
+                        autoFocus
+                      >
+                        {CATEGORIES.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <button onClick={() => onStartEdit(null)} className="text-muted-foreground hover:text-foreground">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => onStartEdit(tx.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-0.5 rounded border border-border bg-background hover:border-emerald-500/40 hover:text-emerald-400 transition-colors group"
+                    >
+                      {tx.category ?? "uncategorized"}
+                      <Pencil className="h-2.5 w-2.5 opacity-0 group-hover:opacity-100" />
+                    </button>
+                  )}
+                </td>
+                <td className={`px-3 py-2 text-right font-mono text-sm ${tx.type === "CREDIT" ? "text-emerald-400" : "text-rose-400"}`}>
+                  {tx.type === "CREDIT" ? "+" : "-"}{fmtD(tx.amount)}
+                </td>
+                <td className="px-3 py-2 font-mono text-[11px] text-muted-foreground">
+                  {tx.confidence != null ? `${(tx.confidence * 100).toFixed(0)}%` : "—"}
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan={5} className="text-center py-10 text-sm text-muted-foreground">No transactions match.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* Anomalies tab */
+function AnomaliesTab({ anomalies, txns, onDismiss }: { anomalies: Anomaly[]; txns: Transaction[]; onDismiss: (id: string) => void }) {
+  if (anomalies.length === 0) {
+    return (
+      <div className="text-center py-16 rounded-lg border border-border/60 bg-card/40">
+        <CheckCircle2 className="h-10 w-10 text-emerald-400/60 mx-auto mb-3" />
+        <p className="font-medium text-foreground">No anomalies flagged</p>
+        <p className="text-sm text-muted-foreground mt-1">Run a scan from the Anomaly Detection page to look for duplicates, unusual amounts, or fraud signals.</p>
+      </div>
+    );
+  }
+  return (
+    <ul className="space-y-2">
+      {anomalies.map((a) => {
+        const tx = a.transactionId ? txns.find((t) => t.id === a.transactionId) : null;
+        return (
+          <li key={a.id} className="rounded-lg border border-border/60 bg-card/40 p-4 flex items-start gap-3">
+            <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-4 w-4 text-amber-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${severityBadge[a.severity] ?? severityBadge.MEDIUM}`}>
+                  {a.severity}
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  risk_score: {(a.riskScore * 100).toFixed(0)}%
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">·</span>
+                <span className="font-mono text-[10px] text-muted-foreground">{fmtDate(a.createdAt)}</span>
+              </div>
+              <p className="text-sm text-foreground">{a.reason}</p>
+              {tx && (
+                <div className="mt-2 text-xs font-mono text-muted-foreground bg-background border border-border/60 rounded px-2 py-1.5">
+                  <span className="text-foreground">{tx.description}</span> · {fmtDate(tx.date)} · <span className={tx.type === "CREDIT" ? "text-emerald-400" : "text-rose-400"}>{fmtD(tx.amount)}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">Total Expenses</span>
-                  <span className="font-bold text-red-400">{fmtD(totalExpenses)}</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-sm font-semibold text-foreground">Net Profit</span>
-                  <span className={`text-lg font-bold ${totalRevenue - totalExpenses >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    {totalRevenue - totalExpenses >= 0 ? "+" : ""}{fmtD(totalRevenue - totalExpenses)}
+              )}
+            </div>
+            <button
+              onClick={() => onDismiss(a.id)}
+              className="text-xs font-mono text-muted-foreground hover:text-foreground border border-border bg-background hover:border-foreground/40 rounded px-2.5 py-1.5 shrink-0"
+            >
+              dismiss
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/* Reports tab with approve button */
+function ReportsTab({ reports, onApprove }: { reports: Report[]; onApprove: (r: Report) => void }) {
+  if (reports.length === 0) {
+    return (
+      <div className="text-center py-16 rounded-lg border border-border/60 bg-card/40">
+        <FileText className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+        <p className="font-medium text-foreground">No reports yet</p>
+        <p className="text-sm text-muted-foreground mt-1">Reports are auto-drafted on the 2nd of each month. You review before they go to the client.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-3">
+      {reports.map((r) => {
+        const needsApproval = r.status === "DRAFT" && !r.accountantApprovedAt;
+        return (
+          <div key={r.id} className="rounded-lg border border-border/60 bg-card/40 p-4">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <h3 className="font-semibold text-foreground">{monthName(r.month, r.year)}</h3>
+                  <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${reportStatusBadge[r.status] ?? "border-border text-muted-foreground"}`}>
+                    {r.status.toLowerCase().replace(/_/g, " ")}
                   </span>
                 </div>
-                <div className="pt-2 border-t border-border text-xs text-muted-foreground">
-                  Based on {transactions.length} transactions across {statements.length} uploaded file{statements.length !== 1 ? "s" : ""}
+                <div className="grid grid-cols-3 gap-x-4 text-sm font-mono mt-2">
+                  <span><span className="text-muted-foreground">revenue:</span> <span className="text-emerald-400">{fmtD(r.totalIncome)}</span></span>
+                  <span><span className="text-muted-foreground">expenses:</span> <span className="text-rose-400">{fmtD(r.totalExpenses)}</span></span>
+                  <span><span className="text-muted-foreground">net:</span> <span className={r.netProfit >= 0 ? "text-emerald-400" : "text-rose-400"}>{fmtD(r.netProfit)}</span></span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex gap-3 mt-2 text-[11px] font-mono text-muted-foreground flex-wrap">
+                  {r.draftedAt && <span>drafted: {fmtDate(r.draftedAt)}</span>}
+                  {r.accountantApprovedAt && <span>approved: {fmtDate(r.accountantApprovedAt)}</span>}
+                  {r.sentAt && <span>sent: {fmtDate(r.sentAt)}</span>}
+                  {r.clientApprovedAt && <span className="text-emerald-400">client_approved: {fmtDate(r.clientApprovedAt)}</span>}
+                </div>
+              </div>
+              {needsApproval && (
+                <Button size="sm" onClick={() => onApprove(r)} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                  <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
+                  Approve
+                </Button>
+              )}
+            </div>
+            {r.aiSummary && (
+              <details className="mt-3">
+                <summary className="text-xs font-mono text-muted-foreground cursor-pointer hover:text-foreground inline-flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> ai_summary
+                </summary>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed bg-background border border-border/60 rounded p-3">{r.aiSummary}</p>
+              </details>
+            )}
           </div>
-        </TabsContent>
+        );
+      })}
+    </div>
+  );
+}
 
-        {/* ── Statements / Uploads ── */}
-        <TabsContent value="statements" className="mt-4">
-          <Card>
-            <CardContent className="p-0">
-              {statements.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  <Upload className="h-8 w-8 mx-auto mb-3 opacity-20" />
-                  <p className="font-medium">No uploads yet</p>
-                  <p className="text-sm mt-1">Client will upload their bank statement CSV from their portal.</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border hover:bg-transparent">
-                      <TableHead>File</TableHead>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-center">Rows</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Uploaded</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {statements.map((s) => (
-                      <TableRow key={s.id} className="border-border">
-                        <TableCell className="font-mono text-sm">{s.filename}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {s.periodStart && s.periodEnd
-                            ? `${new Date(s.periodStart).toLocaleDateString()} – ${new Date(s.periodEnd).toLocaleDateString()}`
-                            : "—"}
-                        </TableCell>
-                        <TableCell className="text-center text-sm text-muted-foreground">{s.rowCount}</TableCell>
-                        <TableCell>
-                          <div>
-                            <Badge variant="outline" className={`text-xs ${stmtColor[s.status] ?? "border-border text-muted-foreground"}`}>
-                              {s.status.toLowerCase()}
-                            </Badge>
-                            {s.errorMsg && <p className="text-[10px] text-red-400 mt-0.5 max-w-[200px] truncate">{s.errorMsg}</p>}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {new Date(s.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+/* Statements tab */
+function StatementsTab({ statements }: { statements: Statement[] }) {
+  if (statements.length === 0) {
+    return (
+      <div className="text-center py-16 rounded-lg border border-border/60 bg-card/40">
+        <Upload className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+        <p className="font-medium text-foreground">No uploads yet</p>
+        <p className="text-sm text-muted-foreground mt-1">Client will upload bank statement CSVs from their portal.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-lg border border-border/60 overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-card/60 border-b border-border/60">
+          <tr className="text-left">
+            <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">file</th>
+            <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">period</th>
+            <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground text-center">rows</th>
+            <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">status</th>
+            <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">uploaded</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border/40">
+          {statements.map((s) => (
+            <tr key={s.id} className="hover:bg-card/30">
+              <td className="px-3 py-2 font-mono text-xs">{s.filename}</td>
+              <td className="px-3 py-2 text-xs text-muted-foreground font-mono">
+                {s.periodStart && s.periodEnd ? `${fmtDate(s.periodStart)} – ${fmtDate(s.periodEnd)}` : "—"}
+              </td>
+              <td className="px-3 py-2 text-center font-mono text-xs">{s.rowCount}</td>
+              <td className="px-3 py-2">
+                <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${
+                  s.status === "CATEGORIZED" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                  : s.status === "ERROR" ? "border-rose-500/40 bg-rose-500/10 text-rose-400"
+                  : "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                }`}>
+                  {s.status.toLowerCase()}
+                </span>
+                {s.errorMsg && <p className="text-[10px] text-rose-400 mt-0.5 max-w-[200px] truncate">{s.errorMsg}</p>}
+              </td>
+              <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{fmtDate(s.createdAt)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
-        {/* ── Reports ── */}
-        <TabsContent value="reports" className="mt-4">
-          <Card>
-            <CardContent className="p-0">
-              {reports.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground">
-                  <FileText className="h-8 w-8 mx-auto mb-3 opacity-20" />
-                  <p className="font-medium">No reports yet</p>
-                  <p className="text-sm mt-1">Reports are generated automatically on the 2nd of each month.</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border hover:bg-transparent">
-                      <TableHead>Period</TableHead>
-                      <TableHead>Revenue</TableHead>
-                      <TableHead>Expenses</TableHead>
-                      <TableHead>Net Profit</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Approved</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {reports.map((r) => (
-                      <TableRow key={r.id} className="border-border">
-                        <TableCell className="text-sm font-medium">
-                          {new Date(r.year, r.month - 1).toLocaleString("en-US", { month: "long", year: "numeric" })}
-                        </TableCell>
-                        <TableCell className="text-sm text-emerald-400">{fmtD(r.totalIncome)}</TableCell>
-                        <TableCell className="text-sm text-red-400">{fmtD(r.totalExpenses)}</TableCell>
-                        <TableCell className={`text-sm font-semibold ${r.netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                          {r.netProfit >= 0 ? "+" : ""}{fmtD(r.netProfit)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`text-xs ${reportColor[r.status] ?? "border-border text-muted-foreground"}`}>
-                            {r.status.toLowerCase()}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {r.clientApprovedAt ? (
-                            <span className="flex items-center gap-1 text-emerald-400">
-                              <CheckCircle2 className="h-3 w-3" />
-                              {new Date(r.clientApprovedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                            </span>
-                          ) : "—"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+/* Notes / messages tab */
+function NotesTab({ messages, clientId, onSent }: { messages: Message[]; clientId: string; onSent: () => void }) {
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+
+  async function send() {
+    if (!body.trim()) return;
+    setSending(true);
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: clientId, body: body.trim(), role: "ACCOUNTANT" }),
+      });
+      if (!res.ok) throw new Error();
+      setBody("");
+      toast.success("Note sent");
+      onSent();
+    } catch {
+      toast.error("Failed to send note");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="lg:col-span-2 space-y-3">
+        <Card title="message_thread">
+          {messages.length === 0 ? (
+            <p className="p-6 text-sm text-muted-foreground text-center">No messages yet. Start the conversation below.</p>
+          ) : (
+            <ul className="p-3 space-y-3 max-h-[500px] overflow-y-auto">
+              {[...messages].reverse().map((m) => (
+                <li key={m.id} className={`flex ${m.role === "ACCOUNTANT" ? "justify-end" : "justify-start"}`}>
+                  <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                    m.role === "ACCOUNTANT" ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-card border border-border"
+                  }`}>
+                    <p>{m.body}</p>
+                    <p className="text-[10px] font-mono text-muted-foreground mt-1">
+                      {m.role.toLowerCase()} · {fmtDate(m.createdAt)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+        <Card title="compose">
+          <div className="p-3 space-y-2">
+            <Textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Note to client about their books..."
+              rows={3}
+              className="text-sm"
+            />
+            <div className="flex justify-end">
+              <Button size="sm" onClick={send} disabled={sending || !body.trim()} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                <Send className="h-3.5 w-3.5 mr-1.5" />
+                {sending ? "sending..." : "send"}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+      <Card title="info">
+        <div className="p-4 text-xs text-muted-foreground space-y-2">
+          <p>Notes sent here go directly to the client&apos;s portal. They&apos;ll see them as messages from their accountant.</p>
+          <p>Use this for: requesting more docs, explaining categorizations, flagging issues to address before close.</p>
+        </div>
+      </Card>
     </div>
   );
 }

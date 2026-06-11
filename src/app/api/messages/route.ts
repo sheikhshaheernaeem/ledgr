@@ -11,10 +11,11 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const transactionId = searchParams.get("transactionId");
   const reportId = searchParams.get("reportId");
+  const userId = searchParams.get("userId"); // accountant viewing a client's thread
 
-  if (!transactionId && !reportId) {
+  if (!transactionId && !reportId && !userId) {
     return NextResponse.json(
-      { error: "transactionId or reportId is required" },
+      { error: "transactionId, reportId, or userId is required" },
       { status: 400 }
     );
   }
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
   const where: Record<string, unknown> = {};
   if (transactionId) where.transactionId = transactionId;
   if (reportId) where.reportId = reportId;
+  if (userId) where.userId = userId;
 
   const messages = await prisma.message.findMany({
     where,
@@ -29,9 +31,18 @@ export async function GET(request: NextRequest) {
     include: { user: { select: { id: true, name: true, email: true, role: true } } },
   });
 
-  // Mark messages as read where they were not sent by the current user
+  // Mark messages as read where the viewer is the inbox owner (CLIENT) and message role is ACCOUNTANT,
+  // or vice versa
+  const sessionUserId = session.user!.id;
   const unreadIds = messages
-    .filter((m) => m.userId !== session.user!.id && m.readAt === null)
+    .filter((m) => {
+      if (m.readAt) return false;
+      // mark read if viewer is the message's intended recipient
+      const sessionRole = (session.user as { role?: string }).role;
+      if (sessionRole === "CLIENT" && m.role === "ACCOUNTANT") return true;
+      if ((sessionRole === "ACCOUNTANT" || sessionRole === "ADMIN") && m.role === "CLIENT") return true;
+      return m.userId !== sessionUserId;
+    })
     .map((m) => m.id);
 
   if (unreadIds.length > 0) {
@@ -49,38 +60,48 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const sessionUserId = session.user.id as string;
+  const sessionRole = (session.user as { role?: string }).role;
 
   const body = await request.json();
-  const { transactionId, reportId, body: messageBody } = body as {
+  const { transactionId, reportId, body: messageBody, userId: targetUserId, role: explicitRole } = body as {
     transactionId?: string;
     reportId?: string;
     body: string;
+    userId?: string; // when accountant addresses a client
+    role?: string;   // override (must match sessionRole or fall back to it)
   };
 
-  if (!messageBody) {
+  if (!messageBody?.trim()) {
     return NextResponse.json({ error: "body is required" }, { status: 400 });
   }
 
-  if (!transactionId && !reportId) {
-    return NextResponse.json(
-      { error: "transactionId or reportId is required" },
-      { status: 400 }
-    );
+  // Resolve the inbox owner. CLIENT users post to their own inbox; accountants post to a client's inbox.
+  let inboxUserId = sessionUserId;
+  if (targetUserId && targetUserId !== sessionUserId) {
+    if (sessionRole !== "ACCOUNTANT" && sessionRole !== "ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (sessionRole === "ACCOUNTANT") {
+      const mc = await prisma.managedClient.findUnique({
+        where: { accountantId_clientId: { accountantId: sessionUserId, clientId: targetUserId } },
+      });
+      if (!mc?.isActive) return NextResponse.json({ error: "Not your client" }, { status: 403 });
+    }
+    inboxUserId = targetUserId;
   }
 
-  // Get user's role for the message role field
-  const user = await prisma.user.findUnique({
-    where: { id: session.user!.id },
-    select: { role: true },
-  });
+  if (!transactionId && !reportId && inboxUserId === sessionUserId) {
+    // For client direct notes, allow general (no entity required) — fall through.
+  }
 
   const message = await prisma.message.create({
     data: {
-      userId: session.user!.id,
+      userId: inboxUserId,
       transactionId: transactionId ?? undefined,
       reportId: reportId ?? undefined,
-      body: messageBody,
-      role: user?.role ?? "CLIENT",
+      body: messageBody.trim(),
+      role: (explicitRole as string) || sessionRole || "CLIENT",
     },
     include: { user: { select: { id: true, name: true, email: true, role: true } } },
   });

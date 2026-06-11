@@ -210,6 +210,12 @@ model Report {
   clientApprovalToken String?  @unique
   clientApprovedAt    DateTime?
   clientEmail         String?
+
+  // Two-stage approval: AI drafts → accountant reviews → client approves
+  draftedAt              DateTime?
+  accountantApprovedAt   DateTime?
+  accountantApprovedById String?
+  revisionNotes          String?
 }
 
 model Subscription {

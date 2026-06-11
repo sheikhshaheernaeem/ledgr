@@ -14,17 +14,17 @@ export async function GET(
   const { clientId } = await params;
 
   // Admins/accountants can view any client; others need a managed relationship
-  let clientInfo: { id: string; name: string | null; email: string; companyName: string | null } | null = null;
+  let clientInfo: { id: string; name: string | null; email: string; companyName: string | null; createdAt: Date } | null = null;
 
   if (isAdmin) {
     clientInfo = await prisma.user.findUnique({
       where: { id: clientId },
-      select: { id: true, name: true, email: true, companyName: true },
+      select: { id: true, name: true, email: true, companyName: true, createdAt: true },
     });
   } else {
     const mc = await prisma.managedClient.findUnique({
       where: { accountantId_clientId: { accountantId: userId, clientId } },
-      include: { client: { select: { id: true, name: true, email: true, companyName: true } } },
+      include: { client: { select: { id: true, name: true, email: true, companyName: true, createdAt: true } } },
     });
     if (mc?.isActive) clientInfo = mc.client;
   }
@@ -34,18 +34,22 @@ export async function GET(
   const now = new Date();
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const [transactions, allTransactions, invoices, reports, statements] = await Promise.all([
+  const [transactions, allTransactions, invoices, reports, statements, anomalies, messages] = await Promise.all([
     // This-month summary
     prisma.transaction.findMany({
       where: { userId: clientId, date: { gte: thisMonthStart } },
       select: { amount: true, type: true, category: true, date: true },
     }),
-    // All transactions for the transactions tab
+    // Recent transactions for review
     prisma.transaction.findMany({
       where: { userId: clientId },
       orderBy: { date: "desc" },
       take: 200,
-      select: { id: true, date: true, description: true, amount: true, type: true, category: true, subcategory: true, status: true, confidence: true },
+      select: {
+        id: true, date: true, description: true, amount: true, type: true,
+        category: true, subcategory: true, status: true, confidence: true,
+        notes: true, reconciled: true,
+      },
     }),
     prisma.invoice.findMany({
       where: { userId: clientId, status: { in: ["SENT", "OVERDUE", "DRAFT"] } },
@@ -54,20 +58,45 @@ export async function GET(
     prisma.report.findMany({
       where: { userId: clientId },
       orderBy: [{ year: "desc" }, { month: "desc" }],
-      take: 6,
-      select: { id: true, month: true, year: true, totalIncome: true, totalExpenses: true, netProfit: true, status: true, clientApprovedAt: true },
+      take: 12,
+      select: {
+        id: true, month: true, year: true,
+        totalIncome: true, totalExpenses: true, netProfit: true,
+        status: true, aiSummary: true,
+        draftedAt: true,
+        accountantApprovedAt: true,
+        accountantApprovedById: true,
+        clientApprovedAt: true,
+        sentAt: true,
+        createdAt: true,
+      },
     }),
     prisma.statement.findMany({
       where: { userId: clientId },
       orderBy: { createdAt: "desc" },
       select: { id: true, filename: true, rowCount: true, status: true, periodStart: true, periodEnd: true, createdAt: true, errorMsg: true },
     }),
+    prisma.anomalyFlag.findMany({
+      where: { userId: clientId, dismissed: false },
+      orderBy: [{ severity: "desc" }, { createdAt: "desc" }],
+      take: 50,
+      select: {
+        id: true, transactionId: true, entityType: true, entityId: true,
+        reason: true, severity: true, riskScore: true, createdAt: true,
+      },
+    }),
+    prisma.message.findMany({
+      where: { userId: clientId },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      select: { id: true, body: true, role: true, readAt: true, createdAt: true, reportId: true, transactionId: true },
+    }),
   ]);
 
   const revenue = transactions.filter((t) => t.type === "CREDIT").reduce((s, t) => s + t.amount, 0);
   const expenses = transactions.filter((t) => t.type === "DEBIT").reduce((s, t) => s + t.amount, 0);
 
-  // Category breakdown for expense analysis
+  // Category breakdown
   const categoryMap: Record<string, number> = {};
   allTransactions
     .filter((t) => t.type === "DEBIT")
@@ -78,6 +107,10 @@ export async function GET(
 
   const openInvoices = invoices.filter((i) => i.status === "SENT" || i.status === "OVERDUE");
   const overdueInvoices = invoices.filter((i) => i.status === "OVERDUE");
+
+  // Reports awaiting accountant approval
+  const pendingApproval = reports.filter((r) => r.status === "DRAFT" || (r.draftedAt && !r.accountantApprovedAt));
+  const uncategorized = allTransactions.filter((t) => !t.category || t.category === "Uncategorized").length;
 
   return NextResponse.json({
     client: clientInfo,
@@ -95,11 +128,17 @@ export async function GET(
         recentOpen: openInvoices.slice(0, 5),
       },
       lastReport: reports[0] ?? null,
+      pendingApprovalCount: pendingApproval.length,
+      anomalyCount: anomalies.length,
+      uncategorizedCount: uncategorized,
+      unreadMessages: messages.filter((m) => !m.readAt && m.role === "CLIENT").length,
     },
     statements,
     transactions: allTransactions,
     categoryBreakdown,
     reports,
+    anomalies,
+    messages,
   });
 }
 
