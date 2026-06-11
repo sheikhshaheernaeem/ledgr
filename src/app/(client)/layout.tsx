@@ -3,7 +3,7 @@ import { auth, signOut } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LogOut, LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3, MessageSquare } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3, MessageSquare, Wallet } from "lucide-react";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -43,6 +43,11 @@ export default async function ClientLayout({ children }: { children: React.React
             <Link href="/client/analytics">
               <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
                 <BarChart3 className="h-3.5 w-3.5" /> Analytics
+              </Button>
+            </Link>
+            <Link href="/client/financials">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <Wallet className="h-3.5 w-3.5" /> Financials
               </Button>
             </Link>
             <Link href="/client/reports">
@@ -102,6 +107,11 @@ export default async function ClientLayout({ children }: { children: React.React
           <Link href="/client/analytics">
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
               <BarChart3 className="h-3 w-3" /> Analytics
+            </Button>
+          </Link>
+          <Link href="/client/financials">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <Wallet className="h-3 w-3" /> Financials
             </Button>
           </Link>
           <Link href="/client/reports">

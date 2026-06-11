@@ -24,6 +24,15 @@ export default async function ClientDashboardPage() {
 
   const userId = session.user.id;
 
+  // First-time user → onboarding wizard
+  const [statementCount, currentUser] = await Promise.all([
+    prisma.statement.count({ where: { userId } }),
+    prisma.user.findUnique({ where: { id: userId }, select: { companyName: true } }),
+  ]);
+  if (statementCount === 0 && !currentUser?.companyName) {
+    redirect("/client/onboarding");
+  }
+
   // Latest statement
   const latestStatement = await prisma.statement.findFirst({
     where: { userId },

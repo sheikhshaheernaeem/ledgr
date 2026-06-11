@@ -64,9 +64,17 @@ export default async function AdminPage() {
 
   return (
     <div className="p-8 space-y-8 max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
-        <p className="text-muted-foreground mt-1">Full platform overview — all users, reports, and transactions</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
+          <p className="text-muted-foreground mt-1">Full platform overview — all users, reports, and transactions</p>
+        </div>
+        <Link href="/admin/metrics">
+          <Button variant="outline" className="gap-1.5">
+            <FileText className="h-4 w-4" />
+            MRR &amp; Growth Metrics
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
