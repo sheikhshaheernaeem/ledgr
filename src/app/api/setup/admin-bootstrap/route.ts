@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     secret?: string; email?: string; password?: string; name?: string;
   };
 
-  const expected = process.env.AUTH_SECRET;
+  const expected = process.env.BOOTSTRAP_SECRET;
   if (!expected || !secret || secret !== expected) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
