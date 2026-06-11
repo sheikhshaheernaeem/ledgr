@@ -312,7 +312,7 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
             />
           )}
           {tab === "anomalies" && (
-            <AnomaliesTab anomalies={anomalies} txns={transactions} onDismiss={dismissAnomaly} />
+            <AnomaliesTab anomalies={anomalies} txns={transactions} onDismiss={dismissAnomaly} clientId={clientId} onScan={load} />
           )}
           {tab === "reports" && (
             <ReportsTab reports={reports} onApprove={(r) => setApproveReport(r)} />
@@ -683,53 +683,87 @@ function TransactionsTab({
 }
 
 /* Anomalies tab */
-function AnomaliesTab({ anomalies, txns, onDismiss }: { anomalies: Anomaly[]; txns: Transaction[]; onDismiss: (id: string) => void }) {
-  if (anomalies.length === 0) {
-    return (
-      <div className="text-center py-16 rounded-lg border border-border/60 bg-card/40">
-        <CheckCircle2 className="h-10 w-10 text-emerald-400/60 mx-auto mb-3" />
-        <p className="font-medium text-foreground">No anomalies flagged</p>
-        <p className="text-sm text-muted-foreground mt-1">Run a scan from the Anomaly Detection page to look for duplicates, unusual amounts, or fraud signals.</p>
-      </div>
-    );
+function AnomaliesTab({ anomalies, txns, onDismiss, clientId, onScan }: {
+  anomalies: Anomaly[]; txns: Transaction[]; onDismiss: (id: string) => void;
+  clientId: string; onScan: () => void;
+}) {
+  const [scanning, setScanning] = useState(false);
+
+  async function runScan() {
+    setScanning(true);
+    try {
+      const res = await fetch("/api/ai/anomaly-detection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: clientId }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      toast.success(`Scanned ${data.scanned} txns — flagged ${data.flagged} new`);
+      onScan();
+    } catch {
+      toast.error("Anomaly scan failed");
+    } finally {
+      setScanning(false);
+    }
   }
+
   return (
-    <ul className="space-y-2">
-      {anomalies.map((a) => {
-        const tx = a.transactionId ? txns.find((t) => t.id === a.transactionId) : null;
-        return (
-          <li key={a.id} className="rounded-lg border border-border/60 bg-card/40 p-4 flex items-start gap-3">
-            <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${severityBadge[a.severity] ?? severityBadge.MEDIUM}`}>
-                  {a.severity}
-                </span>
-                <span className="font-mono text-[10px] text-muted-foreground">
-                  risk_score: {(a.riskScore * 100).toFixed(0)}%
-                </span>
-                <span className="font-mono text-[10px] text-muted-foreground">·</span>
-                <span className="font-mono text-[10px] text-muted-foreground">{fmtDate(a.createdAt)}</span>
-              </div>
-              <p className="text-sm text-foreground">{a.reason}</p>
-              {tx && (
-                <div className="mt-2 text-xs font-mono text-muted-foreground bg-background border border-border/60 rounded px-2 py-1.5">
-                  <span className="text-foreground">{tx.description}</span> · {fmtDate(tx.date)} · <span className={tx.type === "CREDIT" ? "text-emerald-400" : "text-rose-400"}>{fmtD(tx.amount)}</span>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-mono text-muted-foreground">
+          {anomalies.length} active flag{anomalies.length !== 1 ? "s" : ""} · scans last 90 days
+        </p>
+        <Button size="sm" onClick={runScan} disabled={scanning} variant="outline">
+          {scanning ? <><Clock className="h-3.5 w-3.5 mr-1.5 animate-spin" />scanning...</> : <><Sparkles className="h-3.5 w-3.5 mr-1.5" />run scan</>}
+        </Button>
+      </div>
+
+      {anomalies.length === 0 ? (
+        <div className="text-center py-16 rounded-lg border border-border/60 bg-card/40">
+          <CheckCircle2 className="h-10 w-10 text-emerald-400/60 mx-auto mb-3" />
+          <p className="font-medium text-foreground">No anomalies flagged</p>
+          <p className="text-sm text-muted-foreground mt-1">Click &quot;run scan&quot; to check for duplicates, unusual amounts, and fraud signals.</p>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {anomalies.map((a) => {
+            const tx = a.transactionId ? txns.find((t) => t.id === a.transactionId) : null;
+            return (
+              <li key={a.id} className="rounded-lg border border-border/60 bg-card/40 p-4 flex items-start gap-3">
+                <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
+                  <AlertTriangle className="h-4 w-4 text-amber-400" />
                 </div>
-              )}
-            </div>
-            <button
-              onClick={() => onDismiss(a.id)}
-              className="text-xs font-mono text-muted-foreground hover:text-foreground border border-border bg-background hover:border-foreground/40 rounded px-2.5 py-1.5 shrink-0"
-            >
-              dismiss
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${severityBadge[a.severity] ?? severityBadge.MEDIUM}`}>
+                      {a.severity}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      risk_score: {(a.riskScore * 100).toFixed(0)}%
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">·</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">{fmtDate(a.createdAt)}</span>
+                  </div>
+                  <p className="text-sm text-foreground">{a.reason}</p>
+                  {tx && (
+                    <div className="mt-2 text-xs font-mono text-muted-foreground bg-background border border-border/60 rounded px-2 py-1.5">
+                      <span className="text-foreground">{tx.description}</span> · {fmtDate(tx.date)} · <span className={tx.type === "CREDIT" ? "text-emerald-400" : "text-rose-400"}>{fmtD(tx.amount)}</span>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => onDismiss(a.id)}
+                  className="text-xs font-mono text-muted-foreground hover:text-foreground border border-border bg-background hover:border-foreground/40 rounded px-2.5 py-1.5 shrink-0"
+                >
+                  dismiss
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
 

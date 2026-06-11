@@ -3,7 +3,7 @@ import { auth, signOut } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LogOut, LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3 } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3, MessageSquare } from "lucide-react";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -53,6 +53,11 @@ export default async function ClientLayout({ children }: { children: React.React
             <Link href="/client/invoices">
               <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
                 <FileText className="h-3.5 w-3.5" /> Invoices
+              </Button>
+            </Link>
+            <Link href="/client/messages">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-sm">
+                <MessageSquare className="h-3.5 w-3.5" /> Messages
               </Button>
             </Link>
           </nav>
@@ -107,6 +112,11 @@ export default async function ClientLayout({ children }: { children: React.React
           <Link href="/client/invoices">
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
               <FileText className="h-3 w-3" /> Invoices
+            </Button>
+          </Link>
+          <Link href="/client/messages">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs shrink-0">
+              <MessageSquare className="h-3 w-3" /> Messages
             </Button>
           </Link>
         </div>
