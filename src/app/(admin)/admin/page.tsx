@@ -69,12 +69,20 @@ export default async function AdminPage() {
           <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
           <p className="text-muted-foreground mt-1">Full platform overview — all users, reports, and transactions</p>
         </div>
-        <Link href="/admin/metrics">
-          <Button variant="outline" className="gap-1.5">
-            <FileText className="h-4 w-4" />
-            MRR &amp; Growth Metrics
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/metrics">
+            <Button variant="outline" className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              MRR &amp; Growth Metrics
+            </Button>
+          </Link>
+          <Link href="/admin/yc-application">
+            <Button className="gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white">
+              <FileText className="h-4 w-4" />
+              YC Application Draft
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
