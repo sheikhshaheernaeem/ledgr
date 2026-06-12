@@ -4,20 +4,25 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { FloatingChat } from "@/components/layout/FloatingChat";
 import {
   LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3,
   MessageSquare, Wallet, LogOut, ChevronLeft, ChevronRight, Menu, X,
+  Receipt, FolderOpen, Settings,
 } from "lucide-react";
 
 const NAV = [
   { href: "/client", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/client/upload", label: "Upload", icon: Upload, accent: true },
   { href: "/client/transactions", label: "Transactions", icon: List },
-  { href: "/client/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/client/financials", label: "Financials", icon: Wallet },
+  { href: "/client/tax", label: "Tax", icon: Receipt },
+  { href: "/client/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/client/reports", label: "Reports", icon: BarChart2 },
   { href: "/client/invoices", label: "Invoices", icon: FileText },
+  { href: "/client/documents", label: "Documents", icon: FolderOpen },
   { href: "/client/messages", label: "Messages", icon: MessageSquare },
+  { href: "/client/settings", label: "Settings", icon: Settings },
 ];
 
 interface Props {
@@ -213,6 +218,9 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
           {children}
         </div>
       </main>
+
+      {/* AI assistant — always available */}
+      <FloatingChat />
     </div>
   );
 }

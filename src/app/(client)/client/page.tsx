@@ -11,6 +11,7 @@ import {
 import {
   FileText, CheckCircle2, Clock, TrendingUp, TrendingDown, ExternalLink, Upload,
 } from "lucide-react";
+import { InsightsFeed } from "@/components/client/InsightsFeed";
 
 const fmt = (n: number) =>
   n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -72,6 +73,9 @@ export default async function ClientDashboardPage() {
         <h1 className="text-2xl font-bold text-foreground">Welcome, {displayName}</h1>
         <p className="text-muted-foreground mt-1">Here&apos;s an overview of your account</p>
       </div>
+
+      {/* AI-driven insights */}
+      <InsightsFeed userId={userId} />
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
