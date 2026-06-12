@@ -6,21 +6,14 @@ import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { FloatingChat } from "@/components/layout/FloatingChat";
 import {
-  LayoutDashboard, FileText, BarChart2, Upload, List, BarChart3,
-  MessageSquare, Wallet, LogOut, ChevronLeft, ChevronRight, Menu, X,
-  Receipt, FolderOpen, Settings,
+  LayoutDashboard, Wallet, BarChart2, MessageSquare, Settings,
+  LogOut, ChevronLeft, ChevronRight, Menu, X,
 } from "lucide-react";
 
 const NAV = [
   { href: "/client", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/client/upload", label: "Upload", icon: Upload, accent: true },
-  { href: "/client/transactions", label: "Transactions", icon: List },
-  { href: "/client/financials", label: "Financials", icon: Wallet },
-  { href: "/client/tax", label: "Tax", icon: Receipt },
-  { href: "/client/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/client/financials", label: "My Books", icon: Wallet },
   { href: "/client/reports", label: "Reports", icon: BarChart2 },
-  { href: "/client/invoices", label: "Invoices", icon: FileText },
-  { href: "/client/documents", label: "Documents", icon: FolderOpen },
   { href: "/client/messages", label: "Messages", icon: MessageSquare },
   { href: "/client/settings", label: "Settings", icon: Settings },
 ];
@@ -149,13 +142,8 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
                 {active && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-r bg-emerald-400" />
                 )}
-                <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-emerald-400" : item.accent ? "text-emerald-500 dark:text-emerald-400" : ""}`} />
+                <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-emerald-400" : ""}`} />
                 <span className={`whitespace-nowrap ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
-                {item.accent && !active && (
-                  <span className={`ml-auto font-mono text-[9px] uppercase tracking-wider text-emerald-500 dark:text-emerald-400 ${collapsed ? "lg:hidden" : ""}`}>
-                    new
-                  </span>
-                )}
               </Link>
             );
           })}

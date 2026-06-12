@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import {
   FileText, CheckCircle2, Clock, TrendingUp, TrendingDown, ExternalLink, Upload,
+  Receipt, FolderOpen,
 } from "lucide-react";
 import { InsightsFeed } from "@/components/client/InsightsFeed";
 
@@ -74,8 +75,30 @@ export default async function ClientDashboardPage() {
         <p className="text-muted-foreground mt-1">Here&apos;s an overview of your account</p>
       </div>
 
+      {/* Primary action: upload — the service starts here */}
+      <Link href="/client/upload" className="block">
+        <div className="rounded-xl border-2 border-dashed border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.08] hover:border-emerald-500/50 transition-colors p-6 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+            <Upload className="h-5 w-5 text-emerald-400" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-foreground">Upload a bank statement</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Drop a CSV — we&apos;ll have it categorized in minutes.</p>
+          </div>
+          <div className="font-mono text-xs text-emerald-500 hidden sm:block">drop → categorize → report</div>
+        </div>
+      </Link>
+
       {/* AI-driven insights */}
       <InsightsFeed userId={userId} />
+
+      {/* Quick links — service-shaped utilities */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <QuickLink href="/client/tax" icon={Receipt} label="Tax estimate" desc="Quarterly view" />
+        <QuickLink href="/client/invoices" icon={FileText} label="Invoices" desc="What's owed to you" />
+        <QuickLink href="/client/documents" icon={FolderOpen} label="Documents" desc="Receipts &amp; forms" />
+        <QuickLink href="/client/financials" icon={TrendingUp} label="My books" desc="Live financials" />
+      </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -291,5 +314,23 @@ export default async function ClientDashboardPage() {
         </Card>
       )}
     </div>
+  );
+}
+
+function QuickLink({ href, icon: Icon, label, desc }: {
+  href: string; icon: React.ComponentType<{ className?: string }>; label: string; desc: string;
+}) {
+  return (
+    <Link href={href} className="block rounded-lg border border-border/60 bg-card/40 hover:bg-card hover:border-emerald-500/30 transition-colors p-3">
+      <div className="flex items-start gap-2.5">
+        <div className="w-8 h-8 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
+          <Icon className="h-3.5 w-3.5 text-emerald-400" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground">{label}</p>
+          <p className="text-[11px] text-muted-foreground font-mono mt-0.5 truncate">{desc}</p>
+        </div>
+      </div>
+    </Link>
   );
 }
