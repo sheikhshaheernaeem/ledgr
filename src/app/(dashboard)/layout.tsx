@@ -1,20 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
-import Sidebar from "@/components/layout/Sidebar";
-import { MobileSidebar } from "@/components/layout/MobileSidebar";
-import { NotificationBell } from "@/components/layout/NotificationBell";
-import { AIChatBubble } from "@/components/ai/AIChatBubble";
+import { FirmSidebar } from "@/components/layout/FirmSidebar";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  // If the user still needs to complete 2FA, send them to the challenge page
   if ((session.user as unknown as { requiresTwoFactor?: boolean }).requiresTwoFactor === true) {
     redirect("/login/2fa");
   }
@@ -23,61 +16,49 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (role === "CLIENT") redirect("/client");
 
   const isAdmin = role === "ADMIN";
+  const userId = session.user.id as string;
 
-  const localeSettings = await prisma.user.findUnique({
-    where: { id: session.user.id as string },
-    select: { country: true, currency: true, locale: true, timezone: true, taxName: true, defaultTaxRate: true },
-  });
+  const [localeSettings, queueCount] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { country: true, currency: true, locale: true, timezone: true, taxName: true, defaultTaxRate: true },
+    }),
+    // Count of pending items for the badge
+    (async () => {
+      const clientIds = isAdmin
+        ? (await prisma.user.findMany({ where: { role: "CLIENT" }, select: { id: true } })).map((u) => u.id)
+        : (await prisma.managedClient.findMany({ where: { accountantId: userId, isActive: true }, select: { clientId: true } })).map((mc) => mc.clientId);
+      if (clientIds.length === 0) return 0;
+      const [draftReports, anomalies, unreadMessages, failedStatements] = await Promise.all([
+        prisma.report.count({
+          where: {
+            userId: { in: clientIds },
+            OR: [{ status: "DRAFT" }, { AND: [{ draftedAt: { not: null } }, { accountantApprovedAt: null }] }],
+          },
+        }),
+        prisma.anomalyFlag.count({ where: { userId: { in: clientIds }, dismissed: false } }),
+        prisma.message.count({ where: { userId: { in: clientIds }, role: "CLIENT", readAt: null } }),
+        prisma.statement.count({ where: { userId: { in: clientIds }, status: "ERROR" } }),
+      ]);
+      return draftReports + anomalies + unreadMessages + failedStatements;
+    })(),
+  ]);
+
+  async function signOutAction() {
+    "use server";
+    await signOut({ redirectTo: "/" });
+  }
 
   return (
     <LocaleProvider settings={localeSettings ?? {}}>
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar — desktop only */}
-      <aside className="hidden md:flex w-60 border-r border-border flex-col py-6 px-4 shrink-0">
-        <Link href="/" className="px-2 mb-6">
-          <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
-        </Link>
-
-        <Sidebar email={session.user.email ?? ""} isAdmin={isAdmin} />
-
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/" });
-          }}
-        >
-          <Button
-            type="submit"
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start gap-2 text-muted-foreground mt-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
-        </form>
-      </aside>
-
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        {/* Mobile header */}
-        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border">
-          <Link href="/">
-            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">Ledgr</span>
-          </Link>
-          <MobileSidebar />
-          <div className="ml-auto">
-            <NotificationBell />
-          </div>
-        </div>
-        {/* Desktop sticky header bar with notification bell */}
-        <div className="hidden md:flex items-center justify-end px-6 py-2 border-b border-border sticky top-0 z-30 bg-background/80 backdrop-blur-sm">
-          <NotificationBell />
-        </div>
+      <FirmSidebar
+        userEmail={session.user.email ?? ""}
+        isAdmin={isAdmin}
+        signOutAction={signOutAction}
+        queueCount={queueCount}
+      >
         {children}
-      </main>
-      <AIChatBubble />
-    </div>
+      </FirmSidebar>
     </LocaleProvider>
   );
 }

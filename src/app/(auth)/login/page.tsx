@@ -53,7 +53,7 @@ function LoginForm() {
         } else if (sessionData?.user?.role === "CLIENT") {
           router.push("/client");
         } else {
-          router.push("/dashboard");
+          router.push("/firm/queue");
         }
         router.refresh();
       }

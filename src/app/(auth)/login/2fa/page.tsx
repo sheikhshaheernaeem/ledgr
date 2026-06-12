@@ -12,7 +12,7 @@ import { ShieldCheck, Loader2 } from "lucide-react";
 function TwoFAForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/firm/queue";
 
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
