@@ -66,12 +66,18 @@ model User {
   notificationPrefs String?
 
   // Regional / locale settings
-  country        String  @default("US")
-  currency       String  @default("USD")
-  locale         String  @default("en-US")
-  timezone       String  @default("America/New_York")
-  taxName        String  @default("Tax")
-  defaultTaxRate Float   @default(0)
+  country               String  @default("US")
+  currency              String  @default("USD")
+  locale                String  @default("en-US")
+  timezone              String  @default("America/New_York")
+  taxName               String  @default("Tax")
+  defaultTaxRate        Float   @default(0)
+  fiscalYearStartMonth  Int     @default(1)      // 1=Jan ... 12=Dec
+  dateFormat            String  @default("MM/DD/YYYY")
+  weekStartsOn          Int     @default(0)      // 0=Sun, 1=Mon
+  taxId                 String?                  // EIN, SSN, ABN, etc.
+  registrationNumber    String?                  // company reg number
+  emailSignature        String?
 
   // Firm white-label (JSON)
   firmBranding String?
@@ -1663,6 +1669,76 @@ model FundTransfer {
 }
 
 // ─── Firm-side: Tasks, Internal Notes, Time entries (operator-facing) ─────
+
+// Firm-wide settings (singleton — one row, id="default")
+model FirmSettings {
+  id                    String   @id @default("default")
+  // Identity
+  firmName              String   @default("Ledgr")
+  firmLogoUrl           String?
+  firmEmail             String?
+  firmPhone             String?
+  firmAddress           String?
+  firmWebsite           String?
+  firmTaxId             String?
+
+  // Regional defaults (applied to new clients)
+  defaultCountry        String   @default("US")
+  defaultCurrency       String   @default("USD")
+  defaultLocale         String   @default("en-US")
+  defaultTimezone       String   @default("America/New_York")
+  defaultTaxName        String   @default("Tax")
+  defaultTaxRate        Float    @default(0)
+  defaultFiscalStartMonth Int    @default(1)
+  defaultDateFormat     String   @default("MM/DD/YYYY")
+
+  // Supported markets (JSON arrays)
+  supportedCurrenciesJson String @default("[\"USD\",\"EUR\",\"GBP\",\"CAD\",\"AUD\",\"INR\"]")
+  supportedCountriesJson  String @default("[\"US\",\"GB\",\"CA\",\"AU\",\"DE\",\"FR\"]")
+  supportedLanguagesJson  String @default("[\"en-US\",\"en-GB\",\"en-CA\",\"en-AU\",\"de-DE\",\"fr-FR\"]")
+
+  // Default new-client plan
+  defaultPlan           String   @default("STARTER")
+  trialDays             Int      @default(30)
+
+  // Branding (white-label)
+  brandPrimaryColor     String   @default("#10b981") // emerald
+  brandAccentColor      String   @default("#000000")
+  brandFont             String   @default("system-ui")
+  customDomain          String?
+
+  // Email
+  emailSenderName       String   @default("Your accountant at Ledgr")
+  emailSignature        String?
+  emailReplyTo          String?
+
+  // Security policy
+  enforceTwoFactor      Boolean  @default(false)
+  sessionTimeoutMinutes Int      @default(720)
+  passwordMinLength     Int      @default(8)
+  ipAllowlistJson       String   @default("[]")
+  ssoEnabled            Boolean  @default(false)
+  ssoProvider           String?
+
+  // Notifications (operator-side)
+  notifyOnNewClient     Boolean  @default(true)
+  notifyOnAnomaly       Boolean  @default(true)
+  notifyOnLargeTxn      Boolean  @default(true)
+  largeTxnThreshold     Float    @default(10000)
+  digestFrequency       String   @default("DAILY") // DAILY | WEEKLY | NEVER
+
+  // Audit retention
+  auditRetentionDays    Int      @default(365)
+
+  // Service SLA promises
+  closeDayOfMonth       Int      @default(5)
+  responseSlaStarter    Int      @default(24)  // hours
+  responseSlaGrowth     Int      @default(8)
+  responseSlaCfo        Int      @default(4)
+
+  updatedAt             DateTime @updatedAt
+  createdAt             DateTime @default(now())
+}
 
 model FirmTask {
   id            String    @id @default(cuid())

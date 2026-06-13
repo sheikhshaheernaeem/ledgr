@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import {
   Inbox, Users, BarChart3, Shield, CheckSquare, Calendar,
-  TrendingUp, Activity, UserPlus,
+  TrendingUp, Activity, UserPlus, Settings,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
 } from "lucide-react";
 
@@ -44,6 +44,7 @@ export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queue
     { href: "/firm/revenue", label: "Revenue", icon: BarChart3, adminOnly: true },
     { href: "/admin/metrics", label: "Metrics", icon: BarChart3, adminOnly: true },
     { href: "/admin", label: "Admin", icon: Shield, adminOnly: true, exact: true },
+    { href: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
   ];
 
   useEffect(() => {
