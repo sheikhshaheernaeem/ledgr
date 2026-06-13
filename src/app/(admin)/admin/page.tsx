@@ -64,6 +64,9 @@ export default async function AdminPage() {
 
   return (
     <div className="p-8 space-y-8 max-w-7xl">
+      <Link href="/firm/queue" className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 font-mono">
+        ← back to firm console
+      </Link>
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
