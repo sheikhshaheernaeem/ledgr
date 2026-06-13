@@ -1718,3 +1718,45 @@ model FirmTimeEntry {
   @@index([operatorId, startedAt])
   @@index([clientId, startedAt])
 }
+
+model FirmLead {
+  id            String    @id @default(cuid())
+  ownerId       String    // operator who owns this lead
+  name          String
+  email         String?
+  phone         String?
+  companyName   String?
+  source        String?   // 'referral' | 'website' | 'bench_refugee' | 'partner'
+  stage         String    @default("NEW")  // NEW | CONTACTED | PROPOSAL | WON | LOST
+  estimatedMrr  Float?    // expected $/month
+  notes         String?
+  // If won, the resulting client User id
+  convertedToClientId String?
+  convertedAt   DateTime?
+  lastContactAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([ownerId, stage])
+  @@index([stage])
+}
+
+model DocumentRequest {
+  id            String    @id @default(cuid())
+  // Operator who created the request
+  requesterId   String
+  // Client this request is for
+  clientId      String
+  title         String
+  description   String?
+  // List of specific items as JSON: [{ label: string, status: 'pending'|'submitted'|'approved' }]
+  itemsJson     String    @default("[]")
+  status        String    @default("OPEN")  // OPEN | PARTIAL | COMPLETE | CANCELLED
+  dueAt         DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([clientId, status])
+  @@index([requesterId])
+}

@@ -12,6 +12,7 @@ import {
 import {
   ArrowLeft, AlertTriangle, Building2, Upload, CheckCircle2, Clock,
   Send, Edit3, X, Sparkles, FileText, Hash, Mail, Pencil,
+  BookOpen, GitMerge, Lock, Wand2, FileCheck,
 } from "lucide-react";
 
 /* ── types ── */
@@ -98,7 +99,31 @@ const reportStatusBadge: Record<string, string> = {
   APPROVED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 };
 
-type Tab = "overview" | "transactions" | "anomalies" | "reports" | "statements" | "notes";
+type Tab = "overview" | "transactions" | "anomalies" | "reports" | "statements" | "notes" | "internal" | "time";
+
+interface FirmNote {
+  id: string;
+  authorId: string;
+  clientId: string;
+  body: string;
+  pinned: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface FirmTimeEntry {
+  id: string;
+  operatorId: string;
+  clientId: string;
+  description: string | null;
+  category: string | null;
+  startedAt: string;
+  endedAt: string | null;
+  durationSec: number | null;
+  billableRate: number | null;
+  billable: boolean;
+  invoiced: boolean;
+}
 
 export default function ClientWorkspacePage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = use(params);
@@ -241,6 +266,15 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
           </div>
         </div>
 
+        {/* Per-client tools row */}
+        <div className="flex flex-wrap gap-2">
+          <ToolLink href={`/firm/${clientId}/journal`} icon={BookOpen} label="Journal entries" />
+          <ToolLink href={`/firm/${clientId}/reconcile`} icon={GitMerge} label="Reconcile" />
+          <ToolLink href={`/firm/${clientId}/year-end`} icon={Lock} label="Year-end" />
+          <ToolLink href={`/firm/${clientId}/bulk-categorize`} icon={Wand2} label="Bulk categorize" />
+          <ToolLink href={`/firm/${clientId}/doc-requests`} icon={FileCheck} label="Doc requests" />
+        </div>
+
         {/* Action banner */}
         {actionsNeeded > 0 && (
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
@@ -295,7 +329,9 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
           <TabBtn label={`anomalies (${anomalies.length})`} active={tab === "anomalies"} onClick={() => setTab("anomalies")} badge={anomalies.length > 0} />
           <TabBtn label={`reports (${reports.length})`} active={tab === "reports"} onClick={() => setTab("reports")} badge={summary.pendingApprovalCount > 0} />
           <TabBtn label={`statements (${statements.length})`} active={tab === "statements"} onClick={() => setTab("statements")} />
-          <TabBtn label="notes" active={tab === "notes"} onClick={() => setTab("notes")} />
+          <TabBtn label="client thread" active={tab === "notes"} onClick={() => setTab("notes")} />
+          <TabBtn label="internal" active={tab === "internal"} onClick={() => setTab("internal")} />
+          <TabBtn label="time" active={tab === "time"} onClick={() => setTab("time")} />
         </div>
 
         {/* tab content */}
@@ -322,6 +358,12 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
           )}
           {tab === "notes" && (
             <NotesTab messages={data.messages} clientId={clientId} onSent={load} />
+          )}
+          {tab === "internal" && (
+            <InternalNotesTab clientId={clientId} />
+          )}
+          {tab === "time" && (
+            <TimeTab clientId={clientId} />
           )}
         </div>
       </div>
@@ -392,6 +434,17 @@ export default function ClientWorkspacePage({ params }: { params: Promise<{ clie
 }
 
 /* ── subcomponents ── */
+
+function ToolLink({ href, icon: Icon, label }: { href: string; icon: React.ComponentType<{ className?: string }>; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider border border-border bg-card/60 hover:border-emerald-500/30 hover:bg-emerald-500/[0.04] hover:text-emerald-400 text-muted-foreground px-2.5 py-1.5 rounded-md transition-colors"
+    >
+      <Icon className="h-3 w-3" />{label}
+    </Link>
+  );
+}
 
 function MonoBadge({ children }: { children: React.ReactNode }) {
   return (
@@ -948,6 +1001,294 @@ function NotesTab({ messages, clientId, onSent }: { messages: Message[]; clientI
           <p>Use this for: requesting more docs, explaining categorizations, flagging issues to address before close.</p>
         </div>
       </Card>
+    </div>
+  );
+}
+
+/* ── Internal Notes (firm-only, hidden from client) ── */
+function InternalNotesTab({ clientId }: { clientId: string }) {
+  const [notes, setNotes] = useState<FirmNote[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [body, setBody] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/firm/notes?clientId=${clientId}`);
+      if (res.ok) setNotes(await res.json());
+    } finally { setLoading(false); }
+  }, [clientId]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load(); }, [load]);
+
+  async function add() {
+    if (!body.trim()) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/firm/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, body: body.trim() }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Note saved");
+      setBody("");
+      load();
+    } catch { toast.error("Failed to save note"); }
+    finally { setSaving(false); }
+  }
+
+  async function togglePin(n: FirmNote) {
+    await fetch(`/api/firm/notes/${n.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pinned: !n.pinned }),
+    });
+    load();
+  }
+
+  async function del(id: string) {
+    if (!confirm("Delete this note?")) return;
+    await fetch(`/api/firm/notes/${id}`, { method: "DELETE" });
+    load();
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="lg:col-span-2 space-y-3">
+        <Card title="firm_only_notes">
+          <div className="p-3 space-y-2">
+            <Textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Internal note — NOT visible to the client..."
+              rows={3}
+              className="text-sm"
+            />
+            <div className="flex justify-end">
+              <Button size="sm" onClick={add} disabled={saving || !body.trim()} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                {saving ? "saving..." : "save note"}
+              </Button>
+            </div>
+          </div>
+        </Card>
+        {loading ? (
+          <div className="text-center py-6 text-sm text-muted-foreground"><Clock className="h-4 w-4 animate-spin mx-auto" /></div>
+        ) : notes.length === 0 ? (
+          <div className="p-8 text-center text-sm text-muted-foreground rounded-lg border border-border/60 bg-card/40">
+            No internal notes yet. Use these for: client quirks, history, who to call for what, things to remember.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {notes.map((n) => (
+              <li key={n.id} className={`rounded-lg border p-3 ${n.pinned ? "border-amber-500/30 bg-amber-500/[0.05]" : "border-border/60 bg-card/40"}`}>
+                <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{n.body}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    {n.pinned && "📌 "}{fmtDate(n.createdAt)}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => togglePin(n)} className="text-xs font-mono text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-card">
+                      {n.pinned ? "unpin" : "pin"}
+                    </button>
+                    <button onClick={() => del(n.id)} className="text-xs font-mono text-muted-foreground hover:text-rose-400 px-2 py-1 rounded hover:bg-card">
+                      delete
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <Card title="info">
+        <div className="p-4 text-xs text-muted-foreground space-y-2">
+          <p><strong className="text-foreground">Firm-only.</strong> These notes are NEVER visible to the client.</p>
+          <p>Use for: quirks, history, follow-up reminders, internal status. Pin important ones to the top.</p>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ── Time Tracking ── */
+function TimeTab({ clientId }: { clientId: string }) {
+  const [entries, setEntries] = useState<FirmTimeEntry[]>([]);
+  const [activeTimer, setActiveTimer] = useState<FirmTimeEntry | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("BOOKKEEPING");
+  const [running, setRunning] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/firm/time?clientId=${clientId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setEntries(data.entries ?? []);
+        setActiveTimer(data.activeTimer ?? null);
+      }
+    } finally { setLoading(false); }
+  }, [clientId]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load(); }, [load]);
+
+  async function startTimer() {
+    setRunning(true);
+    try {
+      const res = await fetch("/api/firm/time", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, description: description || undefined, category }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Timer started");
+      setDescription("");
+      load();
+    } catch { toast.error("Failed to start timer"); }
+    finally { setRunning(false); }
+  }
+
+  async function stopTimer(id: string) {
+    setRunning(true);
+    try {
+      await fetch(`/api/firm/time/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stop: true }),
+      });
+      toast.success("Timer stopped");
+      load();
+    } finally { setRunning(false); }
+  }
+
+  async function del(id: string) {
+    if (!confirm("Delete this entry?")) return;
+    await fetch(`/api/firm/time/${id}`, { method: "DELETE" });
+    load();
+  }
+
+  const totalSec = entries.reduce((s, e) => s + (e.durationSec ?? 0), 0);
+  const billableSec = entries.filter((e) => e.billable).reduce((s, e) => s + (e.durationSec ?? 0), 0);
+
+  function fmtDur(sec: number | null) {
+    if (sec == null) return "—";
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    return `${h}h ${m}m`;
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Active timer or start widget */}
+      {activeTimer ? (
+        <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/[0.08] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">Timer running</p>
+              <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                started {new Date(activeTimer.startedAt).toLocaleTimeString()} · {activeTimer.category?.toLowerCase() ?? "—"}
+                {activeTimer.description && ` · ${activeTimer.description}`}
+              </p>
+            </div>
+            <Button onClick={() => stopTimer(activeTimer.id)} disabled={running} className="bg-rose-500 hover:bg-rose-400 text-white font-semibold">
+              Stop
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Card title="start_a_timer">
+          <div className="p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2">
+                <Input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What are you working on?"
+                />
+              </div>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="h-10 border border-input bg-background rounded-md px-3 text-sm"
+              >
+                <option value="BOOKKEEPING">Bookkeeping</option>
+                <option value="TAX">Tax prep</option>
+                <option value="REPORTING">Reporting</option>
+                <option value="MEETING">Meeting</option>
+                <option value="ADMIN">Admin</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={startTimer} disabled={running} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                Start timer
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
+        <div className="bg-card p-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">total_time</p>
+          <p className="text-xl font-bold text-foreground">{fmtDur(totalSec)}</p>
+        </div>
+        <div className="bg-card p-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">billable</p>
+          <p className="text-xl font-bold text-emerald-400">{fmtDur(billableSec)}</p>
+        </div>
+        <div className="bg-card p-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">entries</p>
+          <p className="text-xl font-bold text-foreground">{entries.length}</p>
+        </div>
+      </div>
+
+      {/* Entries list */}
+      {loading ? null : entries.length === 0 ? (
+        <div className="p-8 text-center text-sm text-muted-foreground rounded-lg border border-border/60 bg-card/40">
+          No time logged for this client yet.
+        </div>
+      ) : (
+        <div className="rounded-lg border border-border/60 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-card/60 border-b border-border/60">
+              <tr className="text-left">
+                <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">when</th>
+                <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">what</th>
+                <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">cat</th>
+                <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground text-right">duration</th>
+                <th className="px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">billable</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40">
+              {entries.map((e) => (
+                <tr key={e.id} className="hover:bg-card/30">
+                  <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                    {new Date(e.startedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                  </td>
+                  <td className="px-3 py-2 text-sm">{e.description ?? <span className="text-muted-foreground">—</span>}</td>
+                  <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{e.category?.toLowerCase() ?? "—"}</td>
+                  <td className="px-3 py-2 text-right font-mono text-sm">{fmtDur(e.durationSec)}</td>
+                  <td className="px-3 py-2">
+                    {e.billable ? <span className="text-emerald-400 text-xs font-mono">✓</span> : <span className="text-muted-foreground text-xs font-mono">—</span>}
+                  </td>
+                  <td className="px-3 py-2">
+                    <button onClick={() => del(e.id)} className="text-muted-foreground hover:text-rose-400 text-xs">×</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
