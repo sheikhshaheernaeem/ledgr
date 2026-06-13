@@ -17,6 +17,7 @@ import { AdminRoleButton } from "./AdminRoleButton";
 import { AdminDeleteButton } from "./AdminDeleteButton";
 import { AdminVerifyButton } from "./AdminVerifyButton";
 import { CreateAccountButton } from "./CreateAccountButton";
+import { SeedDemoButton } from "./SeedDemoButton";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -72,7 +73,8 @@ export default async function AdminPage() {
           <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
           <p className="text-muted-foreground mt-1">Full platform overview — all users, reports, and transactions</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <SeedDemoButton />
           <Link href="/admin/metrics">
             <Button variant="outline" className="gap-1.5">
               <FileText className="h-4 w-4" />
