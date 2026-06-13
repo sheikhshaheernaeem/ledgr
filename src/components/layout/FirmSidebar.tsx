@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import {
-  Inbox, Users, BarChart3, Shield,
+  Inbox, Users, BarChart3, Shield, CheckSquare, Calendar,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
 } from "lucide-react";
 
@@ -34,6 +35,8 @@ export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queue
   const NAV: NavItem[] = [
     { href: "/firm/queue", label: "Queue", icon: Inbox, badge: queueCount > 0 ? queueCount : undefined },
     { href: "/firm", label: "Clients", icon: Users, exact: true },
+    { href: "/firm/tasks", label: "Tasks", icon: CheckSquare },
+    { href: "/firm/calendar", label: "Calendar", icon: Calendar },
     { href: "/admin/metrics", label: "Metrics", icon: BarChart3, adminOnly: true },
     { href: "/admin", label: "Admin", icon: Shield, adminOnly: true, exact: true },
   ];
@@ -127,6 +130,12 @@ export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queue
             <X className="h-4 w-4" />
           </button>
         </div>
+
+        {!collapsed && (
+          <div className="px-2 pt-2 hidden lg:block">
+            <GlobalSearch />
+          </div>
+        )}
 
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
           {visibleNav.map((item) => {
