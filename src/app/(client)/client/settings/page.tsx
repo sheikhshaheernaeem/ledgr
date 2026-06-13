@@ -159,6 +159,38 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      {/* Engagement / scope of service */}
+      <Section title="scope_of_service" icon={UserCheck}>
+        <div className="p-5 space-y-3">
+          <p className="text-sm text-foreground leading-relaxed">
+            Your firm handles your bookkeeping end-to-end — we do the work, you receive the output.
+          </p>
+          <ul className="text-sm space-y-2 mt-3">
+            <li className="flex items-start gap-2">
+              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+              <span><strong className="text-foreground">Monthly close</strong> — all transactions categorized, reconciled, reviewed by your accountant. Reports delivered by the 5th.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+              <span><strong className="text-foreground">Live AI assistant</strong> — Llama 3.3 with read access to your books. Ask anything any time.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+              <span><strong className="text-foreground">Anomaly detection</strong> — flags duplicates, unusual amounts, fraud signals. Reviewed by your accountant.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+              <span><strong className="text-foreground">Tax prep (Growth+)</strong> — quarterly estimates, year-end close, federal &amp; state filing where applicable.</span>
+            </li>
+          </ul>
+          <div className="border-t border-border/40 pt-3 mt-3 text-xs text-muted-foreground space-y-1">
+            <p><strong className="text-foreground font-mono">Billing cycle:</strong> monthly, auto-renew. Cancel anytime via &quot;Manage billing&quot;.</p>
+            <p><strong className="text-foreground font-mono">Response SLA:</strong> 24h Starter · same day Growth · 4h CFO.</p>
+            <p><strong className="text-foreground font-mono">Onboarding:</strong> first close cycle is free. You see actual output before paying.</p>
+          </div>
+        </div>
+      </Section>
+
       {/* Plan card */}
       {plan && (
         <Section title="current_plan" icon={CreditCard}>

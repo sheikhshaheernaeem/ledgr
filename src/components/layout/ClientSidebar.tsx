@@ -5,13 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { FloatingChat } from "@/components/layout/FloatingChat";
+import { ClientNotificationsBell } from "@/components/layout/ClientNotificationsBell";
 import {
-  LayoutDashboard, Wallet, BarChart2, MessageSquare, Settings,
+  LayoutDashboard, Wallet, BarChart2, MessageSquare, Settings, Inbox,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
 } from "lucide-react";
 
 const NAV = [
   { href: "/client", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/client/requests", label: "Requests", icon: Inbox },
   { href: "/client/financials", label: "My Books", icon: Wallet },
   { href: "/client/reports", label: "Reports", icon: BarChart2 },
   { href: "/client/messages", label: "Messages", icon: MessageSquare },
@@ -80,7 +82,10 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
             </div>
             <span className="font-semibold tracking-tight">ledgr</span>
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-1.5">
+            <ClientNotificationsBell />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -202,6 +207,10 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
 
       {/* Main content */}
       <main className={`min-h-screen transition-all duration-200 ${contentLeft}`}>
+        {/* Desktop top-right notifications */}
+        <div className="hidden lg:flex absolute top-3 right-4 z-30">
+          <ClientNotificationsBell />
+        </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
           {children}
         </div>

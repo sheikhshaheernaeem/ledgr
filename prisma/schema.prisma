@@ -1749,7 +1749,7 @@ model DocumentRequest {
   clientId      String
   title         String
   description   String?
-  // List of specific items as JSON: [{ label: string, status: 'pending'|'submitted'|'approved' }]
+  // List of specific items as JSON: [{ label: string, status: 'pending'|'submitted'|'approved', docId?: string }]
   itemsJson     String    @default("[]")
   status        String    @default("OPEN")  // OPEN | PARTIAL | COMPLETE | CANCELLED
   dueAt         DateTime?
@@ -1759,4 +1759,23 @@ model DocumentRequest {
 
   @@index([clientId, status])
   @@index([requesterId])
+}
+
+// Client → Firm service requests (tickets initiated by the client)
+model ClientServiceRequest {
+  id            String    @id @default(cuid())
+  clientId      String
+  category      String    @default("OTHER") // TAX_PREP | BOARD_PACKAGE | LOAN_DOCS | AUDIT | OTHER
+  title         String
+  description   String?
+  urgency       String    @default("MED")  // LOW | MED | HIGH
+  status        String    @default("OPEN") // OPEN | IN_PROGRESS | COMPLETED | CANCELLED
+  assignedToId  String?   // operator assigned
+  dueAt         DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([clientId, status])
+  @@index([assignedToId, status])
 }

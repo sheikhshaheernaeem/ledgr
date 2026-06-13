@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/table";
 import {
   FileText, CheckCircle2, Clock, TrendingUp, TrendingDown, ExternalLink, Upload,
-  Receipt, FolderOpen,
+  Receipt, FolderOpen, Car, Repeat, HelpCircle, Inbox,
 } from "lucide-react";
 import { InsightsFeed } from "@/components/client/InsightsFeed";
+import { ServiceStatus } from "@/components/client/ServiceStatus";
+import { FirmActivity } from "@/components/client/FirmActivity";
 
 const fmt = (n: number) =>
   n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -75,6 +77,9 @@ export default async function ClientDashboardPage() {
         <p className="text-muted-foreground mt-1">Here&apos;s an overview of your account</p>
       </div>
 
+      {/* Service status — where are my books? */}
+      <ServiceStatus userId={userId} />
+
       {/* Primary action: upload — the service starts here */}
       <Link href="/client/upload" className="block">
         <div className="rounded-xl border-2 border-dashed border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.08] hover:border-emerald-500/50 transition-colors p-6 flex items-center gap-4">
@@ -92,12 +97,19 @@ export default async function ClientDashboardPage() {
       {/* AI-driven insights */}
       <InsightsFeed userId={userId} />
 
+      {/* Firm activity feed — what your firm did this week */}
+      <FirmActivity userId={userId} />
+
       {/* Quick links — service-shaped utilities */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <QuickLink href="/client/requests" icon={Inbox} label="Service inbox" desc="Requests &amp; approvals" />
         <QuickLink href="/client/tax" icon={Receipt} label="Tax estimate" desc="Quarterly view" />
         <QuickLink href="/client/invoices" icon={FileText} label="Invoices" desc="What's owed to you" />
         <QuickLink href="/client/documents" icon={FolderOpen} label="Documents" desc="Receipts &amp; forms" />
+        <QuickLink href="/client/mileage" icon={Car} label="Mileage" desc="Tax-deductible miles" />
+        <QuickLink href="/client/rules" icon={Repeat} label="Rules" desc="Vendor auto-categorize" />
         <QuickLink href="/client/financials" icon={TrendingUp} label="My books" desc="Live financials" />
+        <QuickLink href="/client/help" icon={HelpCircle} label="Help" desc="FAQ &amp; how-tos" />
       </div>
 
       {/* Summary cards */}
@@ -156,7 +168,7 @@ export default async function ClientDashboardPage() {
               ) : (
                 <>
                   <p className="text-sm font-semibold text-foreground">Upload your bank statement</p>
-                  <p className="text-xs text-muted-foreground">Export as CSV from your bank · we'll categorize every transaction automatically</p>
+                  <p className="text-xs text-muted-foreground">Export as CSV from your bank · we&apos;ll categorize every transaction automatically</p>
                 </>
               )}
             </div>
