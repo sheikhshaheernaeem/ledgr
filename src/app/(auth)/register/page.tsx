@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users } from "lucide-react";
 
 const PLAN_LABELS: Record<string, { name: string; price: string; color: string }> = {
   starter: { name: "Starter", price: "$299/mo", color: "border-zinc-500/30 text-zinc-400" },
@@ -110,6 +110,7 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [role, setRole] = useState<"CLIENT" | "ACCOUNTANT">("CLIENT");
   const [emailTouched, setEmailTouched] = useState(false);
 
   const emailStatus = useMemo(() => validateEmail(form.email), [form.email]);
@@ -134,7 +135,7 @@ function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, plan: planParam || "starter" }),
+        body: JSON.stringify({ ...form, plan: planParam || "starter", role }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -175,9 +176,44 @@ function RegisterForm() {
           <CardDescription>First month completely free. Upload your bank statement, we handle the rest.</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Role selector */}
+          <div className="mb-5">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-mono">
+              i&apos;m signing up as
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole("CLIENT")}
+                className={`rounded-lg border p-3 text-left transition-colors ${
+                  role === "CLIENT"
+                    ? "border-emerald-500/50 bg-emerald-500/[0.06]"
+                    : "border-border bg-card hover:border-foreground/30"
+                }`}
+              >
+                <Users className={`h-4 w-4 mb-1.5 ${role === "CLIENT" ? "text-emerald-400" : "text-muted-foreground"}`} />
+                <p className="text-sm font-medium text-foreground">A business owner</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">I need bookkeeping done for my business.</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("ACCOUNTANT")}
+                className={`rounded-lg border p-3 text-left transition-colors ${
+                  role === "ACCOUNTANT"
+                    ? "border-emerald-500/50 bg-emerald-500/[0.06]"
+                    : "border-border bg-card hover:border-foreground/30"
+                }`}
+              >
+                <Briefcase className={`h-4 w-4 mb-1.5 ${role === "ACCOUNTANT" ? "text-emerald-400" : "text-muted-foreground"}`} />
+                <p className="text-sm font-medium text-foreground">An accountant</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">I do bookkeeping for clients on this platform.</p>
+              </button>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Business / Your Name</Label>
+              <Label htmlFor="name">{role === "ACCOUNTANT" ? "Your name" : "Business / Your Name"}</Label>
               <Input
                 id="name"
                 placeholder="Acme Store"

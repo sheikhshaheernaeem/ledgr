@@ -39,6 +39,12 @@ interface ServiceRequest {
   dueAt: string | null;
   createdAt: string;
   completedAt: string | null;
+  assignedToId: string | null;
+  assignedToName: string | null;
+  allocatedAt: string | null;
+  deliverableUrl: string | null;
+  deliverableNote: string | null;
+  deliverableType: string | null;
 }
 interface PendingReport {
   id: string;
@@ -304,7 +310,7 @@ export default function ClientRequestsPage() {
               </h2>
               {myRequests.map((r) => (
                 <div key={r.id} className={`rounded-lg border p-4 ${
-                  r.status === "COMPLETED" ? "border-border/40 bg-card/30 opacity-70" : "border-border/60 bg-card/40"
+                  r.status === "COMPLETED" ? "border-emerald-500/30 bg-emerald-500/[0.04]" : "border-border/60 bg-card/40"
                 }`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
@@ -317,12 +323,39 @@ export default function ClientRequestsPage() {
                       {r.description && (
                         <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{r.description}</p>
                       )}
-                      <p className="font-mono text-[10px] text-muted-foreground mt-1.5">
-                        {r.category.toLowerCase().replace(/_/g, " ")} · {r.urgency.toLowerCase()} priority ·
-                        opened {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      </p>
+                      <div className="flex items-center gap-3 mt-1.5 text-[10px] font-mono text-muted-foreground flex-wrap">
+                        <span>{r.category.toLowerCase().replace(/_/g, " ")}</span>
+                        <span>{r.urgency.toLowerCase()} priority</span>
+                        <span>opened {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                        {r.assignedToName && (
+                          <span className="text-emerald-400">↳ allocated to {r.assignedToName}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Deliverable when completed */}
+                  {r.status === "COMPLETED" && (
+                    <div className="mt-3 pt-3 border-t border-emerald-500/20 space-y-2">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-400">
+                        delivered · {r.completedAt && new Date(r.completedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </p>
+                      {r.deliverableNote && (
+                        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{r.deliverableNote}</p>
+                      )}
+                      {r.deliverableUrl && (
+                        <a
+                          href={r.deliverableUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-1 text-sm font-medium text-emerald-500 hover:text-emerald-400 border border-emerald-500/30 bg-emerald-500/[0.06] px-3 py-1.5 rounded"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          Download deliverable ({r.deliverableType?.replace(/_/g, " ") ?? "file"})
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </section>

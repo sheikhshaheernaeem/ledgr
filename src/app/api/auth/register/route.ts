@@ -12,6 +12,7 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   plan: z.string().optional(),
+  role: z.enum(["CLIENT", "ACCOUNTANT"]).optional(),
 });
 
 function getAppUrl(req: Request): string {
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name, email, password, plan } = parsed.data;
+    const { name, email, password, plan, role } = parsed.data;
     const subscriptionStatus = VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
       ? plan!.toUpperCase()
       : "STARTER";
@@ -41,9 +42,15 @@ export async function POST(req: Request) {
       );
     }
 
+    const finalRole = role === "ACCOUNTANT" ? "ACCOUNTANT" : "CLIENT";
+
     const hashed = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
-      data: { name, email, password: hashed, emailVerified: false, subscriptionStatus },
+      data: {
+        name, email, password: hashed, emailVerified: false,
+        subscriptionStatus,
+        role: finalRole,
+      },
     });
 
     // Create verification token (expires in 24h)

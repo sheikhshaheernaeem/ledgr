@@ -12,7 +12,21 @@ export async function GET() {
     where: { clientId: session.user.id as string },
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(requests);
+
+  // Hydrate assignee names
+  const assigneeIds = [...new Set(requests.map((r) => r.assignedToId).filter(Boolean) as string[])];
+  const assignees = assigneeIds.length > 0
+    ? await prisma.user.findMany({ where: { id: { in: assigneeIds } }, select: { id: true, name: true, email: true } })
+    : [];
+  const nameMap = new Map<string, string>();
+  for (const a of assignees) nameMap.set(a.id, a.name ?? a.email);
+
+  return NextResponse.json(
+    requests.map((r) => ({
+      ...r,
+      assignedToName: r.assignedToId ? nameMap.get(r.assignedToId) ?? null : null,
+    }))
+  );
 }
 
 export async function POST(req: NextRequest) {

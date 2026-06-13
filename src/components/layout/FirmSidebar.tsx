@@ -35,6 +35,7 @@ export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queue
 
   const NAV: NavItem[] = [
     { href: "/firm/queue", label: "Queue", icon: Inbox, badge: queueCount > 0 ? queueCount : undefined },
+    { href: "/admin/dispatch", label: "Dispatch", icon: Inbox, adminOnly: true },
     { href: "/firm", label: "Clients", icon: Users, exact: true },
     { href: "/firm/tasks", label: "Tasks", icon: CheckSquare },
     { href: "/firm/calendar", label: "Calendar", icon: Calendar },

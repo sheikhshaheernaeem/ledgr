@@ -1845,13 +1845,24 @@ model ClientServiceRequest {
   title         String
   description   String?
   urgency       String    @default("MED")  // LOW | MED | HIGH
-  status        String    @default("OPEN") // OPEN | IN_PROGRESS | COMPLETED | CANCELLED
+  status        String    @default("OPEN") // OPEN | ALLOCATED | IN_PROGRESS | COMPLETED | CANCELLED
   assignedToId  String?   // operator assigned
+  allocatedAt   DateTime?
+  allocatedById String?   // admin who allocated
+  startedAt     DateTime?
   dueAt         DateTime?
   completedAt   DateTime?
+
+  // Deliverable when accountant completes the work
+  deliverableUrl       String?  // URL or document ID reference
+  deliverableNote      String?  // accountant's notes when delivering
+  deliverableType      String?  // "report" | "tax_filing" | "audit" | "other"
+  clientAcknowledgedAt DateTime?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   @@index([clientId, status])
   @@index([assignedToId, status])
+  @@index([status, allocatedAt])
 }

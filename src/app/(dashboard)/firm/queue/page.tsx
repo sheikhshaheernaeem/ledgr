@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { MyAllocations } from "@/components/firm/MyAllocations";
 import {
   Inbox, FileText, AlertTriangle, MessageSquare, Upload, Clock, ArrowRight,
   CheckCircle2,
@@ -200,6 +201,9 @@ export default async function QueuePage() {
           Everything that needs your attention across {clientIds.length} client{clientIds.length !== 1 ? "s" : ""} — in one place.
         </p>
       </div>
+
+      {/* My allocated requests (accountant-side) */}
+      <MyAllocations />
 
       {/* stat strip */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
