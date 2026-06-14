@@ -18,9 +18,11 @@
 import { prisma } from "@/lib/db";
 import { extractTextFromDocument } from "@/lib/ocr/extract";
 import { classifyTransaction } from "@/lib/ai/classifier";
+import { validateAIOutput, summarizeValidation } from "@/lib/ai/validator";
 import { normalizeAll } from "@/lib/ai/transform";
 import { addTransactionsBatch, calculateSummary, type Summary } from "@/lib/accounting/engine";
 import { analyzeFinancialSentiment } from "@/lib/finbert";
+import { logPipelineEvent } from "@/lib/logs/logger";
 
 export interface PipelineStep {
   name: string;
@@ -90,8 +92,48 @@ export async function processDocument(documentId: string, opts: Options = {}): P
     // ── 3. Classify (Llama 3.3 → structured JSON, with retries baked in)
     const extraction = await tick("ai_classify", () => classifyTransaction(ocr.text));
 
-    // ── 4. Normalize
-    const normalized = normalizeAll(extraction.transactions, doc.userId);
+    // ── 4. Validate AI output. Up to 2 retry passes if everything is rejected.
+    let validation = await tick("ai_validate", async () => validateAIOutput(extraction.transactions));
+    let retryCount = 0;
+    while (validation.ok && validation.valid.length === 0 && extraction.transactions.length > 0 && retryCount < 2) {
+      retryCount++;
+      await logPipelineEvent({
+        stage: "ai_validate",
+        level: "warn",
+        message: `Validation rejected all ${extraction.transactions.length} transactions, retry ${retryCount}/2`,
+        userId: doc.userId,
+        documentId: doc.id,
+        detail: validation.rejected.slice(0, 3),
+      });
+      const retried = await classifyTransaction(ocr.text);
+      extraction.transactions = retried.transactions;
+      validation = validateAIOutput(retried.transactions);
+    }
+
+    if (!validation.ok) {
+      await logPipelineEvent({
+        stage: "ai_validate",
+        level: "error",
+        message: `Validation failure: ${validation.reason}`,
+        userId: doc.userId,
+        documentId: doc.id,
+      });
+      throw new Error(`Validation failed: ${validation.reason}`);
+    }
+
+    if (validation.rejected.length > 0) {
+      await logPipelineEvent({
+        stage: "ai_validate",
+        level: "warn",
+        message: `Rejected ${validation.rejected.length} of ${extraction.transactions.length} transactions: ${summarizeValidation(validation)}`,
+        userId: doc.userId,
+        documentId: doc.id,
+        detail: validation.rejected.slice(0, 10),
+      });
+    }
+
+    // ── 5. Normalize (only the validated set)
+    const normalized = normalizeAll(validation.valid, doc.userId);
 
     // ── 5. Persist transactions atomically
     const transactionIds = await tick("persist_transactions", () =>
@@ -150,9 +192,18 @@ export async function processDocument(documentId: string, opts: Options = {}): P
       steps,
     };
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logPipelineEvent({
+      stage: "pipeline",
+      level: "error",
+      message: `processDocument failed: ${message}`,
+      userId: doc.userId,
+      documentId: doc.id,
+      detail: { steps, errorName: err instanceof Error ? err.name : "unknown" },
+    });
     await prisma.document.update({
       where: { id: documentId },
-      data: { status: "ERROR" },
+      data: { status: "FAILED" },
     }).catch(() => {});
     throw err;
   }

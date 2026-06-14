@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  LayoutDashboard, Users, Inbox, FileText, Brain, LogOut, Menu, X, Sparkles,
+  LayoutDashboard, Users, Inbox, FileText, Brain, LogOut, Menu, X, Sparkles, FileX,
 } from "lucide-react";
 
 interface NavItem { href: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }
@@ -15,6 +15,7 @@ const NAV: NavItem[] = [
   { href: "/admin/requests", label: "Requests", icon: Inbox },
   { href: "/admin/reports", label: "Reports archive", icon: FileText },
   { href: "/admin/ai-insights", label: "AI insights", icon: Brain },
+  { href: "/admin/failures", label: "Failures", icon: FileX },
 ];
 
 interface Props {

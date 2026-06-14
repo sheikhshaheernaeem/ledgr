@@ -1808,6 +1808,24 @@ model FirmTimeEntry {
   @@index([clientId, startedAt])
 }
 
+// Structured pipeline failure log. Persists OCR / AI / validation errors per
+// document so admins can see which documents failed and why.
+model PipelineLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  documentId String?
+  stage      String   // ocr | ai_classify | ai_validate | normalize | persist | summary | unknown
+  level      String   @default("error")  // info | warn | error
+  message    String   @db.Text
+  detailJson String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([documentId])
+  @@index([userId, createdAt])
+  @@index([level, createdAt])
+  @@index([stage])
+}
+
 // Persistent FinBERT / financial-AI analyses. Attaches to a request, a document,
 // or stands alone. Used to power /admin/ai-insights and per-request analysis cards.
 model AiAnalysis {
