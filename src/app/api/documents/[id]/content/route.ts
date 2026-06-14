@@ -10,9 +10,15 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   const doc = await prisma.document.findFirst({
     where: { id, userId },
-    select: { name: true, mimeType: true, content: true },
+    select: { name: true, mimeType: true, content: true, fileUrl: true, storageProvider: true },
   });
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // Vercel Blob: redirect to the blob URL (or proxy). Redirect is cheapest.
+  if (doc.storageProvider === "vercel_blob" && doc.fileUrl) {
+    return NextResponse.redirect(doc.fileUrl, 302);
+  }
+
   if (!doc.content) return NextResponse.json({ error: "No content" }, { status: 404 });
 
   // Content is stored as data URL: "data:<mime>;base64,<...>"

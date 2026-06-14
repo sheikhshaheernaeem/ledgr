@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { AiAccountant } from "@/components/client/AiAccountant";
+import { LaneSwitcher } from "@/components/client/LaneSwitcher";
 
 export default async function ClientHomePage() {
   const session = await auth();
@@ -10,7 +10,7 @@ export default async function ClientHomePage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <AiAccountant />
+      <LaneSwitcher />
     </div>
   );
 }

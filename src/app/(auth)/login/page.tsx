@@ -52,6 +52,8 @@ function LoginForm() {
           router.push("/login/2fa");
         } else if (sessionData?.user?.role === "ADMIN") {
           router.push("/admin");
+        } else if (sessionData?.user?.role === "ACCOUNTANT") {
+          router.push("/firm/queue");
         } else {
           router.push("/client");
         }

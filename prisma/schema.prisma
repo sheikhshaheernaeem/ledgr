@@ -505,7 +505,13 @@ model Document {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   type        String   @default("OTHER")
-  content     String?
+  /// Legacy: base64 data URL when blob storage was not configured.
+  content     String?  @db.Text
+  /// New: Vercel Blob public URL when BLOB_READ_WRITE_TOKEN is set.
+  fileUrl     String?
+  /// Where the file lives: "vercel_blob" or "db_base64".
+  storageProvider String?
+  fileSize    Int?
   mimeType    String   @default("text/plain")
   clientId    String?
   client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
