@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { Upload, ArrowRight, Sparkles, MessageSquare, FolderOpen, HelpCircle } from "lucide-react";
 import { ActionInbox } from "@/components/client/ActionInbox";
 import { StatusStrip } from "@/components/client/StatusStrip";
+import { FinBertWidget } from "@/components/client/FinBertWidget";
 
 export default async function ClientDashboardPage() {
   const session = await auth();
@@ -59,6 +60,9 @@ export default async function ClientDashboardPage() {
           <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-emerald-400 shrink-0" />
         </div>
       </Link>
+
+      {/* FinBERT tone analysis — soft, optional */}
+      <FinBertWidget />
 
       {/* Small calm shortcut row — utilities */}
       <nav className="grid grid-cols-3 gap-3">

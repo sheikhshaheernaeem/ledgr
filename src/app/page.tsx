@@ -108,7 +108,7 @@ export default function Landing() {
               <span className="font-semibold text-foreground tracking-tight">ledgr</span>
             </Link>
             <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground">
-              {[["#services","Services"],["#how-it-works","Process"],["#pricing","Pricing"]].map(([href,label])=>(
+              {[["/services","Services"],["/about","About"],["/contact","Contact"],["#pricing","Pricing"]].map(([href,label])=>(
                 <Link key={href} href={href} className="hover:text-foreground transition-colors">{label}</Link>
               ))}
             </nav>

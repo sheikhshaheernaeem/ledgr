@@ -28,6 +28,7 @@ model User {
   auditLogs         AuditLog[]
   plaidConnections  PlaidConnection[]
   cashFlowForecasts CashFlowForecast[]
+  aiAnalyses        AiAnalysis[]
   paymentLink       String?
   customCategories  String?
   clients           Client[]
@@ -1793,6 +1794,45 @@ model FirmTimeEntry {
 
   @@index([operatorId, startedAt])
   @@index([clientId, startedAt])
+}
+
+// Persistent FinBERT / financial-AI analyses. Attaches to a request, a document,
+// or stands alone. Used to power /admin/ai-insights and per-request analysis cards.
+model AiAnalysis {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestId      String?
+  documentId     String?
+  kind           String   @default("sentiment")
+  source         String   @default("finbert")
+  modelId        String
+  inputText      String   @db.Text
+  label          String?
+  score          Float?
+  scoresJson     String?  @db.Text
+  signalsJson    String?  @db.Text
+  highlightsJson String?  @db.Text
+  latencyMs      Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([requestId])
+  @@index([source])
+}
+
+// Inbound raw submissions from public /contact page (separate from CRM FirmLead which is sales-owned).
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String
+  topic     String   @default("general")
+  message   String
+  handled   Boolean  @default(false)
+  handledAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([handled, createdAt])
 }
 
 model FirmLead {

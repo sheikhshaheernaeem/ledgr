@@ -75,6 +75,12 @@ export default async function AdminPage() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <SeedDemoButton />
+          <Link href="/admin/ai-insights">
+            <Button variant="outline" className="gap-1.5 border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+              <FileText className="h-4 w-4" />
+              AI Insights
+            </Button>
+          </Link>
           <Link href="/admin/metrics">
             <Button variant="outline" className="gap-1.5">
               <FileText className="h-4 w-4" />
