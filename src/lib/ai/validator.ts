@@ -25,8 +25,8 @@ export interface RejectedTransaction {
 }
 
 const ALLOWED_TYPES = new Set(["INCOME", "EXPENSE"]);
-const MIN_CONFIDENCE = 0.7;
-const DEFAULT_CONFIDENCE = 0.8;
+const MIN_CONFIDENCE = 0.75;
+const DEFAULT_CONFIDENCE = 0.85;
 
 /**
  * Validate an array of AI-extracted transactions. Returns the subset that
