@@ -50,10 +50,10 @@ function LoginForm() {
         const sessionData = sessionRes.ok ? await sessionRes.json() : null;
         if (sessionData?.user?.requiresTwoFactor) {
           router.push("/login/2fa");
-        } else if (sessionData?.user?.role === "CLIENT") {
-          router.push("/client");
+        } else if (sessionData?.user?.role === "ADMIN") {
+          router.push("/admin");
         } else {
-          router.push("/firm/queue");
+          router.push("/client");
         }
         router.refresh();
       }
