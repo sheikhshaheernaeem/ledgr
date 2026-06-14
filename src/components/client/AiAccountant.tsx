@@ -40,11 +40,35 @@ interface PipelineResult {
 }
 
 const STEP_LABELS: Record<string, string> = {
+  ocr: "OCR scanning image (Tesseract)",
   parse_document: "Parsing document",
   extract_transactions: "Extracting transactions (Llama 3.3)",
   finbert_sentiment: "Analyzing sentiment (FinBERT)",
   persist_transactions: "Saving to your ledger",
 };
+
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function ocrImage(file: File, onProgress: (pct: number) => void): Promise<string> {
+  const Tesseract = (await import("tesseract.js")).default;
+  const result = await Tesseract.recognize(file, "eng", {
+    logger: (m) => {
+      if (m.status === "recognizing text" && typeof m.progress === "number") {
+        onProgress(Math.round(m.progress * 100));
+      }
+    },
+  });
+  return result.data.text;
+}
 
 export function AiAccountant() {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -52,6 +76,7 @@ export function AiAccountant() {
   const [pasted, setPasted] = useState("");
   const [working, setWorking] = useState(false);
   const [currentStep, setCurrentStep] = useState<string | null>(null);
+  const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const [result, setResult] = useState<PipelineResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -60,13 +85,28 @@ export function AiAccountant() {
     setError(null);
     setResult(null);
     setWorking(true);
-    setCurrentStep("uploading");
+    setOcrProgress(null);
 
     const fd = new FormData();
-    if (input.file) fd.append("file", input.file);
-    if (input.text) fd.append("text", input.text);
 
     try {
+      // If it's an image, OCR in browser first (free, local, no server load)
+      if (input.file && input.file.type.startsWith("image/")) {
+        setCurrentStep("ocr");
+        setOcrProgress(0);
+        const text = await ocrImage(input.file, (pct) => setOcrProgress(pct));
+        if (text.trim().length < 20) {
+          throw new Error("OCR couldn't read enough text from the image. Try a clearer scan.");
+        }
+        fd.append("text", text);
+        fd.append("sourceName", input.file.name);
+        setOcrProgress(null);
+      } else if (input.file) {
+        fd.append("file", input.file);
+      } else if (input.text) {
+        fd.append("text", input.text);
+      }
+
       setCurrentStep("parse_document");
       const res = await fetch("/api/ai/process-document", { method: "POST", body: fd });
       const data = await res.json();
@@ -81,6 +121,7 @@ export function AiAccountant() {
     } finally {
       setWorking(false);
       setCurrentStep(null);
+      setOcrProgress(null);
     }
   }, []);
 
@@ -110,15 +151,26 @@ export function AiAccountant() {
       });
       if (!res.ok) throw new Error("Report generation failed");
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ledgr-${kind}-${new Date().toISOString().slice(0, 10)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      toast.success("Report downloaded");
+      triggerDownload(blob, `ledgr-${kind}-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success("PDF downloaded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Download failed");
+    } finally { setDownloading(false); }
+  }, [result]);
+
+  const downloadCsv = useCallback(async () => {
+    if (!result) return;
+    setDownloading(true);
+    try {
+      const res = await fetch("/api/ai/generate-csv", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transactionIds: result.transactionIds, scope: "selected" }),
+      });
+      if (!res.ok) throw new Error("CSV generation failed");
+      const blob = await res.blob();
+      triggerDownload(blob, `ledgr-transactions-${new Date().toISOString().slice(0, 10)}.csv`);
+      toast.success("CSV downloaded");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Download failed");
     } finally { setDownloading(false); }
@@ -159,7 +211,7 @@ export function AiAccountant() {
             <input
               ref={fileRef}
               type="file"
-              accept=".pdf,.csv,.txt,text/plain,text/csv,application/pdf"
+              accept=".pdf,.csv,.txt,image/*,text/plain,text/csv,application/pdf"
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
@@ -169,9 +221,9 @@ export function AiAccountant() {
             <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
               <Upload className="h-6 w-6 text-blue-500 dark:text-blue-400" />
             </div>
-            <p className="text-base font-semibold text-foreground">Drop a PDF / CSV / TXT here</p>
+            <p className="text-base font-semibold text-foreground">Drop a PDF, image, or CSV</p>
             <p className="text-xs text-muted-foreground mt-1.5">or click to browse · max 8MB</p>
-            <p className="text-[11px] text-muted-foreground font-mono mt-3">supports bank_statements · invoices · receipts · ledgers</p>
+            <p className="text-[11px] text-muted-foreground font-mono mt-3">pdf · jpg · png · csv · txt &nbsp;·&nbsp; images OCR&apos;d locally</p>
           </div>
 
           {/* Paste text */}
@@ -201,11 +253,22 @@ export function AiAccountant() {
             <div className="w-9 h-9 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
               <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin" />
             </div>
-            <div>
+            <div className="flex-1">
               <p className="font-semibold text-foreground">AI is processing your document</p>
-              <p className="text-xs text-muted-foreground">{STEP_LABELS[currentStep ?? ""] ?? "Uploading…"}</p>
+              <p className="text-xs text-muted-foreground">
+                {STEP_LABELS[currentStep ?? ""] ?? "Uploading…"}
+                {currentStep === "ocr" && ocrProgress !== null && ` · ${ocrProgress}%`}
+              </p>
             </div>
           </div>
+          {currentStep === "ocr" && ocrProgress !== null && (
+            <div className="mb-3 h-1.5 bg-blue-500/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${ocrProgress}%` }}
+              />
+            </div>
+          )}
           <div className="space-y-2">
             {Object.entries(STEP_LABELS).map(([key, label]) => {
               const isCurrent = currentStep === key;
@@ -277,6 +340,10 @@ export function AiAccountant() {
               </Button>
               <Button onClick={() => downloadPdf("tax_summary")} disabled={downloading} variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
                 <Download className="h-3.5 w-3.5 mr-1.5" /> Tax Summary
+              </Button>
+              <div className="w-px h-8 bg-border self-center" />
+              <Button onClick={downloadCsv} disabled={downloading} variant="outline">
+                <Download className="h-3.5 w-3.5 mr-1.5" /> CSV
               </Button>
             </div>
           </div>

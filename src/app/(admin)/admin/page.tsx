@@ -17,7 +17,6 @@ import { AdminRoleButton } from "./AdminRoleButton";
 import { AdminDeleteButton } from "./AdminDeleteButton";
 import { AdminVerifyButton } from "./AdminVerifyButton";
 import { CreateAccountButton } from "./CreateAccountButton";
-import { SeedDemoButton } from "./SeedDemoButton";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -74,7 +73,6 @@ export default async function AdminPage() {
           <p className="text-muted-foreground mt-1">Full platform overview — all users, reports, and transactions</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <SeedDemoButton />
           <Link href="/admin/ai-insights">
             <Button variant="outline" className="gap-1.5 border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
               <FileText className="h-4 w-4" />
@@ -85,12 +83,6 @@ export default async function AdminPage() {
             <Button variant="outline" className="gap-1.5">
               <FileText className="h-4 w-4" />
               MRR &amp; Growth Metrics
-            </Button>
-          </Link>
-          <Link href="/admin/yc-application">
-            <Button className="gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white">
-              <FileText className="h-4 w-4" />
-              YC Application Draft
             </Button>
           </Link>
         </div>

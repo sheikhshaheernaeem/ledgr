@@ -7,15 +7,15 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { FloatingChat } from "@/components/layout/FloatingChat";
 import { ClientNotificationsBell } from "@/components/layout/ClientNotificationsBell";
 import {
-  LayoutDashboard, Wallet, BarChart2, MessageSquare, Settings, Inbox,
+  Sparkles, FileText, BarChart2, MessageSquare, Settings, Inbox,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
 } from "lucide-react";
 
 const NAV = [
-  { href: "/client", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/client/requests", label: "Requests", icon: Inbox },
-  { href: "/client/financials", label: "My Books", icon: Wallet },
+  { href: "/client", label: "AI Accountant", icon: Sparkles, exact: true },
+  { href: "/client/transactions", label: "Transactions", icon: FileText },
   { href: "/client/reports", label: "Reports", icon: BarChart2 },
+  { href: "/client/requests", label: "Requests", icon: Inbox },
   { href: "/client/messages", label: "Messages", icon: MessageSquare },
   { href: "/client/settings", label: "Settings", icon: Settings },
 ];
