@@ -194,6 +194,12 @@ model Transaction {
   entityId    String?
   departmentId String?
   projectId    String?
+
+  @@index([userId])
+  @@index([date])
+  @@index([userId, date])
+  @@index([userId, type])
+  @@index([userId, category])
 }
 
 model Report {
