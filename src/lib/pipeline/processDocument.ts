@@ -17,12 +17,13 @@
 
 import { prisma } from "@/lib/db";
 import { extractTextFromDocument } from "@/lib/ocr/extract";
-import { classifyTransaction } from "@/lib/ai/classifier";
+import { classifyWithSelfHealing } from "@/lib/ai/selfHealing";
 import { validateAIOutput, summarizeValidation } from "@/lib/ai/validator";
 import { normalizeAll } from "@/lib/ai/transform";
 import { addTransactionsBatch, calculateSummary, type Summary } from "@/lib/accounting/engine";
 import { analyzeFinancialSentiment } from "@/lib/finbert";
 import { logPipelineEvent } from "@/lib/logs/logger";
+import { failureGuard } from "@/lib/monitoring/failureGuard";
 
 export interface PipelineStep {
   name: string;
@@ -79,18 +80,33 @@ export async function processDocument(documentId: string, opts: Options = {}): P
     if (!urlForOcr) throw new Error(`Document ${documentId} has no file URL or content`);
 
     const ocr = await tick("ocr_extract", () =>
-      extractTextFromDocument(urlForOcr, {
-        contentType: doc.mimeType,
-        clientText: opts.clientText,
-      }),
+      failureGuard(
+        "ocr",
+        () => extractTextFromDocument(urlForOcr, {
+          contentType: doc.mimeType,
+          clientText: opts.clientText,
+        }),
+        {
+          userId: doc.userId, documentId: doc.id, retries: 1,
+          isValid: (r: unknown) => {
+            const ocr = r as { text: string };
+            return Boolean(ocr.text && ocr.text.trim().length >= 20);
+          },
+        },
+      ),
     );
 
-    if (ocr.text.trim().length < 20) {
-      throw new Error(`OCR produced too little text (${ocr.text.trim().length} chars)`);
+    // ── 3. Classify with self-healing (cleans text + retries on empty result)
+    const healed = await tick("ai_classify", () => classifyWithSelfHealing(ocr.text));
+    const extraction = healed.extraction;
+    if (healed.attempts > 1) {
+      await logPipelineEvent({
+        stage: "ai_classify", level: "info",
+        message: `Self-healing converged on attempt ${healed.attempts}`,
+        userId: doc.userId, documentId: doc.id,
+        detail: { healLog: healed.healLog },
+      });
     }
-
-    // ── 3. Classify (Llama 3.3 → structured JSON, with retries baked in)
-    const extraction = await tick("ai_classify", () => classifyTransaction(ocr.text));
 
     // ── 4. Validate AI output. Up to 2 retry passes if everything is rejected.
     let validation = await tick("ai_validate", async () => validateAIOutput(extraction.transactions));
@@ -105,9 +121,9 @@ export async function processDocument(documentId: string, opts: Options = {}): P
         documentId: doc.id,
         detail: validation.rejected.slice(0, 3),
       });
-      const retried = await classifyTransaction(ocr.text);
-      extraction.transactions = retried.transactions;
-      validation = validateAIOutput(retried.transactions);
+      const retried = await classifyWithSelfHealing(ocr.text);
+      extraction.transactions = retried.extraction.transactions;
+      validation = validateAIOutput(retried.extraction.transactions);
     }
 
     if (!validation.ok) {

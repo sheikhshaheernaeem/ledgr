@@ -60,7 +60,7 @@ Output schema:
   "notes": "optional brief observation"
 }`;
 
-const MAX_RETRIES = 2;
+const MAX_RETRIES = 3;
 
 /**
  * Classify a chunk of financial text into structured transactions.

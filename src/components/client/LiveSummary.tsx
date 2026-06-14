@@ -19,7 +19,7 @@ interface Summary {
   last_processed_count: number;
 }
 
-const POLL_MS = 3000;
+const POLL_MS = 2000;
 
 export function LiveSummary() {
   const [data, setData] = useState<Summary | null>(null);
