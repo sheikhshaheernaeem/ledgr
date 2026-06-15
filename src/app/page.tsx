@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowRight, Check, TrendingUp, Shield, Clock,
   BarChart3, FileText, Zap, Brain, Users, Star, ChevronRight, Terminal, Code2, GitBranch, Sparkles,
@@ -67,7 +67,7 @@ const services = [
   { icon: BarChart3,  title: "Cash Flow Forecasting",     desc: "We model your runway, flag issues early, and surface insights so you make decisions with data." },
 ];
 
-const pricing = [
+const pricingBookkeeping = [
   { name: "Starter", price: 299, desc: "Freelancers & solopreneurs", slug: "starter",
     features: ["Up to 200 transactions/month", "Monthly P&L to inbox", "AI categorization + human review", "Ledgr AI financial assistant", "Email support"],
     cta: "Start free", hot: false },
@@ -76,6 +76,18 @@ const pricing = [
     cta: "Start free", hot: true },
   { name: "CFO",     price: 1499, desc: "Growing companies that need more", slug: "cfo",
     features: ["Unlimited transactions", "Dedicated human accountant", "Weekly check-ins", "Board-ready financials", "Full fractional CFO service"],
+    cta: "Talk to us", hot: false },
+];
+
+const pricingAiAccountant = [
+  { name: "Starter", price: 999, desc: "AI handles the books — solo founders & SMBs", slug: "ai-starter",
+    features: ["Full autonomous AI pipeline", "OCR + extraction + classification", "Llama 3.3 + FinBERT analysis", "Real-time dashboard + P&L", "Downloadable PDF + CSV reports"],
+    cta: "Start free", hot: false },
+  { name: "Growth",  price: 1999, desc: "Higher volume, faster SLA, multi-entity", slug: "ai-growth",
+    features: ["Unlimited document processing", "Multi-bank + multi-currency", "Sentiment + anomaly detection", "Priority AI compute (5× faster)", "Slack + email anomaly alerts"],
+    cta: "Start free", hot: true },
+  { name: "CFO",     price: 2999, desc: "AI + human review + dedicated CFO", slug: "ai-cfo",
+    features: ["Everything in Growth", "Dedicated human CFO review", "Board-ready financials", "Custom AI fine-tuning", "White-glove onboarding"],
     cta: "Talk to us", hot: false },
 ];
 
@@ -93,7 +105,13 @@ const stats = [
   { val: "70%", label: "avg_cost_savings" },
 ];
 
+type ServiceTier = "ai" | "bookkeeping";
+
 export default function Landing() {
+  const [tier, setTier] = useState<ServiceTier>("ai");
+  const pricing = tier === "ai" ? pricingAiAccountant : pricingBookkeeping;
+  const isAi = tier === "ai";
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-emerald-500/20">
 
@@ -469,25 +487,70 @@ export default function Landing() {
       {/* ── Pricing ── */}
       <section id="pricing" className="border-b border-border/60">
         <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
+          <FadeUp className="mb-8 max-w-2xl">
             <MonoLabel>PRICING</MonoLabel>
             <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
-              Service pricing.
+              Two ways to use Ledgr.
             </h2>
             <p className="mt-4 text-muted-foreground text-base">
-              First month free · Cancel anytime · No setup fees.
+              Pick the service tier that fits. Switch later anytime.
+            </p>
+          </FadeUp>
+
+          {/* Service tier toggle */}
+          <FadeUp className="mb-10">
+            <div className="inline-flex p-1 bg-card/40 border border-border/60 rounded-xl">
+              <button
+                onClick={() => setTier("ai")}
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  isAi
+                    ? "bg-blue-500 text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  AI Accountant Services
+                </span>
+              </button>
+              <button
+                onClick={() => setTier("bookkeeping")}
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  !isAi
+                    ? "bg-emerald-500 text-black shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5" />
+                  Book keeping Services
+                </span>
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3 font-mono">
+              {isAi
+                ? "ai_accountant · llama_3.3 + finbert · autonomous_pipeline · instant_reports"
+                : "book_keeping · human_review · monthly_close · tax_prep · plaid_sync"}
             </p>
           </FadeUp>
           <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {pricing.map((plan) => (
-              <MotionCard key={plan.name}>
+            {pricing.map((plan) => {
+              const accentBorder = isAi ? "border-blue-500/50" : "border-emerald-500/50";
+              const accentBg = isAi ? "bg-blue-500/[0.04]" : "bg-emerald-500/[0.04]";
+              const accentBadge = isAi ? "bg-blue-500 text-white" : "bg-emerald-500 text-black";
+              const accentCheck = isAi ? "text-blue-500 dark:text-blue-400" : "text-emerald-400";
+              const accentBtn = isAi
+                ? "bg-blue-500 hover:bg-blue-400 text-white"
+                : "bg-emerald-500 hover:bg-emerald-400 text-black";
+              return (
+              <MotionCard key={plan.slug}>
                 <div className={`relative h-full flex flex-col rounded-xl border p-7 ${
                   plan.hot
-                    ? "border-emerald-500/50 bg-emerald-500/[0.04]"
+                    ? `${accentBorder} ${accentBg}`
                     : "border-border/60 bg-card/60"
                 }`}>
                   {plan.hot && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-emerald-500 text-black text-[10px] font-bold px-3 py-0.5 rounded-full font-mono uppercase tracking-wider">
+                    <span className={`absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 ${accentBadge} text-[10px] font-bold px-3 py-0.5 rounded-full font-mono uppercase tracking-wider`}>
                       Most popular
                     </span>
                   )}
@@ -505,7 +568,7 @@ export default function Landing() {
                   <ul className="space-y-2.5 mb-7 flex-1">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <Check className={`h-4 w-4 ${accentCheck} shrink-0 mt-0.5`} />
                         <span>{f}</span>
                       </li>
                     ))}
@@ -513,7 +576,7 @@ export default function Landing() {
                   <Link href={`/register?plan=${plan.slug}`}>
                     <Button className={`w-full h-10 font-semibold ${
                       plan.hot
-                        ? "bg-emerald-500 hover:bg-emerald-400 text-black"
+                        ? accentBtn
                         : "bg-foreground hover:bg-foreground/90 text-background"
                     }`}>
                       {plan.cta} <ArrowRight className="h-3.5 w-3.5 ml-1" />
@@ -521,7 +584,8 @@ export default function Landing() {
                   </Link>
                 </div>
               </MotionCard>
-            ))}
+              );
+            })}
           </Stagger>
         </div>
       </section>

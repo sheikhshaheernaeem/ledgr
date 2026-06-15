@@ -9,16 +9,44 @@ import { ClientNotificationsBell } from "@/components/layout/ClientNotifications
 import {
   Sparkles, FileText, BarChart2, MessageSquare, Settings, Inbox,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
+  Activity, Receipt, Wallet, Calculator, FolderOpen, Lightbulb, Upload,
 } from "lucide-react";
 
-const NAV = [
-  { href: "/client", label: "AI Accountant", icon: Sparkles, exact: true },
-  { href: "/client/transactions", label: "Transactions", icon: FileText },
-  { href: "/client/reports", label: "Reports", icon: BarChart2 },
-  { href: "/client/requests", label: "Requests", icon: Inbox },
-  { href: "/client/messages", label: "Messages", icon: MessageSquare },
-  { href: "/client/settings", label: "Settings", icon: Settings },
+interface NavItem { href: string; label: string; icon: typeof Sparkles; exact?: boolean }
+
+const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
+  {
+    title: "AI Accountant",
+    items: [
+      { href: "/client", label: "AI Accountant", icon: Sparkles, exact: true },
+      { href: "/client/transactions", label: "Transactions", icon: FileText },
+      { href: "/client/reports", label: "Reports", icon: BarChart2 },
+      { href: "/client/requests", label: "Requests", icon: Inbox },
+    ],
+  },
+  {
+    title: "Book keeping",
+    items: [
+      { href: "/client/bookkeeping", label: "Overview", icon: Activity, exact: true },
+      { href: "/client/financials", label: "My Books", icon: Wallet },
+      { href: "/client/tax", label: "Tax", icon: Calculator },
+      { href: "/client/invoices", label: "Invoices", icon: Receipt },
+      { href: "/client/documents", label: "Documents", icon: FolderOpen },
+      { href: "/client/upload", label: "Upload", icon: Upload },
+      { href: "/client/insights", label: "Insights", icon: Lightbulb },
+    ],
+  },
+  {
+    title: "Account",
+    items: [
+      { href: "/client/messages", label: "Messages", icon: MessageSquare },
+      { href: "/client/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ];
+
+// Flat nav for back-compat with usePathname matching
+const NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
 
 interface Props {
   children: React.ReactNode;
@@ -126,30 +154,45 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
           </button>
         </div>
 
-        {/* nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-          {NAV.map((item) => {
-            const active = isActive(item.href, item.exact);
+        {/* nav — grouped by section (AI Accountant / Book keeping / Account) */}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
+          {NAV_SECTIONS.map((section, sIdx) => {
+            const isAiSection = section.title === "AI Accountant";
+            const isBkSection = section.title === "Book keeping";
+            const accentText = isAiSection ? "text-blue-500 dark:text-blue-400" : isBkSection ? "text-emerald-500 dark:text-emerald-400" : "";
+            const accentBg = isAiSection ? "bg-blue-500/12" : isBkSection ? "bg-emerald-500/12" : "bg-muted";
+            const accentBar = isAiSection ? "bg-blue-500" : isBkSection ? "bg-emerald-500" : "bg-foreground";
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={collapsed ? item.label : undefined}
-                className={`
-                  group relative flex items-center gap-3 rounded-md px-2.5 py-2 text-sm transition-colors
-                  ${active
-                    ? "bg-emerald-500/12 text-foreground font-medium"
-                    : "text-muted-foreground hover:bg-card hover:text-foreground"}
-                  ${collapsed ? "lg:justify-center lg:px-0" : ""}
-                `}
-              >
-                {/* active indicator bar */}
-                {active && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-r bg-emerald-400" />
+              <div key={section.title} className="space-y-0.5">
+                {!collapsed && (
+                  <p className={`px-2.5 mt-${sIdx === 0 ? 0 : 1} mb-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground`}>
+                    <span className={accentText}>·</span> {section.title.toLowerCase().replace(/ /g, "_")}
+                  </p>
                 )}
-                <item.icon className={`h-4 w-4 shrink-0 ${active ? "text-emerald-400" : ""}`} />
-                <span className={`whitespace-nowrap ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
-              </Link>
+                {section.items.map((item) => {
+                  const active = isActive(item.href, item.exact);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      title={collapsed ? item.label : undefined}
+                      className={`
+                        group relative flex items-center gap-3 rounded-md px-2.5 py-2 text-sm transition-colors
+                        ${active
+                          ? `${accentBg} text-foreground font-medium`
+                          : "text-muted-foreground hover:bg-card hover:text-foreground"}
+                        ${collapsed ? "lg:justify-center lg:px-0" : ""}
+                      `}
+                    >
+                      {active && (
+                        <span className={`absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-r ${accentBar}`} />
+                      )}
+                      <item.icon className={`h-4 w-4 shrink-0 ${active ? accentText : ""}`} />
+                      <span className={`whitespace-nowrap ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>
