@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Mail, Eye, EyeOff } from "lucide-react";
+import { Loader2, CheckCircle2, Mail, Eye, EyeOff, Sparkles, FileText, ArrowRight } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -161,6 +161,37 @@ function LoginForm() {
           Sign up free
         </Link>
       </p>
+
+      {/* Tier entry points — for visitors hitting login first */}
+      <div className="rounded-xl border border-border/60 bg-card/30 p-3">
+        <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground text-center mb-2">
+          new_to_ledgr · choose_your_service
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href="/register?plan=ai-starter"
+            className="rounded-lg border border-blue-500/30 bg-blue-500/[0.04] hover:bg-blue-500/[0.10] hover:border-blue-500/50 transition-all p-3 group"
+          >
+            <Sparkles className="h-4 w-4 text-blue-500 dark:text-blue-400 mb-1.5" />
+            <p className="text-sm font-semibold text-foreground">AI Accountant</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">$999–$2,999/mo</p>
+            <p className="text-[10px] font-mono text-blue-500 mt-1.5 inline-flex items-center gap-0.5">
+              start_free <ArrowRight className="h-2.5 w-2.5" />
+            </p>
+          </Link>
+          <Link
+            href="/register?plan=starter"
+            className="rounded-lg border border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.10] hover:border-emerald-500/50 transition-all p-3 group"
+          >
+            <FileText className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mb-1.5" />
+            <p className="text-sm font-semibold text-foreground">Book keeping</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">$299–$1,499/mo</p>
+            <p className="text-[10px] font-mono text-emerald-500 mt-1.5 inline-flex items-center gap-0.5">
+              start_free <ArrowRight className="h-2.5 w-2.5" />
+            </p>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

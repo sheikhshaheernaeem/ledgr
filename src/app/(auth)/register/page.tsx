@@ -15,12 +15,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users } from "lucide-react";
+import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users, Sparkles, FileText } from "lucide-react";
 
 const PLAN_LABELS: Record<string, { name: string; price: string; color: string }> = {
-  starter: { name: "Starter", price: "$299/mo", color: "border-zinc-500/30 text-zinc-400" },
-  growth: { name: "Growth", price: "$599/mo", color: "border-emerald-500/30 text-emerald-400" },
-  cfo: { name: "CFO", price: "$1,499/mo", color: "border-blue-500/30 text-blue-400" },
+  starter:     { name: "Bookkeeping Starter", price: "$299/mo", color: "border-emerald-500/30 text-emerald-400" },
+  growth:      { name: "Bookkeeping Growth",  price: "$599/mo", color: "border-emerald-500/30 text-emerald-400" },
+  cfo:         { name: "Bookkeeping CFO",     price: "$1,499/mo", color: "border-emerald-500/30 text-emerald-400" },
+  "ai-starter":{ name: "AI Accountant Starter", price: "$999/mo",  color: "border-blue-500/30 text-blue-400" },
+  "ai-growth": { name: "AI Accountant Growth",  price: "$1,999/mo", color: "border-blue-500/30 text-blue-400" },
+  "ai-cfo":    { name: "AI Accountant CFO",     price: "$2,999/mo", color: "border-blue-500/30 text-blue-400" },
+};
+
+// Map plan slug → tier
+function tierOf(slug: string): "ai" | "bookkeeping" {
+  return slug.startsWith("ai-") ? "ai" : "bookkeeping";
+}
+
+// Default plan within a tier (entry-level)
+const DEFAULT_PLAN: Record<"ai" | "bookkeeping", string> = {
+  ai: "ai-starter",
+  bookkeeping: "starter",
 };
 
 // Popular domains — fuzzy match against these
@@ -106,12 +120,24 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const planParam = searchParams.get("plan")?.toLowerCase() ?? "";
-  const planInfo = PLAN_LABELS[planParam] ?? null;
+  const initialTier: "ai" | "bookkeeping" = planParam in PLAN_LABELS ? tierOf(planParam) : "ai";
+  const initialPlan = planParam in PLAN_LABELS ? planParam : DEFAULT_PLAN[initialTier];
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [role, setRole] = useState<"CLIENT" | "ACCOUNTANT">("CLIENT");
+  const [tier, setTier] = useState<"ai" | "bookkeeping">(initialTier);
+  const [selectedPlan, setSelectedPlan] = useState(initialPlan);
   const [emailTouched, setEmailTouched] = useState(false);
+
+  const planInfo = PLAN_LABELS[selectedPlan] ?? null;
+
+  // When tier changes, reset selected plan to that tier's default
+  function switchTier(next: "ai" | "bookkeeping") {
+    setTier(next);
+    setSelectedPlan(DEFAULT_PLAN[next]);
+  }
 
   const emailStatus = useMemo(() => validateEmail(form.email), [form.email]);
   const showEmailError = emailTouched && form.email.length > 0 && !emailStatus.valid;
@@ -135,7 +161,7 @@ function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, plan: planParam || "starter", role }),
+        body: JSON.stringify({ ...form, plan: selectedPlan, role }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -176,6 +202,70 @@ function RegisterForm() {
           <CardDescription>First month completely free. Upload your bank statement, we handle the rest.</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Tier picker — only relevant when signing up as a CLIENT */}
+          {role === "CLIENT" && (
+            <div className="mb-5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-mono">
+                choose_your_service
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => switchTier("ai")}
+                  className={`rounded-lg border p-3 text-left transition-colors ${
+                    tier === "ai"
+                      ? "border-blue-500/50 bg-blue-500/[0.06]"
+                      : "border-border bg-card hover:border-foreground/30"
+                  }`}
+                >
+                  <Sparkles className={`h-4 w-4 mb-1.5 ${tier === "ai" ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground"}`} />
+                  <p className="text-sm font-medium text-foreground">AI Accountant</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Instant. $999–$2,999/mo.</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchTier("bookkeeping")}
+                  className={`rounded-lg border p-3 text-left transition-colors ${
+                    tier === "bookkeeping"
+                      ? "border-emerald-500/50 bg-emerald-500/[0.06]"
+                      : "border-border bg-card hover:border-foreground/30"
+                  }`}
+                >
+                  <FileText className={`h-4 w-4 mb-1.5 ${tier === "bookkeeping" ? "text-emerald-500 dark:text-emerald-400" : "text-muted-foreground"}`} />
+                  <p className="text-sm font-medium text-foreground">Book keeping</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Human-reviewed. $299–$1,499/mo.</p>
+                </button>
+              </div>
+
+              {/* Plan picker within the chosen tier */}
+              <div className="mt-3 grid grid-cols-3 gap-1.5">
+                {(tier === "ai"
+                  ? ["ai-starter", "ai-growth", "ai-cfo"]
+                  : ["starter", "growth", "cfo"]
+                ).map((slug) => {
+                  const info = PLAN_LABELS[slug];
+                  const isActive = selectedPlan === slug;
+                  const accent = tier === "ai"
+                    ? "border-blue-500/50 bg-blue-500/[0.06] text-blue-500 dark:text-blue-400"
+                    : "border-emerald-500/50 bg-emerald-500/[0.06] text-emerald-500 dark:text-emerald-400";
+                  return (
+                    <button
+                      key={slug}
+                      type="button"
+                      onClick={() => setSelectedPlan(slug)}
+                      className={`rounded-md border p-2 text-center text-[11px] font-mono transition-colors ${
+                        isActive ? accent : "border-border bg-card hover:border-foreground/30 text-muted-foreground"
+                      }`}
+                    >
+                      <p className="font-semibold uppercase tracking-wider text-[10px]">{info.name.split(" ").pop()}</p>
+                      <p className="text-foreground mt-0.5">{info.price}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Role selector */}
           <div className="mb-5">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-mono">

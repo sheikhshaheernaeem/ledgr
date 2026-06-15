@@ -5,7 +5,10 @@ import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
 
-const VALID_PLANS = ["starter", "growth", "cfo"] as const;
+const VALID_PLANS = [
+  "starter", "growth", "cfo",
+  "ai-starter", "ai-growth", "ai-cfo",
+] as const;
 
 const schema = z.object({
   name: z.string().min(1),
@@ -30,8 +33,9 @@ export async function POST(req: Request) {
     }
 
     const { name, email, password, plan, role } = parsed.data;
+    // Map plan slug → subscription status (uppercase with AI_ prefix for AI tier)
     const subscriptionStatus = VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
-      ? plan!.toUpperCase()
+      ? plan!.replace("-", "_").toUpperCase()
       : "STARTER";
 
     const existing = await prisma.user.findUnique({ where: { email } });
