@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import {
   ArrowRight, Check, TrendingUp, Shield, Clock,
   BarChart3, FileText, Zap, Brain, Users, Star, ChevronRight, Terminal, Code2, GitBranch, Sparkles,
@@ -68,27 +68,87 @@ const services = [
 ];
 
 const pricingBookkeeping = [
-  { name: "Starter", price: 299, desc: "Freelancers & solopreneurs", slug: "starter",
-    features: ["Up to 200 transactions/month", "Monthly P&L to inbox", "AI categorization + human review", "Ledgr AI financial assistant", "Email support"],
+  { name: "Basic", price: 299, desc: "Very small businesses · low volume", slug: "starter",
+    features: [
+      "Up to 100 transactions/month",
+      "Manual bookkeeping by human",
+      "Monthly financial reports",
+      "Basic expense categorization",
+      "3–7 day turnaround",
+    ],
     cta: "Start free", hot: false },
-  { name: "Growth",  price: 599, desc: "Small businesses $10K–$100K/mo", slug: "growth",
-    features: ["Up to 500 transactions/month", "Monthly P&L + quarterly deep-dive", "Tax prep included", "Cash flow forecasting", "Priority 24h support"],
+  { name: "Pro", price: 599, desc: "Small businesses scaling operations", slug: "growth",
+    features: [
+      "Up to 500 transactions/month",
+      "Manual bookkeeping",
+      "Weekly updates",
+      "Categorized expense tracking",
+      "Improved accuracy checks",
+      "1–3 day turnaround",
+    ],
     cta: "Start free", hot: true },
-  { name: "CFO",     price: 1499, desc: "Growing companies that need more", slug: "cfo",
-    features: ["Unlimited transactions", "Dedicated human accountant", "Weekly check-ins", "Board-ready financials", "Full fractional CFO service"],
+  { name: "Advanced", price: 1499, desc: "Businesses needing human oversight", slug: "cfo",
+    features: [
+      "High transaction volume support",
+      "Dedicated bookkeeper",
+      "Real-time transaction updates",
+      "Tax-ready financial reports",
+      "Custom reporting support",
+      "Same-day / near real-time updates",
+    ],
     cta: "Talk to us", hot: false },
 ];
 
 const pricingAiAccountant = [
-  { name: "Starter", price: 999, desc: "AI handles the books — solo founders & SMBs", slug: "ai-starter",
-    features: ["Full autonomous AI pipeline", "OCR + extraction + classification", "Llama 3.3 + FinBERT analysis", "Real-time dashboard + P&L", "Downloadable PDF + CSV reports"],
+  { name: "Starter AI", price: 999, desc: "Freelancers & small businesses starting automation", slug: "ai-starter",
+    features: [
+      "Up to 200 documents/month",
+      "AI-powered automatic bookkeeping (no manual entry)",
+      "Smart transaction categorization (auto-learns)",
+      "Real-time financial dashboard",
+      "Basic P&L reports",
+      "~80% autonomous",
+      "Standard queue · 30–90 sec / document",
+    ],
     cta: "Start free", hot: false },
-  { name: "Growth",  price: 1999, desc: "Higher volume, faster SLA, multi-entity", slug: "ai-growth",
-    features: ["Unlimited document processing", "Multi-bank + multi-currency", "Sentiment + anomaly detection", "Priority AI compute (5× faster)", "Slack + email anomaly alerts"],
+  { name: "Growth AI", price: 1999, desc: "Scaling startups & growing businesses", slug: "ai-growth",
+    features: [
+      "Up to 1,000 documents/month",
+      "Multi-source ingestion (uploads, email, integrations)",
+      "Full end-to-end AI accounting pipeline",
+      "Real-time P&L + cash flow tracking",
+      "AI anomaly + duplicate detection",
+      "Multi-user access + role permissions",
+      "~95% autonomous · Priority queue",
+    ],
     cta: "Start free", hot: true },
-  { name: "CFO",     price: 2999, desc: "AI + human review + dedicated CFO", slug: "ai-cfo",
-    features: ["Everything in Growth", "Dedicated human CFO review", "Board-ready financials", "Custom AI fine-tuning", "White-glove onboarding"],
+  { name: "Autonomous AI", price: 2999, desc: "Flagship — replaces human accounting workflows", slug: "ai-cfo",
+    features: [
+      "Unlimited documents + transactions",
+      "100% autonomous · zero manual work",
+      "Auto-reconciliation (bank ↔ transactions)",
+      "Predictive forecasting + trend analysis",
+      "Real-time P&L, balance sheet, cash flow",
+      "Self-healing data validation",
+      "Tax-ready summaries · Fraud detection",
+      "Instant processing (<10s) · Priority SLA",
+      "Dedicated onboarding",
+    ],
     cta: "Talk to us", hot: false },
+];
+
+const addOns = [
+  { icon: "plug", name: "Integrations", desc: "Bank sync · Stripe / PayPal · ERP connectors", price: "from $99/mo" },
+  { icon: "chart", name: "Advanced Reports Pack", desc: "Balance Sheet · Cash Flow Forecast · Custom KPI dashboards", price: "from $149/mo" },
+  { icon: "headset", name: "Dedicated Support", desc: "Account manager · Priority SLA · 1-hour response", price: "from $199/mo" },
+];
+
+const comparison = [
+  { trad: "Manual work", ai: "Fully automated" },
+  { trad: "Delayed reports", ai: "Real-time data" },
+  { trad: "Human errors", ai: "AI validation" },
+  { trad: "Expensive scaling", ai: "Infinite scalability" },
+  { trad: "$3,000+/month per accountant", ai: "24/7 — never sleeps" },
 ];
 
 const evolution = [
@@ -587,6 +647,80 @@ export default function Landing() {
               );
             })}
           </Stagger>
+
+          {/* Add-ons */}
+          <FadeUp className="mt-16">
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-3">add_ons · stack_on_any_plan</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {addOns.map((a) => (
+                <div key={a.name} className="rounded-xl border border-border/60 bg-card/30 p-4">
+                  <p className="font-semibold text-foreground text-sm">{a.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
+                  <p className="font-mono text-[11px] text-blue-500 dark:text-blue-400 mt-3">{a.price}</p>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── Positioning + Comparison ── */}
+      <section className="border-b border-border/60 relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
+          style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-radial from-blue-500/10 via-blue-500/[0.02] to-transparent blur-3xl" />
+        </div>
+        <div className="max-w-5xl mx-auto px-6 py-24 text-center">
+          <FadeUp>
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-blue-500 dark:text-blue-400">
+              positioning
+            </p>
+            <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-[-0.025em] leading-[1.05] max-w-3xl mx-auto">
+              Replace a <span className="text-blue-500 dark:text-blue-400">$3,000/month accountant</span> with a 24/7 AI system.
+            </h2>
+            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Never sleeps. Never misses transactions. Updates your finances in real time.
+            </p>
+          </FadeUp>
+
+          {/* Traditional vs AI comparison */}
+          <FadeUp className="mt-14 max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 rounded-2xl border border-border/60 overflow-hidden">
+              <div className="bg-card/40 p-5 border-r border-border/60 text-left">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-rose-500">traditional_bookkeeping</p>
+              </div>
+              <div className="bg-blue-500/[0.04] p-5 text-left">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-blue-500 dark:text-blue-400">ai_accountant</p>
+              </div>
+              {comparison.map((row, i) => (
+                <Fragment key={i}>
+                  <div className={`p-5 border-r border-t border-border/60 text-left text-sm text-muted-foreground ${i % 2 === 0 ? "bg-card/20" : "bg-card/40"}`}>
+                    × {row.trad}
+                  </div>
+                  <div className={`p-5 border-t border-border/60 text-left text-sm text-foreground ${i % 2 === 0 ? "bg-blue-500/[0.02]" : "bg-blue-500/[0.05]"}`}>
+                    <span className="text-blue-500 dark:text-blue-400 font-semibold">✓</span> {row.ai}
+                  </div>
+                </Fragment>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Conversion hook */}
+          <FadeUp className="mt-14">
+            <div className="inline-block rounded-2xl border border-blue-500/40 bg-blue-500/[0.06] px-6 py-4">
+              <p className="text-sm text-muted-foreground font-mono">try_it</p>
+              <p className="mt-1 text-xl sm:text-2xl font-bold tracking-tight">
+                Upload 5 invoices <span className="text-blue-500 dark:text-blue-400">→</span> get a full financial report instantly.
+              </p>
+            </div>
+          </FadeUp>
+
+          <FadeUp className="mt-10">
+            <p className="text-xs text-muted-foreground italic max-w-xl mx-auto">
+              We&apos;re not selling bookkeeping. We&apos;re selling an autonomous financial intelligence system that replaces humans.
+            </p>
+          </FadeUp>
         </div>
       </section>
 

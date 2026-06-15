@@ -174,7 +174,7 @@ function LoginForm() {
           >
             <Sparkles className="h-4 w-4 text-blue-500 dark:text-blue-400 mb-1.5" />
             <p className="text-sm font-semibold text-foreground">AI Accountant</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">$999–$2,999/mo</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Starter → Autonomous · $999–$2,999</p>
             <p className="text-[10px] font-mono text-blue-500 mt-1.5 inline-flex items-center gap-0.5">
               start_free <ArrowRight className="h-2.5 w-2.5" />
             </p>
@@ -185,7 +185,7 @@ function LoginForm() {
           >
             <FileText className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mb-1.5" />
             <p className="text-sm font-semibold text-foreground">Book keeping</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">$299–$1,499/mo</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Basic → Advanced · $299–$1,499</p>
             <p className="text-[10px] font-mono text-emerald-500 mt-1.5 inline-flex items-center gap-0.5">
               start_free <ArrowRight className="h-2.5 w-2.5" />
             </p>

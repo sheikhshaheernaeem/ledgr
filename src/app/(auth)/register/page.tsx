@@ -18,17 +18,30 @@ import {
 import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users, Sparkles, FileText } from "lucide-react";
 
 const PLAN_LABELS: Record<string, { name: string; price: string; color: string }> = {
-  starter:     { name: "Bookkeeping Starter", price: "$299/mo", color: "border-emerald-500/30 text-emerald-400" },
-  growth:      { name: "Bookkeeping Growth",  price: "$599/mo", color: "border-emerald-500/30 text-emerald-400" },
-  cfo:         { name: "Bookkeeping CFO",     price: "$1,499/mo", color: "border-emerald-500/30 text-emerald-400" },
-  "ai-starter":{ name: "AI Accountant Starter", price: "$999/mo",  color: "border-blue-500/30 text-blue-400" },
-  "ai-growth": { name: "AI Accountant Growth",  price: "$1,999/mo", color: "border-blue-500/30 text-blue-400" },
-  "ai-cfo":    { name: "AI Accountant CFO",     price: "$2,999/mo", color: "border-blue-500/30 text-blue-400" },
+  starter:     { name: "Bookkeeping Basic",    price: "$299/mo",   color: "border-emerald-500/30 text-emerald-400" },
+  growth:      { name: "Bookkeeping Pro",      price: "$599/mo",   color: "border-emerald-500/30 text-emerald-400" },
+  cfo:         { name: "Bookkeeping Advanced", price: "$1,499/mo", color: "border-emerald-500/30 text-emerald-400" },
+  "ai-starter":{ name: "Starter AI",           price: "$999/mo",   color: "border-blue-500/30 text-blue-400" },
+  "ai-growth": { name: "Growth AI",            price: "$1,999/mo", color: "border-blue-500/30 text-blue-400" },
+  "ai-cfo":    { name: "Autonomous AI",        price: "$2,999/mo", color: "border-blue-500/30 text-blue-400" },
 };
 
 // Map plan slug → tier
 function tierOf(slug: string): "ai" | "bookkeeping" {
   return slug.startsWith("ai-") ? "ai" : "bookkeeping";
+}
+
+// Short label for the 3-chip picker (matches spec names)
+function shortPlanLabel(slug: string): string {
+  const map: Record<string, string> = {
+    "ai-starter": "Starter",
+    "ai-growth": "Growth",
+    "ai-cfo": "Autonomous",
+    starter: "Basic",
+    growth: "Pro",
+    cfo: "Advanced",
+  };
+  return map[slug] ?? slug;
 }
 
 // Default plan within a tier (entry-level)
@@ -257,7 +270,7 @@ function RegisterForm() {
                         isActive ? accent : "border-border bg-card hover:border-foreground/30 text-muted-foreground"
                       }`}
                     >
-                      <p className="font-semibold uppercase tracking-wider text-[10px]">{info.name.split(" ").pop()}</p>
+                      <p className="font-semibold uppercase tracking-wider text-[10px]">{shortPlanLabel(slug)}</p>
                       <p className="text-foreground mt-0.5">{info.price}</p>
                     </button>
                   );
