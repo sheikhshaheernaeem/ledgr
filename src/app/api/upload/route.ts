@@ -15,6 +15,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { uploadFile } from "@/lib/storage/blob";
 import { processDocument } from "@/lib/pipeline/processDocument";
+import { checkLimit, getUpgradeOptions } from "@/lib/usageTracker";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -25,6 +26,23 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id;
+
+  // ── Enforce per-tier document limit BEFORE we accept the upload ──
+  const limit = await checkLimit(userId, "documents");
+  if (!limit.allowed) {
+    const upgrade_options = getUpgradeOptions(limit.tier);
+    return NextResponse.json(
+      {
+        error: "limit_reached",
+        message: limit.reason ?? "Document limit reached for your plan.",
+        tier: limit.tier,
+        used: limit.used,
+        limit: limit.limit === Infinity ? null : limit.limit,
+        upgrade_options,
+      },
+      { status: 402 },
+    );
+  }
 
   const form = await req.formData();
   const file = form.get("file");

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, Users, Inbox, FileText, Brain, LogOut, Menu, X, Sparkles, FileX,
+  CreditCard, Activity,
 } from "lucide-react";
 
 interface NavItem { href: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }
@@ -12,6 +13,8 @@ interface NavItem { href: string; label: string; icon: typeof LayoutDashboard; e
 const NAV: NavItem[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/admin/clients", label: "Clients", icon: Users },
+  { href: "/admin/billing", label: "Billing & Tiers", icon: CreditCard },
+  { href: "/admin/usage", label: "Usage", icon: Activity },
   { href: "/admin/requests", label: "Requests", icon: Inbox },
   { href: "/admin/reports", label: "Reports archive", icon: FileText },
   { href: "/admin/ai-insights", label: "AI insights", icon: Brain },
