@@ -43,8 +43,11 @@ export function PublicFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">legal</p>
           <ul className="space-y-1.5">
-            <li><span className="text-muted-foreground text-xs">Privacy</span></li>
-            <li><span className="text-muted-foreground text-xs">Terms</span></li>
+            {[["/privacy", "Privacy Policy"], ["/terms", "Terms of Service"], ["/refunds", "Refund Policy"], ["/#pricing", "Pricing"]].map(([href, label]) => (
+              <li key={href}>
+                <Link href={href} className="text-muted-foreground hover:text-foreground transition-colors text-xs">{label}</Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
