@@ -5,12 +5,18 @@ import { prisma } from "@/lib/db";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const body = await request.json();
-  const { publicToken } = body;
+  const body = await request.json().catch(() => ({}));
+  const { publicToken } = body as { publicToken?: string };
 
-  // Find invoice by id and optional public token
+  // Public, unauthenticated endpoint: require the invoice's public token so an
+  // invoice can only be accessed via its shareable pay link (prevents data
+  // disclosure by guessing/enumerating invoice IDs).
+  if (!publicToken) {
+    return NextResponse.json({ error: "Payment token required" }, { status: 401 });
+  }
+
   const invoice = await prisma.invoice.findFirst({
-    where: publicToken ? { id, publicToken } : { id },
+    where: { id, publicToken },
   });
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });

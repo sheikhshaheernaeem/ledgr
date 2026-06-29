@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection, LegalList } from "@/components/layout/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Ledgr",
+  title: "Privacy Policy",
   description:
     "How Ledgr collects, uses, protects, and shares your personal and financial information.",
 };

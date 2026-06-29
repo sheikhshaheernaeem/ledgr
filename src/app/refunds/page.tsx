@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection, LegalList } from "@/components/layout/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Refund Policy — Ledgr",
+  title: "Refund Policy",
   description: "Ledgr's refund and cancellation policy for our monthly bookkeeping subscription.",
 };
 

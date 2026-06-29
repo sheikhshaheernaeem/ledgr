@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, LegalSection, LegalList } from "@/components/layout/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Ledgr",
+  title: "Terms of Service",
   description:
     "The terms that govern your use of Ledgr's AI-native bookkeeping and accounting service.",
 };
