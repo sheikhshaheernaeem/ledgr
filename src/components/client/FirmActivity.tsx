@@ -121,7 +121,7 @@ export async function FirmActivity({ userId }: { userId: string }) {
     const hours = (timeEntries._sum.durationSec / 3600).toFixed(1);
     items.push({
       kind: "time",
-      // eslint-disable-next-line react-hooks/purity
+       
       date: new Date(),
       title: `${hours}h of work logged this week`,
       detail: `${timeEntries._count} session${timeEntries._count !== 1 ? "s" : ""} across your books`,

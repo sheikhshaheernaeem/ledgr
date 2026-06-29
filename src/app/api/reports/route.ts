@@ -42,7 +42,7 @@ export async function GET(req: Request) {
 
   // ── Accounting engine modes ──
   const month = searchParams.get("month") ? parseInt(searchParams.get("month") as string, 10) : undefined;
-  // eslint-disable-next-line react-hooks/purity
+   
   const year = searchParams.get("year") ? parseInt(searchParams.get("year") as string, 10) : new Date().getFullYear();
 
   if (kind === "summary") {

@@ -86,7 +86,7 @@ export default function TimeTrackingPage() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []);  
 
   function filterEntries(e: TimeEntry) {
     if (tab === "Billable") return e.billable;
@@ -117,7 +117,8 @@ export default function TimeTrackingPage() {
   function toggleSelect(id: string) {
     setSelected(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }

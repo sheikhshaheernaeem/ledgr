@@ -15,6 +15,13 @@ const eslintConfig = defineConfig([
     // Auto-generated Prisma client — not hand-written, never lint it.
     "src/generated/**",
   ]),
+  {
+    rules: {
+      // Cosmetic only: escaping apostrophes/quotes in JSX text (e.g. &apos;)
+      // has zero runtime, accessibility, or SEO impact. Not worth the noise.
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

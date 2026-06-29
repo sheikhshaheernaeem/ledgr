@@ -34,7 +34,7 @@ export default async function FirmCalendarPage() {
   const userId = session.user.id as string;
   const isAdmin = role === "ADMIN";
 
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const clientIds = isAdmin
     ? (await prisma.user.findMany({ where: { role: "CLIENT" }, select: { id: true } })).map((u) => u.id)

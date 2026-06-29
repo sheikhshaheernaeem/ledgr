@@ -36,7 +36,7 @@ export interface LimitCheck {
  * simplicity (so "limit resets monthly" is implicit).
  */
 export function currentPeriod(): { start: Date; end: Date } {
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);

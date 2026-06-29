@@ -201,7 +201,7 @@ export async function POST(req: Request) {
   const pdfBytes = Buffer.from(arrayBuffer);
 
   // ── Persist Report row ──
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   try {
     const report = await prisma.report.create({

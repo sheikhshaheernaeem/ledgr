@@ -100,7 +100,7 @@ export default function TransactionsPage() {
   // Reset to page 1 when filters change
   useEffect(() => { setPage(1); }, [search, filterCategory, filterStatus, startDate, endDate]);
 
-  function toggleSelect(id: string) { setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
+  function toggleSelect(id: string) { setSelected(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; }); }
   function toggleAll() { setSelected(prev => prev.size === transactions.length ? new Set() : new Set(transactions.map(t => t.id))); }
 
   function openEdit(tx: Transaction) {

@@ -142,7 +142,7 @@ export default async function FailuresPage() {
 }
 
 function timeAgo(d: Date): string {
-  // eslint-disable-next-line react-hooks/purity
+   
   const diff = Date.now() - d.getTime();
   const m = Math.floor(diff / 60000);
   if (m < 1) return "now";

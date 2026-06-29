@@ -73,7 +73,8 @@ export default function InvoicesPage() {
   function toggleSelect(id: string) {
     setSelectedInvoices(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -143,7 +144,8 @@ export default function InvoicesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a href="/api/invoices/export">
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- API route file download, not page navigation */}
+          <a href="/api/invoices/export" download>
             <Button variant="outline" className="gap-2 text-xs">
               <Download className="h-3.5 w-3.5" /> Export CSV
             </Button>

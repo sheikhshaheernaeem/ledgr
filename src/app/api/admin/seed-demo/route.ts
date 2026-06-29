@@ -187,7 +187,7 @@ export async function POST() {
   }
 
   // ── A monthly report per client to make My Books non-empty ──
-  // eslint-disable-next-line react-hooks/purity
+   
   const nowDate = new Date();
   const prevMonth = nowDate.getMonth() === 0 ? 12 : nowDate.getMonth();
   const prevYear = nowDate.getMonth() === 0 ? nowDate.getFullYear() - 1 : nowDate.getFullYear();

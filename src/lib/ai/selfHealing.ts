@@ -68,7 +68,7 @@ function clean(text: string, level: number): string {
 
   if (level >= 2) {
     // Remove control chars + zero-width + non-printable
-    // eslint-disable-next-line no-control-regex
+     
     out = out.replace(/[\x00-\x08\x0B-\x1F\x7F​-‍﻿]/g, "");
     // Strip trailing whitespace on each line
     out = out.split("\n").map((l) => l.trimEnd()).join("\n");

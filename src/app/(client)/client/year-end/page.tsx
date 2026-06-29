@@ -14,7 +14,7 @@ export default async function ClientYearEndPage() {
   if (role !== "CLIENT") redirect("/dashboard");
   const userId = session.user.id;
 
-  // eslint-disable-next-line react-hooks/purity
+   
   const currentYear = new Date().getFullYear();
   const lastYear = currentYear - 1;
 

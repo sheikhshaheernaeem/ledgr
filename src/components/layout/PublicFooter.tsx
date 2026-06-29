@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export function PublicFooter() {
-  // eslint-disable-next-line react-hooks/purity
+   
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-border/60 bg-card/30 mt-16">

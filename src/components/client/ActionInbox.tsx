@@ -21,7 +21,7 @@ const monthName = (m: number, y: number) =>
   new Date(y, m - 1).toLocaleString("en-US", { month: "long", year: "numeric" });
 
 export async function ActionInbox({ userId }: { userId: string }) {
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 

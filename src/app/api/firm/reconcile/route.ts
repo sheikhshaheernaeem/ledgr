@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 
   // Build monthly status per account
   const months: Array<{ year: number; month: number }> = [];
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   for (let i = 0; i < 6; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);

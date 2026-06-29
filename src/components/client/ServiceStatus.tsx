@@ -12,7 +12,7 @@ const monthName = (m: number, y: number) =>
   new Date(y, m - 1).toLocaleString("en-US", { month: "long", year: "numeric" });
 
 export async function ServiceStatus({ userId }: { userId: string }) {
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const closingMonth = now.getMonth() === 0 ? 12 : now.getMonth(); // previous month
   const closingYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();

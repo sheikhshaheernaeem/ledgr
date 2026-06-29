@@ -14,7 +14,7 @@ interface Check {
 
 export default function YearEndPage({ params }: { params: Promise<{ clientId: string }> }) {
   const { clientId } = use(params);
-  // eslint-disable-next-line react-hooks/purity
+   
   const [year, setYear] = useState(new Date().getFullYear() - 1);
   const [checklist, setChecklist] = useState<Check[]>([]);
   const [completed, setCompleted] = useState(0);
@@ -36,7 +36,7 @@ export default function YearEndPage({ params }: { params: Promise<{ clientId: st
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
 
-  // eslint-disable-next-line react-hooks/purity
+   
   const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
   const pct = checklist.length > 0 ? (completed / checklist.length) * 100 : 0;
   const allDone = checklist.length > 0 && completed === checklist.length;

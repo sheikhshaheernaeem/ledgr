@@ -182,7 +182,7 @@ function FeatureCard({
 }
 
 function greeting(): string {
-  // eslint-disable-next-line react-hooks/purity
+   
   const h = new Date().getHours();
   if (h < 5) return "Good night";
   if (h < 12) return "Good morning";

@@ -50,9 +50,9 @@ export function GlobalSearch() {
     } else {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery("");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setResults([]);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setActiveIdx(0);
     }
   }, [open]);

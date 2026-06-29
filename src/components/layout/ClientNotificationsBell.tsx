@@ -23,7 +23,7 @@ export function ClientNotificationsBell() {
         const res = await fetch("/api/client/notifications");
         if (res.ok) {
           const d = await res.json();
-          // eslint-disable-next-line react-hooks/set-state-in-effect
+           
           setData(d);
         }
       } catch {}

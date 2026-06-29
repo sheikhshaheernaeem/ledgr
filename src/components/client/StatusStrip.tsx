@@ -9,7 +9,7 @@ const monthName = (m: number, y: number) =>
   new Date(y, m - 1).toLocaleString("en-US", { month: "short", year: "numeric" });
 
 export async function StatusStrip({ userId }: { userId: string }) {
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const closingMonth = now.getMonth() === 0 ? 12 : now.getMonth();
   const closingYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();

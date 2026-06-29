@@ -15,7 +15,7 @@ export default async function FirmRevenuePage() {
   const role = (session.user as { role?: string }).role;
   if (role !== "ADMIN") redirect("/firm/queue");
 
-  // eslint-disable-next-line react-hooks/purity
+   
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
