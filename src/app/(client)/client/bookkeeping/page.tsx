@@ -92,7 +92,7 @@ export default async function BookkeepingHome() {
             desc="Drop a CSV/PDF — your accountant categorizes it."
           />
           <FeatureCard
-            href="/client/insights"
+            href="/client/analytics"
             icon={Lightbulb}
             title="Insights"
             desc="Trends, anomalies, opportunities — proactive advice."

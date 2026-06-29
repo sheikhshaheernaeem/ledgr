@@ -43,7 +43,7 @@ export default function AIAssistantPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  function useSuggestion(text: string) {
+  function applySuggestion(text: string) {
     setInput(text);
     inputRef.current?.focus();
   }
@@ -81,7 +81,7 @@ export default function AIAssistantPage() {
               {SUGGESTIONS.map((s) => (
                 <Card
                   key={s.text}
-                  onClick={() => useSuggestion(s.text)}
+                  onClick={() => applySuggestion(s.text)}
                   className="border-border bg-card hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-colors cursor-pointer"
                 >
                   <CardContent className="p-3 flex items-start gap-2.5">
