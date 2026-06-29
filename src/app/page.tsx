@@ -772,9 +772,9 @@ export default function Landing() {
             <span className="text-xs text-muted-foreground">· AI-native accounting firm</span>
           </div>
           <p className="font-mono text-xs">© 2026 ledgr — we do your accounting.</p>
-          <div className="flex gap-5 text-xs">
-            {["Privacy","Terms","Contact"].map((l)=>(
-              <Link key={l} href="#" className="hover:text-foreground transition-colors">{l}</Link>
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs">
+            {[["Pricing","#pricing"],["Privacy","/privacy"],["Terms","/terms"],["Refunds","/refunds"],["Contact","/contact"]].map(([l,href])=>(
+              <Link key={l} href={href} className="hover:text-foreground transition-colors">{l}</Link>
             ))}
           </div>
         </div>
