@@ -96,7 +96,7 @@ export default function BenchMigrationPage() {
           <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-emerald-400">
             <GitBranch className="h-3 w-3" /> BENCH.CO / MIGRATION
           </span>
-          <h1 className="mt-6 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.025em] leading-[1.0]">
+          <h1 className="mt-6 font-serif text-5xl sm:text-6xl lg:text-7xl font-medium tracking-[-0.02em] leading-[1.02]">
             From Bench to Ledgr
             <br />
             <span className="text-emerald-400">in 24 hours.</span>

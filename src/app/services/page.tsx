@@ -68,7 +68,7 @@ export default function ServicesPage() {
           <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
             <Sparkles className="h-3 w-3" /> SERVICES
           </span>
-          <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.025em] leading-[1.05]">
+          <h1 className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] leading-[1.05]">
             Six services we perform
             <br />
             <span className="text-blue-500 dark:text-blue-400">so you don&apos;t have to.</span>

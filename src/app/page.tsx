@@ -223,10 +223,10 @@ export default function Landing() {
                 <MonoLabel icon={GitBranch}>AI-NATIVE / BOOKKEEPING</MonoLabel>
               </FadeUp>
               <FadeUp delay={0.08}>
-                <h1 className="mt-6 text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-[-0.025em] leading-[1.0]">
+                <h1 className="mt-6 font-serif text-5xl sm:text-6xl lg:text-[5.5rem] font-medium tracking-[-0.02em] leading-[1.02]">
                   Your accounting,
                   <br />
-                  <span className="text-emerald-400">done for you.</span>
+                  <span className="text-emerald-500 dark:text-emerald-400 italic">done for you.</span>
                 </h1>
               </FadeUp>
               <FadeUp delay={0.16}>
@@ -327,7 +327,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-14 max-w-2xl">
             <MonoLabel>WHY LEDGR</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               The next step after AI copilots.
             </h2>
             <p className="mt-4 text-muted-foreground text-base leading-relaxed">
@@ -361,7 +361,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-14 max-w-2xl">
             <MonoLabel icon={Code2}>WHAT WE DO</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               Services we perform for you.
             </h2>
             <p className="mt-4 text-muted-foreground text-base leading-relaxed">
@@ -389,7 +389,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-14 max-w-2xl">
             <MonoLabel icon={Terminal}>PROCESS</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               Three steps. Then just wait for your books.
             </h2>
           </FadeUp>
@@ -422,7 +422,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
             <FadeUp>
               <MonoLabel icon={Sparkles}>AI INTELLIGENCE</MonoLabel>
-              <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+              <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
                 AI that actually knows your numbers.
               </h2>
               <p className="mt-5 text-muted-foreground leading-relaxed">
@@ -483,7 +483,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-14 max-w-2xl">
             <MonoLabel>TESTIMONIALS</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               What clients say.
             </h2>
           </FadeUp>
@@ -520,7 +520,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-14 max-w-2xl">
             <MonoLabel>AUDIENCE</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               Built for founders done doing their own books.
             </h2>
           </FadeUp>
@@ -549,7 +549,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 py-24">
           <FadeUp className="mb-8 max-w-2xl">
             <MonoLabel>PRICING</MonoLabel>
-            <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
               Two ways to use Ledgr.
             </h2>
             <p className="mt-4 text-muted-foreground text-base">
@@ -676,7 +676,7 @@ export default function Landing() {
             <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-blue-500 dark:text-blue-400">
               positioning
             </p>
-            <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-[-0.025em] leading-[1.05] max-w-3xl mx-auto">
+            <h2 className="mt-4 font-serif text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06] max-w-3xl mx-auto">
               Replace a <span className="text-blue-500 dark:text-blue-400">$3,000/month accountant</span> with a 24/7 AI system.
             </h2>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -734,7 +734,7 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto px-6 py-28 text-center">
           <FadeUp>
             <MonoLabel>JOIN 500+ BUSINESSES</MonoLabel>
-            <h2 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.025em] leading-[1.05]">
+            <h2 className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] leading-[1.04]">
               Stop buying<br />accounting software.<br />
               <span className="text-emerald-400">Start getting it done.</span>
             </h2>

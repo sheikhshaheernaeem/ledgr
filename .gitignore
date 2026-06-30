@@ -58,3 +58,4 @@ prisma/dev.db-wal
 .vercel
 
 .env*
+.gstack/

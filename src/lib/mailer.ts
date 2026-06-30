@@ -165,18 +165,9 @@ async function dispatch(params: {
 }) {
   const errors: string[] = [];
 
-  if (hasGmail()) {
-    try {
-      await sendViaGmail(params);
-      console.log(`[email] sent via Gmail to=${params.to}`);
-      return;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      errors.push(`gmail: ${msg}`);
-      console.error(`[email] Gmail failed, falling back. Reason: ${msg}`);
-    }
-  }
-
+  // Brevo is tried first: it is the reliable HTTPS-API provider. Gmail SMTP is
+  // kept only as a secondary fallback because app-password auth is brittle on
+  // serverless (revoked passwords cause 535 errors). Set BREVO_API_KEY in prod.
   if (hasBrevo()) {
     try {
       await sendViaBrevo(params);
@@ -186,6 +177,18 @@ async function dispatch(params: {
       const msg = err instanceof Error ? err.message : String(err);
       errors.push(`brevo: ${msg}`);
       console.error(`[email] Brevo failed, falling back. Reason: ${msg}`);
+    }
+  }
+
+  if (hasGmail()) {
+    try {
+      await sendViaGmail(params);
+      console.log(`[email] sent via Gmail to=${params.to}`);
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`gmail: ${msg}`);
+      console.error(`[email] Gmail failed, falling back. Reason: ${msg}`);
     }
   }
 

@@ -17,7 +17,7 @@ export default function ContactPage() {
           <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
             <Sparkles className="h-3 w-3" /> CONTACT
           </span>
-          <h1 className="mt-6 text-4xl sm:text-5xl font-bold tracking-[-0.025em] leading-[1.05]">
+          <h1 className="mt-6 font-serif text-4xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06]">
             Talk to us.
           </h1>
           <p className="mt-6 text-base text-muted-foreground leading-relaxed max-w-lg mx-auto">
