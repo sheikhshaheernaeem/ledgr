@@ -62,16 +62,16 @@ export default function ServicesPage() {
         <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
           style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-gradient-radial from-blue-500/10 via-blue-500/[0.02] to-transparent blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-gradient-radial from-cyan-500/10 via-cyan-500/[0.02] to-transparent blur-3xl" />
         </div>
         <div className="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-cyan-500 dark:text-cyan-400">
             <Sparkles className="h-3 w-3" /> SERVICES
           </span>
           <h1 className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] leading-[1.05]">
             Six services we perform
             <br />
-            <span className="text-blue-500 dark:text-blue-400">so you don&apos;t have to.</span>
+            <span className="text-cyan-500 dark:text-cyan-400">so you don&apos;t have to.</span>
           </h1>
           <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Not features in software. Services we perform — every month, end-to-end,
@@ -85,16 +85,16 @@ export default function ServicesPage() {
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {SERVICES.map((s) => (
-              <div key={s.title} className="rounded-xl border border-border/60 bg-card/40 p-6 hover:border-blue-500/30 hover:bg-card/60 transition-colors">
+              <div key={s.title} className="rounded-xl border border-border/60 bg-card/40 p-6 hover:border-cyan-500/30 hover:bg-card/60 transition-colors">
                 <div className="w-10 h-10 rounded-lg border border-border bg-background flex items-center justify-center mb-4">
-                  <s.icon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                  <s.icon className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />
                 </div>
                 <h3 className="font-semibold text-foreground text-base mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
                 <ul className="mt-4 pt-4 border-t border-border/40 space-y-1.5">
                   {s.includes.map((inc) => (
                     <li key={inc} className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+                      <Check className="h-3 w-3 text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" />
                       <span>{inc}</span>
                     </li>
                   ))}
@@ -109,7 +109,7 @@ export default function ServicesPage() {
       <section className="border-b border-border/60 bg-card/30">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
+            <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-cyan-500 dark:text-cyan-400">
               <TrendingUp className="h-3 w-3" /> PRICING
             </span>
             <h2 className="mt-4 text-3xl sm:text-4xl font-bold tracking-tight">
@@ -130,7 +130,7 @@ export default function ServicesPage() {
           </div>
           <div className="text-center mt-8">
             <Link href="/register">
-              <Button size="lg" className="h-11 px-7 bg-blue-500 hover:bg-blue-400 text-white font-semibold gap-1.5">
+              <Button size="lg" className="h-11 px-7 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold gap-1.5">
                 Start free <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>

@@ -14,12 +14,12 @@ export default function AboutPage() {
         <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
           style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <div className="max-w-3xl mx-auto px-6 pt-20 pb-12 text-center">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-cyan-500 dark:text-cyan-400">
             <Sparkles className="h-3 w-3" /> ABOUT
           </span>
           <h1 className="mt-6 font-serif text-4xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06]">
             We do the bookkeeping.<br />
-            <span className="text-blue-500 dark:text-blue-400">You run the business.</span>
+            <span className="text-cyan-500 dark:text-cyan-400">You run the business.</span>
           </h1>
         </div>
       </section>
@@ -86,7 +86,7 @@ export default function AboutPage() {
           <p className="text-muted-foreground leading-relaxed mt-4">
             We&apos;re currently a small team serving a focused set of businesses. If our values resonate
             and you want to work here, write to us at{" "}
-            <Link href="/contact" className="text-blue-500 hover:text-blue-400">hello@ledgr.app</Link>.
+            <Link href="/contact" className="text-cyan-500 hover:text-cyan-400">hello@ledgr.app</Link>.
           </p>
         </div>
       </section>
@@ -97,7 +97,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold tracking-tight mb-4">Try us for a month.</h2>
           <p className="text-muted-foreground mb-8">First month free. No card up front. Cancel anytime.</p>
           <Link href="/register">
-            <Button size="lg" className="h-12 px-7 bg-blue-500 hover:bg-blue-400 text-white font-semibold gap-1.5">
+            <Button size="lg" className="h-12 px-7 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold gap-1.5">
               Get started <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -113,7 +113,7 @@ function Belief({ icon: Icon, title, body }: { icon: React.ComponentType<{ class
   return (
     <div className="rounded-xl border border-border/60 bg-card p-6">
       <div className="w-10 h-10 rounded-lg border border-border bg-background flex items-center justify-center mb-4">
-        <Icon className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+        <Icon className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />
       </div>
       <h3 className="font-semibold text-foreground mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>

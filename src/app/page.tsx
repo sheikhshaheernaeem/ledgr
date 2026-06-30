@@ -564,7 +564,7 @@ export default function Landing() {
                 onClick={() => setTier("ai")}
                 className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   isAi
-                    ? "bg-blue-500 text-white shadow-sm"
+                    ? "bg-cyan-500 text-black shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -595,12 +595,12 @@ export default function Landing() {
           </FadeUp>
           <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {pricing.map((plan) => {
-              const accentBorder = isAi ? "border-blue-500/50" : "border-emerald-500/50";
-              const accentBg = isAi ? "bg-blue-500/[0.04]" : "bg-emerald-500/[0.04]";
-              const accentBadge = isAi ? "bg-blue-500 text-white" : "bg-emerald-500 text-black";
-              const accentCheck = isAi ? "text-blue-500 dark:text-blue-400" : "text-emerald-400";
+              const accentBorder = isAi ? "border-cyan-500/50" : "border-emerald-500/50";
+              const accentBg = isAi ? "bg-cyan-500/[0.04]" : "bg-emerald-500/[0.04]";
+              const accentBadge = isAi ? "bg-cyan-500 text-black" : "bg-emerald-500 text-black";
+              const accentCheck = isAi ? "text-cyan-500 dark:text-cyan-400" : "text-emerald-400";
               const accentBtn = isAi
-                ? "bg-blue-500 hover:bg-blue-400 text-white"
+                ? "bg-cyan-500 hover:bg-cyan-400 text-black"
                 : "bg-emerald-500 hover:bg-emerald-400 text-black";
               return (
               <MotionCard key={plan.slug}>
@@ -656,7 +656,7 @@ export default function Landing() {
                 <div key={a.name} className="rounded-xl border border-border/60 bg-card/30 p-4">
                   <p className="font-semibold text-foreground text-sm">{a.name}</p>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
-                  <p className="font-mono text-[11px] text-blue-500 dark:text-blue-400 mt-3">{a.price}</p>
+                  <p className="font-mono text-[11px] text-cyan-500 dark:text-cyan-400 mt-3">{a.price}</p>
                 </div>
               ))}
             </div>
@@ -669,15 +669,15 @@ export default function Landing() {
         <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
           style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-radial from-blue-500/10 via-blue-500/[0.02] to-transparent blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-radial from-cyan-500/10 via-cyan-500/[0.02] to-transparent blur-3xl" />
         </div>
         <div className="max-w-5xl mx-auto px-6 py-24 text-center">
           <FadeUp>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-blue-500 dark:text-blue-400">
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-cyan-500 dark:text-cyan-400">
               positioning
             </p>
             <h2 className="mt-4 font-serif text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06] max-w-3xl mx-auto">
-              Replace a <span className="text-blue-500 dark:text-blue-400">$3,000/month accountant</span> with a 24/7 AI system.
+              Replace a <span className="text-cyan-500 dark:text-cyan-400">$3,000/month accountant</span> with a 24/7 AI system.
             </h2>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               Never sleeps. Never misses transactions. Updates your finances in real time.
@@ -690,16 +690,16 @@ export default function Landing() {
               <div className="bg-card/40 p-5 border-r border-border/60 text-left">
                 <p className="font-mono text-[10px] uppercase tracking-wider text-rose-500">traditional_bookkeeping</p>
               </div>
-              <div className="bg-blue-500/[0.04] p-5 text-left">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-blue-500 dark:text-blue-400">ai_accountant</p>
+              <div className="bg-cyan-500/[0.04] p-5 text-left">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400">ai_accountant</p>
               </div>
               {comparison.map((row, i) => (
                 <Fragment key={i}>
                   <div className={`p-5 border-r border-t border-border/60 text-left text-sm text-muted-foreground ${i % 2 === 0 ? "bg-card/20" : "bg-card/40"}`}>
                     × {row.trad}
                   </div>
-                  <div className={`p-5 border-t border-border/60 text-left text-sm text-foreground ${i % 2 === 0 ? "bg-blue-500/[0.02]" : "bg-blue-500/[0.05]"}`}>
-                    <span className="text-blue-500 dark:text-blue-400 font-semibold">✓</span> {row.ai}
+                  <div className={`p-5 border-t border-border/60 text-left text-sm text-foreground ${i % 2 === 0 ? "bg-cyan-500/[0.02]" : "bg-cyan-500/[0.05]"}`}>
+                    <span className="text-cyan-500 dark:text-cyan-400 font-semibold">✓</span> {row.ai}
                   </div>
                 </Fragment>
               ))}
@@ -708,10 +708,10 @@ export default function Landing() {
 
           {/* Conversion hook */}
           <FadeUp className="mt-14">
-            <div className="inline-block rounded-2xl border border-blue-500/40 bg-blue-500/[0.06] px-6 py-4">
+            <div className="inline-block rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] px-6 py-4">
               <p className="text-sm text-muted-foreground font-mono">try_it</p>
               <p className="mt-1 text-xl sm:text-2xl font-bold tracking-tight">
-                Upload 5 invoices <span className="text-blue-500 dark:text-blue-400">→</span> get a full financial report instantly.
+                Upload 5 invoices <span className="text-cyan-500 dark:text-cyan-400">→</span> get a full financial report instantly.
               </p>
             </div>
           </FadeUp>
