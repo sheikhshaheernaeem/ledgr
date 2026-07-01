@@ -403,7 +403,7 @@ export default function PayrollPage() {
                                         <div className="flex items-center gap-2">
                                           <span className="text-foreground">{emp.employeeName}</span>
                                           {emp.is1099 && (
-                                            <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">1099</Badge>
+                                            <Badge variant="outline" className="text-xs border-cyan-500/30 text-cyan-400">1099</Badge>
                                           )}
                                         </div>
                                       </TableCell>

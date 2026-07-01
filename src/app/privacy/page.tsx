@@ -68,7 +68,7 @@ export default function PrivacyPage() {
         <p>
           Payments are processed by{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com"
             target="_blank"
             rel="noopener noreferrer"
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
           , our authorized reseller and Merchant of Record. When you pay, your card and billing details are
           collected and processed directly by Paddle under{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com/legal/privacy"
             target="_blank"
             rel="noopener noreferrer"
@@ -111,7 +111,7 @@ export default function PrivacyPage() {
           Depending on where you live, you may have the right to access, correct, export, or delete your
           personal information, to object to or restrict certain processing, and to withdraw consent. To
           exercise these rights, email{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:privacy@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:privacy@ledgr.app">
             privacy@ledgr.app
           </a>
           . We will respond within the timeframe required by applicable law.
@@ -150,11 +150,11 @@ export default function PrivacyPage() {
       <LegalSection heading="13. Contact">
         <p>
           Questions about your privacy? Email{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:privacy@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:privacy@ledgr.app">
             privacy@ledgr.app
           </a>{" "}
           or reach us via our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/contact">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/contact">
             contact page
           </Link>
           .

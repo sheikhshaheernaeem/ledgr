@@ -38,7 +38,7 @@ interface VatReturn {
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-yellow-500/30 text-yellow-400",
-  FILED: "border-blue-500/30 text-blue-400",
+  FILED: "border-cyan-500/30 text-cyan-400",
   PAID: "border-emerald-500/30 text-emerald-400",
 };
 
@@ -267,7 +267,7 @@ export default function VatReturnsPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs gap-1 border-blue-500/30 text-blue-400 hover:text-blue-300 h-7"
+                            className="text-xs gap-1 border-cyan-500/30 text-cyan-400 hover:text-cyan-300 h-7"
                             onClick={() => updateStatus(r.id, "FILED")}
                           >
                             <FileCheck className="h-3 w-3" />

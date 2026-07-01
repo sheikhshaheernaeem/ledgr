@@ -25,7 +25,7 @@ interface MileageEntry {
 
 const purposeStyle: Record<string, string> = {
   BUSINESS: "border-emerald-500/30 text-emerald-400",
-  MEDICAL: "border-blue-500/30 text-blue-400",
+  MEDICAL: "border-cyan-500/30 text-cyan-400",
   CHARITY: "border-purple-500/30 text-purple-400",
 };
 

@@ -31,7 +31,7 @@ interface Contract {
 const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 const statusColors: Record<string, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-  COMPLETED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  COMPLETED: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 };
 

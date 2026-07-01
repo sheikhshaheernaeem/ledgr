@@ -6,7 +6,7 @@ import { Activity, ExternalLink } from "lucide-react";
 
 const actionStyle: Record<string, string> = {
   CREATE: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
-  UPDATE: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+  UPDATE: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
   DELETE: "border-rose-500/40 bg-rose-500/10 text-rose-400",
 };
 
@@ -73,7 +73,7 @@ export default async function FirmAuditPage({ searchParams }: { searchParams: Pr
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
         <Stat label="recent_actions" value={logs.length.toString()} />
         <Stat label="creates" value={(actionCounts.CREATE ?? 0).toString()} color="text-emerald-400" />
-        <Stat label="updates" value={(actionCounts.UPDATE ?? 0).toString()} color="text-blue-400" />
+        <Stat label="updates" value={(actionCounts.UPDATE ?? 0).toString()} color="text-cyan-400" />
         <Stat label="deletes" value={(actionCounts.DELETE ?? 0).toString()} color="text-rose-400" />
       </div>
 

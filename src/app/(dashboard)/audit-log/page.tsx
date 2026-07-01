@@ -8,7 +8,7 @@ import { Shield } from "lucide-react";
 
 const ACTION_COLORS: Record<string, string> = {
   CREATE: "border-emerald-500/30 text-emerald-400",
-  UPDATE: "border-blue-500/30 text-blue-400",
+  UPDATE: "border-cyan-500/30 text-cyan-400",
   DELETE: "border-red-500/30 text-red-400",
   APPROVE: "border-emerald-500/30 text-emerald-400",
   REJECT: "border-red-500/30 text-red-400",

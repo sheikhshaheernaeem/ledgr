@@ -64,7 +64,7 @@ export default function ContactPage() {
 
 function Channel({ icon: Icon, title, body, sub }: { icon: React.ComponentType<{ className?: string }>; title: string; body: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-6">
+    <div className="rounded-xl border border-border/60 bg-card p-6 hover:border-cyan-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300">
       <div className="w-10 h-10 rounded-lg border border-border bg-background flex items-center justify-center mb-4">
         <Icon className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />
       </div>

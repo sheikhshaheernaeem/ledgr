@@ -27,7 +27,7 @@ interface Statement {
 const statusStyle: Record<string, string> = {
   PROCESSING: "border-yellow-500/30 text-yellow-400",
   CATEGORIZED: "border-emerald-500/30 text-emerald-400",
-  REVIEWED: "border-blue-500/30 text-blue-400",
+  REVIEWED: "border-cyan-500/30 text-cyan-400",
   ERROR: "border-red-500/30 text-red-400",
 };
 
@@ -130,7 +130,7 @@ export default function UploadPage() {
       <Card className="border-border bg-card">
         <CardContent className="pt-4 pb-3">
           <div className="flex items-start gap-3">
-            <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
+            <Info className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
             <div className="text-sm text-muted-foreground space-y-1">
               <p className="font-medium text-foreground">How to export from your bank</p>
               <p>Most banks: Accounts → Transactions → Download/Export → CSV format. Date range: full month works best. Any column order is fine — our AI handles it.</p>

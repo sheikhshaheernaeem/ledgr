@@ -182,7 +182,7 @@ export function AiAccountant() {
     <div className="space-y-6">
       {/* HERO HEADER */}
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+        <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
           <Sparkles className="h-3 w-3" /> AI_ACCOUNTANT · v1
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Drop a document. Get books.</h1>
@@ -204,8 +204,8 @@ export function AiAccountant() {
             onClick={() => fileRef.current?.click()}
             className={`md:col-span-3 rounded-2xl border-2 border-dashed cursor-pointer p-10 text-center transition-all ${
               dragOver
-                ? "border-blue-500 bg-blue-500/[0.06]"
-                : "border-border/60 hover:border-blue-500/40 hover:bg-blue-500/[0.03]"
+                ? "border-cyan-500 bg-cyan-500/[0.06]"
+                : "border-border/60 hover:border-cyan-500/40 hover:bg-cyan-500/[0.03]"
             }`}
           >
             <input
@@ -218,8 +218,8 @@ export function AiAccountant() {
                 if (f) void process({ file: f });
               }}
             />
-            <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
-              <Upload className="h-6 w-6 text-blue-500 dark:text-blue-400" />
+            <div className="w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto mb-4">
+              <Upload className="h-6 w-6 text-cyan-500 dark:text-cyan-400" />
             </div>
             <p className="text-base font-semibold text-foreground">Drop a PDF, image, or CSV</p>
             <p className="text-xs text-muted-foreground mt-1.5">or click to browse · max 8MB</p>
@@ -239,7 +239,7 @@ export function AiAccountant() {
               className="mt-3 text-xs font-mono"
               placeholder="2026-03-01  STRIPE PAYOUT     +4,250.00&#10;2026-03-02  AWS               -312.40&#10;2026-03-03  SLACK SUBSCRIPTION -42.00"
             />
-            <Button onClick={onPasteSubmit} disabled={pasted.trim().length < 20} className="w-full mt-3 bg-blue-500 hover:bg-blue-400 text-white">
+            <Button onClick={onPasteSubmit} disabled={pasted.trim().length < 20} className="w-full mt-3 bg-cyan-500 hover:bg-cyan-400 text-black">
               <Wand2 className="h-3.5 w-3.5 mr-1.5" /> Process text
             </Button>
           </div>
@@ -248,10 +248,10 @@ export function AiAccountant() {
 
       {/* LIVE PIPELINE */}
       {working && (
-        <div className="rounded-2xl border border-blue-500/30 bg-blue-500/[0.04] p-6">
+        <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/[0.04] p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
-              <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin" />
+            <div className="w-9 h-9 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center">
+              <Loader2 className="h-4 w-4 text-cyan-500 dark:text-cyan-400 animate-spin" />
             </div>
             <div className="flex-1">
               <p className="font-semibold text-foreground">AI is processing your document</p>
@@ -262,9 +262,9 @@ export function AiAccountant() {
             </div>
           </div>
           {currentStep === "ocr" && ocrProgress !== null && (
-            <div className="mb-3 h-1.5 bg-blue-500/10 rounded-full overflow-hidden">
+            <div className="mb-3 h-1.5 bg-cyan-500/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-500 transition-all duration-300"
+                className="h-full bg-cyan-500 transition-all duration-300"
                 style={{ width: `${ocrProgress}%` }}
               />
             </div>
@@ -273,7 +273,7 @@ export function AiAccountant() {
             {Object.entries(STEP_LABELS).map(([key, label]) => {
               const isCurrent = currentStep === key;
               return (
-                <div key={key} className={`flex items-center gap-2 text-xs ${isCurrent ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground"}`}>
+                <div key={key} className={`flex items-center gap-2 text-xs ${isCurrent ? "text-cyan-500 dark:text-cyan-400" : "text-muted-foreground"}`}>
                   {isCurrent ? <Loader2 className="h-3 w-3 animate-spin" /> : <ArrowDown className="h-3 w-3 opacity-40" />}
                   <span className="font-mono">{label}</span>
                 </div>
@@ -331,14 +331,14 @@ export function AiAccountant() {
           <div className="rounded-2xl border border-border/60 bg-card/40 p-4">
             <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-2">download_reports</p>
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => downloadPdf("profit_loss")} disabled={downloading} className="bg-blue-500 hover:bg-blue-400 text-white">
+              <Button onClick={() => downloadPdf("profit_loss")} disabled={downloading} className="bg-cyan-500 hover:bg-cyan-400 text-black">
                 {downloading ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Download className="h-3.5 w-3.5 mr-1.5" />}
                 P&amp;L Statement
               </Button>
-              <Button onClick={() => downloadPdf("expense_summary")} disabled={downloading} variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+              <Button onClick={() => downloadPdf("expense_summary")} disabled={downloading} variant="outline" className="border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10">
                 <Download className="h-3.5 w-3.5 mr-1.5" /> Expense Summary
               </Button>
-              <Button onClick={() => downloadPdf("tax_summary")} disabled={downloading} variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+              <Button onClick={() => downloadPdf("tax_summary")} disabled={downloading} variant="outline" className="border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10">
                 <Download className="h-3.5 w-3.5 mr-1.5" /> Tax Summary
               </Button>
               <div className="w-px h-8 bg-border self-center" />
@@ -351,7 +351,7 @@ export function AiAccountant() {
           {/* Transactions table */}
           <div className="rounded-2xl border border-border/60 bg-card/40 overflow-hidden">
             <div className="px-4 py-2.5 border-b border-border/40 bg-card/60 flex items-center justify-between">
-              <p className="font-mono text-[11px] uppercase tracking-wider text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+              <p className="font-mono text-[11px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
                 <FileText className="h-3 w-3" /> extracted_transactions · {result.transactions.length}
               </p>
               <p className="font-mono text-[10px] text-muted-foreground">llama-3.3-70b-versatile</p>
@@ -390,7 +390,7 @@ export function AiAccountant() {
           {/* FinBERT sentiment */}
           <div className="rounded-2xl border border-border/60 bg-card/40 p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="font-mono text-[11px] uppercase tracking-wider text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+              <p className="font-mono text-[11px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
                 <Brain className="h-3 w-3" /> finbert · sentiment
               </p>
               <p className="font-mono text-[10px] text-muted-foreground">{result.sentiment.modelId} · {result.sentiment.source}</p>
@@ -440,7 +440,7 @@ function Total({
 }: { label: string; value: number; positive?: boolean; accent?: boolean; icon?: React.ComponentType<{ className?: string }>; currency: string }) {
   const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Math.abs(value));
   const color = accent
-    ? (positive ? "text-blue-500 dark:text-blue-400" : "text-rose-500")
+    ? (positive ? "text-cyan-500 dark:text-cyan-400" : "text-rose-500")
     : positive
       ? "text-emerald-500"
       : "text-rose-500";
@@ -460,7 +460,7 @@ function Total({
 function SentimentBadge({ label, score }: { label: "positive" | "neutral" | "negative"; score: number }) {
   const map = {
     positive: { bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-500", icon: TrendingUp },
-    neutral:  { bg: "bg-blue-500/10 border-blue-500/30 text-blue-500", icon: Brain },
+    neutral:  { bg: "bg-cyan-500/10 border-cyan-500/30 text-cyan-500", icon: Brain },
     negative: { bg: "bg-rose-500/10 border-rose-500/30 text-rose-500", icon: TrendingDown },
   } as const;
   const cfg = map[label];

@@ -65,7 +65,7 @@ export function TierControl({ userId, currentTier }: { userId: string; currentTi
         onClick={() => apply(selected)}
         disabled={busy}
         size="sm"
-        className="h-8 bg-blue-500 hover:bg-blue-400 text-white text-xs"
+        className="h-8 bg-cyan-500 hover:bg-cyan-400 text-black text-xs"
       >
         {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
       </Button>

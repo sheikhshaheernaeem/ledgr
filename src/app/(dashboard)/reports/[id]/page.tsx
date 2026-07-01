@@ -57,7 +57,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
           <Badge variant="outline" className={`${
             report.clientApprovedAt ? "border-emerald-500/30 text-emerald-400" :
             report.status === "SENT" ? "border-emerald-500/30 text-emerald-400" :
-            report.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" :
+            report.status === "REVIEWED" ? "border-cyan-500/30 text-cyan-400" :
             "border-yellow-500/30 text-yellow-400"
           }`}>
             {report.clientApprovedAt ? (

@@ -43,8 +43,8 @@ const URGENCIES = [
 
 const STATUS_STYLE: Record<string, string> = {
   OPEN: "text-amber-500 border-amber-500/30 bg-amber-500/10",
-  ALLOCATED: "text-blue-500 border-blue-500/30 bg-blue-500/10",
-  IN_PROGRESS: "text-blue-500 border-blue-500/30 bg-blue-500/10",
+  ALLOCATED: "text-cyan-500 border-cyan-500/30 bg-cyan-500/10",
+  IN_PROGRESS: "text-cyan-500 border-cyan-500/30 bg-cyan-500/10",
   COMPLETED: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10",
   CANCELLED: "text-muted-foreground border-border bg-background/60",
 };
@@ -105,7 +105,7 @@ export function HumanAccountantRequest() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+        <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
           <UserCog className="h-3 w-3" /> HUMAN_ACCOUNTANT
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Send to a real accountant.</h1>
@@ -172,7 +172,7 @@ export function HumanAccountantRequest() {
             <Sparkles className="h-3 w-3 inline mr-1" />
             tip: try the AI lane first — most work is instant
           </p>
-          <Button type="submit" disabled={submitting} className="bg-blue-500 hover:bg-blue-400 text-white font-semibold">
+          <Button type="submit" disabled={submitting} className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold">
             {submitting ? <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />sending…</> : <><Send className="h-3.5 w-3.5 mr-1.5" />Send to accountant</>}
           </Button>
         </div>
@@ -184,7 +184,7 @@ export function HumanAccountantRequest() {
           <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <FileText className="h-3 w-3" /> your_requests · {requests.length}
           </p>
-          <Link href="/client/requests" className="font-mono text-[10px] uppercase tracking-wider text-blue-500 hover:text-blue-400 flex items-center gap-1">
+          <Link href="/client/requests" className="font-mono text-[10px] uppercase tracking-wider text-cyan-500 hover:text-cyan-400 flex items-center gap-1">
             view_all <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </div>
@@ -226,7 +226,7 @@ export function HumanAccountantRequest() {
 
 function StatusIcon({ status }: { status: string }) {
   if (status === "COMPLETED") return <div className="w-7 h-7 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /></div>;
-  if (status === "IN_PROGRESS" || status === "ALLOCATED") return <div className="w-7 h-7 rounded-md bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0"><Clock className="h-3.5 w-3.5 text-blue-500" /></div>;
+  if (status === "IN_PROGRESS" || status === "ALLOCATED") return <div className="w-7 h-7 rounded-md bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0"><Clock className="h-3.5 w-3.5 text-cyan-500" /></div>;
   if (status === "OPEN") return <div className="w-7 h-7 rounded-md bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0"><AlertCircle className="h-3.5 w-3.5 text-amber-500" /></div>;
   return <div className="w-7 h-7 rounded-md bg-card border border-border flex items-center justify-center shrink-0"><FileText className="h-3.5 w-3.5 text-muted-foreground" /></div>;
 }

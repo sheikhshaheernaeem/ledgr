@@ -31,7 +31,7 @@ export default function TermsPage() {
           You must be at least 18 years old and able to form a binding contract to use the Service. You
           are responsible for the accuracy of the information you provide and for all activity that occurs
           under your account. Keep your login credentials confidential and notify us promptly at{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:support@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:support@ledgr.app">
             support@ledgr.app
           </a>{" "}
           if you suspect unauthorized use.
@@ -56,7 +56,7 @@ export default function TermsPage() {
       <LegalSection heading="4. Subscriptions, billing, and payments">
         <p>
           The Service is offered on a subscription basis. Pricing for each plan is shown on our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/#pricing">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/#pricing">
             pricing page
           </Link>
           . Unless stated otherwise, subscriptions are billed monthly in advance and renew automatically
@@ -66,7 +66,7 @@ export default function TermsPage() {
         <p>
           Our payments and subscriptions are processed by{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com"
             target="_blank"
             rel="noopener noreferrer"
@@ -76,7 +76,7 @@ export default function TermsPage() {
           , our authorized reseller and Merchant of Record. When you purchase a subscription, your order
           and payment are fulfilled by Paddle, and Paddle’s{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com/legal/checkout-buyer-terms"
             target="_blank"
             rel="noopener noreferrer"
@@ -92,12 +92,12 @@ export default function TermsPage() {
       <LegalSection heading="5. Cancellation">
         <p>
           You may cancel your subscription at any time from your account settings or by contacting{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:support@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:support@ledgr.app">
             support@ledgr.app
           </a>
           . Cancellation stops future renewals; it takes effect at the end of your current billing period,
           and you retain access until then. Refunds, where applicable, are governed by our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/refunds">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/refunds">
             Refund Policy
           </Link>
           .
@@ -128,7 +128,7 @@ export default function TermsPage() {
         <p>
           We treat your financial information as confidential and handle personal data in accordance with
           our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/privacy">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/privacy">
             Privacy Policy
           </Link>
           . You are responsible for ensuring you have the right to share any third-party data with us.
@@ -190,11 +190,11 @@ export default function TermsPage() {
       <LegalSection heading="15. Contact">
         <p>
           Questions about these Terms? Email us at{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:hello@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:hello@ledgr.app">
             hello@ledgr.app
           </a>{" "}
           or visit our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/contact">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/contact">
             contact page
           </Link>
           .

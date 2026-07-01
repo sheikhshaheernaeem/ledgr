@@ -18,7 +18,7 @@ import { DeleteClaimButton } from "./DeleteClaimButton";
 
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
-  SUBMITTED: "border-blue-500/30 text-blue-400",
+  SUBMITTED: "border-cyan-500/30 text-cyan-400",
   APPROVED: "border-emerald-500/30 text-emerald-400",
   REJECTED: "border-red-500/30 text-red-400",
   PAID: "border-purple-500/30 text-purple-400",
@@ -91,7 +91,7 @@ export default async function ExpensesPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-blue-400">{fmt(submittedTotal)}</p>
+            <p className="text-2xl font-bold text-cyan-400">{fmt(submittedTotal)}</p>
             <p className="text-xs text-muted-foreground mt-1">
               {claims.filter((c) => c.status === "SUBMITTED").length} submitted
             </p>

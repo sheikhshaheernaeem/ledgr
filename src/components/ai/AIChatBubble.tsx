@@ -20,7 +20,7 @@ function Bubble({ role, content }: { role: string; content: string }) {
   const isUser = role === "user";
   return (
     <div className={`flex gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isUser ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-blue-500/20 text-blue-600 dark:text-blue-400"}`}>
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isUser ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400"}`}>
         {isUser ? <User className="h-3 w-3" /> : <Bot className="h-3 w-3" />}
       </div>
       <div className={`max-w-[82%] rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap ${isUser ? "bg-emerald-600 dark:bg-emerald-500/15 text-white rounded-tr-sm" : "bg-muted text-foreground rounded-tl-sm"}`}>
@@ -55,7 +55,7 @@ export function AIChatBubble() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-emerald-500 shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-cyan-600 to-emerald-500 shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
           aria-label="Open AI assistant"
         >
           <Sparkles className="h-6 w-6 text-white" />
@@ -68,8 +68,8 @@ export function AIChatBubble() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/30 to-emerald-500/30 border border-blue-500/20 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-emerald-500/30 border border-cyan-500/20 flex items-center justify-center">
+                <Bot className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-foreground">Ledgr AI</p>
@@ -114,8 +114,8 @@ export function AIChatBubble() {
                 ))}
                 {isLoading && (
                   <div className="flex gap-2">
-                    <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-                      <Bot className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                    <div className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center shrink-0">
+                      <Bot className="h-3 w-3 text-cyan-600 dark:text-cyan-400" />
                     </div>
                     <div className="bg-muted rounded-xl rounded-tl-sm px-3 py-2">
                       <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />

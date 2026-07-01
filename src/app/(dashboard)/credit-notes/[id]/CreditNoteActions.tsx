@@ -45,7 +45,7 @@ export default function CreditNoteActions({ creditNoteId, status, relatedInvoice
   return (
     <div className="flex items-center gap-2">
       {status === "DRAFT" && (
-        <Button size="sm" onClick={() => patch("ISSUED")} disabled={loading} className="bg-blue-600 hover:bg-blue-500 text-white">
+        <Button size="sm" onClick={() => patch("ISSUED")} disabled={loading} className="bg-cyan-600 hover:bg-cyan-500 text-black">
           {loading && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />} Issue
         </Button>
       )}

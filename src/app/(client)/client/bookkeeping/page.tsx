@@ -122,8 +122,8 @@ export default async function BookkeepingHome() {
       </div>
 
       {/* AI cross-promo */}
-      <div className="rounded-2xl border border-blue-500/30 bg-blue-500/[0.04] p-5 flex items-start gap-3">
-        <Sparkles className="h-5 w-5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
+      <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/[0.04] p-5 flex items-start gap-3">
+        <Sparkles className="h-5 w-5 text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" />
         <div className="flex-1">
           <p className="font-semibold text-foreground text-sm">Want instant AI-extracted books too?</p>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -132,7 +132,7 @@ export default async function BookkeepingHome() {
         </div>
         <Link
           href="/client"
-          className="font-mono text-xs text-blue-500 hover:text-blue-400 inline-flex items-center gap-1 shrink-0"
+          className="font-mono text-xs text-cyan-500 hover:text-cyan-400 inline-flex items-center gap-1 shrink-0"
         >
           try ai_accountant <ChevronRight className="h-3 w-3" />
         </Link>

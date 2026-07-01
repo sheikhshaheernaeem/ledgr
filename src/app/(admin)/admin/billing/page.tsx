@@ -44,7 +44,7 @@ export default async function BillingPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_admin
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-blue-500" /> Billing &amp; Tiers
+          <CreditCard className="h-5 w-5 text-cyan-500" /> Billing &amp; Tiers
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Set every client&apos;s subscription. Changes apply instantly and are audit-logged.
@@ -53,9 +53,9 @@ export default async function BillingPage() {
 
       {/* MRR + counts */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Stat label="MRR" value={fmt(mrr)} icon={TrendingUp} accent="text-blue-500" sub={`${users.length} active clients`} />
+        <Stat label="MRR" value={fmt(mrr)} icon={TrendingUp} accent="text-cyan-500" sub={`${users.length} active clients`} />
         <Stat label="Annual run-rate" value={fmt(mrr * 12)} icon={TrendingUp} accent="text-emerald-500" />
-        <Stat label="AI clients" value={`${sumFamily(tierCounts, "ai")}`} icon={Users} accent="text-blue-500" />
+        <Stat label="AI clients" value={`${sumFamily(tierCounts, "ai")}`} icon={Users} accent="text-cyan-500" />
         <Stat label="Bookkeeping clients" value={`${sumFamily(tierCounts, "bookkeeping")}`} icon={Users} accent="text-emerald-500" />
       </div>
 
@@ -69,7 +69,7 @@ export default async function BillingPage() {
             <div key={t.slug} className="p-4">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-foreground text-sm">{t.displayName}</p>
-                <span className={`font-mono text-[10px] uppercase tracking-wider ${t.family === "ai" ? "text-blue-500" : "text-emerald-500"}`}>
+                <span className={`font-mono text-[10px] uppercase tracking-wider ${t.family === "ai" ? "text-cyan-500" : "text-emerald-500"}`}>
                   {t.family}
                 </span>
               </div>
@@ -105,7 +105,7 @@ export default async function BillingPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-muted-foreground">current</p>
-                        <p className={`font-mono text-xs ${t.family === "ai" ? "text-blue-500" : "text-emerald-500"}`}>
+                        <p className={`font-mono text-xs ${t.family === "ai" ? "text-cyan-500" : "text-emerald-500"}`}>
                           {t.displayName} · ${t.price}/mo
                         </p>
                       </div>
@@ -130,7 +130,7 @@ export default async function BillingPage() {
           <div className="rounded-2xl border border-border/60 bg-card/40 overflow-hidden divide-y divide-border/40">
             {audit.map((a) => (
               <div key={a.id} className="px-4 py-2 flex items-center gap-3 text-xs">
-                <span className="font-mono uppercase tracking-wider text-blue-500 px-1.5 py-0.5 rounded border border-blue-500/30 bg-blue-500/10">
+                <span className="font-mono uppercase tracking-wider text-cyan-500 px-1.5 py-0.5 rounded border border-cyan-500/30 bg-cyan-500/10">
                   {a.action}
                 </span>
                 <span className="font-mono text-muted-foreground truncate flex-1">

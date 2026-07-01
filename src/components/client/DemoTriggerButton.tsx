@@ -103,21 +103,21 @@ export function DemoTriggerButton() {
   }
 
   return (
-    <div className="rounded-2xl border border-blue-500/30 bg-blue-500/[0.06] p-4">
+    <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/[0.06] p-4">
       <button
         onClick={trigger}
         disabled={busy}
         className="w-full flex items-center gap-3 text-left disabled:opacity-90"
       >
-        <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/40 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/40 flex items-center justify-center shrink-0">
           {busy
-            ? <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin" />
-            : <Sparkles className="h-4 w-4 text-blue-500 dark:text-blue-400" />}
+            ? <Loader2 className="h-4 w-4 text-cyan-500 dark:text-cyan-400 animate-spin" />
+            : <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />}
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-foreground text-sm flex items-center gap-1.5">
             {busy ? "Watching pipeline…" : "Try the autonomous flow"}
-            <span className="font-mono text-[10px] uppercase tracking-wider text-blue-500 inline-flex items-center gap-0.5">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-500 inline-flex items-center gap-0.5">
               <Zap className="h-2.5 w-2.5" /> one click
             </span>
           </p>
@@ -125,14 +125,14 @@ export function DemoTriggerButton() {
             Skip uploading — we&apos;ll send a sample bank statement through the pipeline. Watch totals update live.
           </p>
         </div>
-        <span className="font-mono text-xs text-blue-500 dark:text-blue-400 px-2 py-1 rounded-md">
+        <span className="font-mono text-xs text-cyan-500 dark:text-cyan-400 px-2 py-1 rounded-md">
           {busy ? "…" : "Run →"}
         </span>
       </button>
 
       {/* Step ticker */}
       {step !== "idle" && (
-        <div className="mt-4 pt-3 border-t border-blue-500/20">
+        <div className="mt-4 pt-3 border-t border-cyan-500/20">
           <ol className="space-y-1.5">
             {STEP_ORDER.map((s) => {
               const currentIdx = STEP_ORDER.indexOf(step as Exclude<Step, "idle">);
@@ -143,7 +143,7 @@ export function DemoTriggerButton() {
                 <li
                   key={s}
                   className={`flex items-center gap-2 text-xs ${
-                    isDone ? "text-emerald-500" : isActive ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground/60"
+                    isDone ? "text-emerald-500" : isActive ? "text-cyan-500 dark:text-cyan-400" : "text-muted-foreground/60"
                   }`}
                 >
                   {isDone

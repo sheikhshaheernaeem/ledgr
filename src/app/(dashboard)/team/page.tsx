@@ -22,7 +22,7 @@ interface Member {
 
 const roleStyle: Record<string, string> = {
   VIEWER: "border-zinc-500/30 text-zinc-400",
-  EDITOR: "border-blue-500/30 text-blue-400",
+  EDITOR: "border-cyan-500/30 text-cyan-400",
   ADMIN: "border-emerald-500/30 text-emerald-400",
 };
 

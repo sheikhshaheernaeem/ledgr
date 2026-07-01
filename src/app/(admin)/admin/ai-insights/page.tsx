@@ -73,7 +73,7 @@ export default async function AiInsightsPage() {
 
       {/* Headline KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Kpi icon={Brain} label="Total analyses" value={totalAnalyses} sub={`${last30Analyses} last 30d`} accent="text-blue-500 dark:text-blue-400" />
+        <Kpi icon={Brain} label="Total analyses" value={totalAnalyses} sub={`${last30Analyses} last 30d`} accent="text-cyan-500 dark:text-cyan-400" />
         <Kpi icon={Zap} label="Classification rate" value={`${classificationRate}%`} sub={`${totalCategorized.toLocaleString()} of ${totalTransactions.toLocaleString()} txns`} accent="text-emerald-500 dark:text-emerald-400" />
         <Kpi icon={AlertTriangle} label="Anomalies flagged" value={totalAnomalies} sub="all-time" accent="text-amber-500 dark:text-amber-400" />
         <Kpi icon={FileText} label="Reports generated" value={totalReports} sub="all-time" accent="text-foreground" />
@@ -113,7 +113,7 @@ export default async function AiInsightsPage() {
       {/* FinBERT-specific distribution */}
       <section className="rounded-xl border border-border/60 bg-card/40 overflow-hidden">
         <div className="px-4 py-2.5 border-b border-border/40 bg-card/60 flex items-center justify-between">
-          <p className="font-mono text-[11px] uppercase tracking-wider text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
             <Brain className="h-3 w-3" /> finbert · sentiment_distribution
           </p>
           <p className="font-mono text-[10px] text-muted-foreground inline-flex items-center gap-1">
@@ -122,7 +122,7 @@ export default async function AiInsightsPage() {
         </div>
         <div className="p-4 grid grid-cols-3 gap-3">
           <Distribution label="Positive" value={sentimentMap.positive} color="bg-emerald-500" />
-          <Distribution label="Neutral" value={sentimentMap.neutral} color="bg-blue-500" />
+          <Distribution label="Neutral" value={sentimentMap.neutral} color="bg-cyan-500" />
           <Distribution label="Negative" value={sentimentMap.negative} color="bg-rose-500" />
         </div>
       </section>
@@ -151,7 +151,7 @@ export default async function AiInsightsPage() {
                   <span className={`font-mono text-[10px] uppercase tracking-wider ${
                     r.label === "positive" ? "text-emerald-400" :
                     r.label === "negative" ? "text-rose-400" :
-                    "text-blue-400"
+                    "text-cyan-400"
                   }`}>
                     {r.label} {r.score ? `${Math.round(r.score * 100)}%` : ""}
                   </span>

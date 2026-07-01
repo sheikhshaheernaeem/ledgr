@@ -19,10 +19,10 @@ const iconFor = {
 
 const colorFor = {
   categorized: "text-emerald-400",
-  report_drafted: "text-blue-400",
+  report_drafted: "text-cyan-400",
   report_sent: "text-emerald-400",
   anomaly: "text-amber-400",
-  message: "text-blue-400",
+  message: "text-cyan-400",
   time: "text-muted-foreground",
 };
 

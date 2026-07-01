@@ -278,7 +278,7 @@ function getBanks(countryCode: string) {
 function ProviderBadge({ provider }: { provider: string }) {
   if (provider === "plaid")
     return (
-      <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">
+      <Badge variant="outline" className="text-xs border-cyan-500/30 text-cyan-400">
         Plaid
       </Badge>
     );
@@ -719,9 +719,9 @@ export default function BankSyncPage() {
 
       {/* Provider info cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-blue-500/20 bg-blue-500/5">
+        <Card className="border-cyan-500/20 bg-cyan-500/5">
           <CardHeader className="pb-2 pt-4">
-            <CardTitle className="text-sm text-blue-400 flex items-center gap-2">
+            <CardTitle className="text-sm text-cyan-400 flex items-center gap-2">
               <Building2 className="h-4 w-4" /> Plaid — US, CA, UK
             </CardTitle>
           </CardHeader>
@@ -732,7 +732,7 @@ export default function BankSyncPage() {
               href="https://dashboard.plaid.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 flex items-center gap-0.5 mt-1 hover:underline"
+              className="text-cyan-400 flex items-center gap-0.5 mt-1 hover:underline"
             >
               dashboard.plaid.com <ExternalLink className="h-3 w-3" />
             </a>

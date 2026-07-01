@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-yellow-500/30 text-yellow-400",
-  PENDING: "border-blue-500/30 text-blue-400",
+  PENDING: "border-cyan-500/30 text-cyan-400",
   PAID: "border-emerald-500/30 text-emerald-400",
   OVERDUE: "border-red-500/30 text-red-400",
   VOID: "border-zinc-500/30 text-zinc-400",

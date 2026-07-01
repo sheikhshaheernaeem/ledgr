@@ -40,7 +40,7 @@ function getBucket(daysOverdue: number): AgingBucket {
 }
 
 const bucketStyles: Record<AgingBucket, string> = {
-  Current: "border-blue-500/30 text-blue-400 bg-blue-500/10",
+  Current: "border-cyan-500/30 text-cyan-400 bg-cyan-500/10",
   "1-30": "border-yellow-500/30 text-yellow-400 bg-yellow-500/10",
   "31-60": "border-orange-500/30 text-orange-400 bg-orange-500/10",
   "61-90": "border-red-500/30 text-red-400 bg-red-500/10",
@@ -48,7 +48,7 @@ const bucketStyles: Record<AgingBucket, string> = {
 };
 
 const bucketCardStyles: Record<AgingBucket, string> = {
-  Current: "border-blue-500/20 bg-blue-500/5",
+  Current: "border-cyan-500/20 bg-cyan-500/5",
   "1-30": "border-yellow-500/20 bg-yellow-500/5",
   "31-60": "border-orange-500/20 bg-orange-500/5",
   "61-90": "border-red-500/20 bg-red-500/5",
@@ -268,7 +268,7 @@ export default async function ARAgingPage({
                           {row.daysOverdue}
                         </span>
                       ) : (
-                        <span className="text-blue-400">
+                        <span className="text-cyan-400">
                           {Math.abs(row.daysOverdue)} left
                         </span>
                       )}

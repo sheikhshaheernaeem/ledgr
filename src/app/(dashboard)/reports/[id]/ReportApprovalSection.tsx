@@ -71,7 +71,7 @@ export default function ReportApprovalSection({
               <CheckCircle2 className="h-3 w-3" /> Approved
             </Badge>
           ) : token ? (
-            <Badge variant="outline" className="border-blue-500/30 text-blue-400 gap-1">
+            <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 gap-1">
               <Clock className="h-3 w-3" /> Awaiting approval
             </Badge>
           ) : null}

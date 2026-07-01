@@ -19,7 +19,7 @@ interface CalEvent {
 const severityChip = {
   high: "border-rose-500/40 bg-rose-500/10 text-rose-400",
   med: "border-amber-500/40 bg-amber-500/10 text-amber-400",
-  low: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+  low: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
   done: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
 };
 

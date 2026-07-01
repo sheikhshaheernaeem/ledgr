@@ -67,8 +67,8 @@ const CATEGORIES = [
 
 const statusStyle: Record<string, string> = {
   OPEN: "border-amber-500/40 bg-amber-500/[0.08] text-amber-400",
-  PARTIAL: "border-blue-500/40 bg-blue-500/[0.08] text-blue-400",
-  IN_PROGRESS: "border-blue-500/40 bg-blue-500/[0.08] text-blue-400",
+  PARTIAL: "border-cyan-500/40 bg-cyan-500/[0.08] text-cyan-400",
+  IN_PROGRESS: "border-cyan-500/40 bg-cyan-500/[0.08] text-cyan-400",
   COMPLETE: "border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400",
   COMPLETED: "border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400",
 };
@@ -275,7 +275,7 @@ export default function ClientRequestsPage() {
                             {it.status === "approved" ? (
                               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                             ) : it.status === "submitted" ? (
-                              <Send className="h-4 w-4 text-blue-400 shrink-0" />
+                              <Send className="h-4 w-4 text-cyan-400 shrink-0" />
                             ) : (
                               <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                             )}

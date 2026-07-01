@@ -19,7 +19,7 @@ const statusColors: Record<string, string> = {
   PENDING: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   ACCEPTED: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
   EXPIRED: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300",
-  SUBMITTED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  SUBMITTED: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   CONVERTED: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
 };
 

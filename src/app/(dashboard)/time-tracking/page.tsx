@@ -390,7 +390,7 @@ export default function TimeTrackingPage() {
                           </TableCell>
                           <TableCell>
                             {entry.invoiced
-                              ? <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">Invoiced</Badge>
+                              ? <Badge variant="outline" className="text-xs border-cyan-500/30 text-cyan-400">Invoiced</Badge>
                               : entry.billable
                                 ? <Badge variant="outline" className="text-xs border-yellow-500/30 text-yellow-400">Pending</Badge>
                                 : <Badge variant="outline" className="text-xs border-zinc-500/30 text-zinc-400">—</Badge>}
@@ -427,7 +427,7 @@ export default function TimeTrackingPage() {
                               )}
                               {entry.invoiced && (
                                 <Link href="/invoices">
-                                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-blue-400 hover:text-blue-300">
+                                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-cyan-400 hover:text-cyan-300">
                                     <FileText className="h-3.5 w-3.5" />
                                   </Button>
                                 </Link>

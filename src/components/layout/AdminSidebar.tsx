@@ -42,12 +42,12 @@ export function AdminSidebar({ children, userEmail, signOutAction }: Props) {
       <aside className="hidden md:flex w-60 shrink-0 border-r border-border/60 bg-card/30 flex-col">
         <div className="px-5 py-5 border-b border-border/40">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-blue-500 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-md bg-cyan-500 flex items-center justify-center">
               <span className="text-white font-black text-xs">L</span>
             </div>
             <div>
               <p className="font-semibold text-foreground leading-tight">Ledgr</p>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-blue-500 dark:text-blue-400">admin_console</p>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-cyan-500 dark:text-cyan-400">admin_console</p>
             </div>
           </Link>
         </div>
@@ -61,7 +61,7 @@ export function AdminSidebar({ children, userEmail, signOutAction }: Props) {
                 href={item.href}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
                   active
-                    ? "bg-blue-500/10 text-blue-500 dark:text-blue-400 font-medium"
+                    ? "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 font-medium"
                     : "text-muted-foreground hover:bg-card hover:text-foreground"
                 }`}
               >
@@ -88,7 +88,7 @@ export function AdminSidebar({ children, userEmail, signOutAction }: Props) {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-xl flex items-center justify-between px-4 h-12">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center">
+          <div className="w-6 h-6 rounded bg-cyan-500 flex items-center justify-center">
             <span className="text-white font-black text-[10px]">L</span>
           </div>
           <span className="font-semibold text-foreground text-sm">Ledgr admin</span>

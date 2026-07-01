@@ -43,7 +43,7 @@ export default async function TransactionsPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_ai_accountant
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <FileText className="h-5 w-5 text-blue-500" /> Transaction history
+          <FileText className="h-5 w-5 text-cyan-500" /> Transaction history
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Every transaction your AI accountant has extracted. {totals._count._all} total · last 500 shown.
@@ -62,7 +62,7 @@ export default async function TransactionsPage() {
           <p className="text-sm text-muted-foreground">No transactions yet.</p>
           <p className="text-xs text-muted-foreground mt-1.5">
             Upload a document on{" "}
-            <Link href="/client" className="text-blue-500 hover:text-blue-400">your AI accountant</Link>{" "}
+            <Link href="/client" className="text-cyan-500 hover:text-cyan-400">your AI accountant</Link>{" "}
             and they&apos;ll appear here.
           </p>
         </div>
@@ -84,7 +84,7 @@ function Metric({
 }: { label: string; value: number; currency: string; positive?: boolean; accent?: boolean; icon?: typeof TrendingUp }) {
   const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Math.abs(value));
   const color = accent
-    ? (positive ? "text-blue-500 dark:text-blue-400" : "text-rose-500")
+    ? (positive ? "text-cyan-500 dark:text-cyan-400" : "text-rose-500")
     : positive
       ? "text-emerald-500"
       : "text-rose-500";

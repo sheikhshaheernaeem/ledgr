@@ -65,7 +65,7 @@ export function UpgradeRequiredCard({
               <Link
                 key={opt.slug}
                 href={`/client/settings?upgrade=${opt.slug}`}
-                className="group rounded-xl border border-blue-500/30 bg-blue-500/[0.06] hover:bg-blue-500/[0.12] hover:border-blue-500/50 transition-all p-4 flex items-center justify-between"
+                className="group rounded-xl border border-cyan-500/30 bg-cyan-500/[0.06] hover:bg-cyan-500/[0.12] hover:border-cyan-500/50 transition-all p-4 flex items-center justify-between"
               >
                 <div className="min-w-0">
                   <p className="font-semibold text-foreground text-sm">{opt.displayName}</p>
@@ -74,14 +74,14 @@ export function UpgradeRequiredCard({
                     {opt.documentLimit !== undefined && opt.documentLimit !== Infinity && ` · ${opt.documentLimit.toLocaleString()} docs/mo`}
                   </p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0" />
+                <ArrowRight className="h-4 w-4 text-cyan-500 dark:text-cyan-400 shrink-0" />
               </Link>
             ))}
           </div>
         </>
       ) : (
         <p className="text-xs text-muted-foreground">
-          You&apos;re on our highest plan — please <Link href="/contact" className="text-blue-500 hover:text-blue-400">contact support</Link> for an override.
+          You&apos;re on our highest plan — please <Link href="/contact" className="text-cyan-500 hover:text-cyan-400">contact support</Link> for an override.
         </p>
       )}
 
@@ -89,7 +89,7 @@ export function UpgradeRequiredCard({
         <p className="text-[10px] font-mono text-muted-foreground">limits_reset_first_of_next_month</p>
         <Link
           href="/#pricing"
-          className="font-mono text-xs text-blue-500 dark:text-blue-400 hover:text-blue-400 border border-blue-500/30 hover:bg-blue-500/10 px-3 py-1.5 rounded-md inline-flex items-center gap-1"
+          className="font-mono text-xs text-cyan-500 dark:text-cyan-400 hover:text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/10 px-3 py-1.5 rounded-md inline-flex items-center gap-1"
         >
           See all plans <ArrowRight className="h-3 w-3" />
         </Link>

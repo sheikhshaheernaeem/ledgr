@@ -207,7 +207,7 @@ export default async function ConsolidatedReportsPage({
                       <td className="px-4 py-3 text-center">
                         {r ? (
                           <Badge variant="outline" className={`text-xs ${
-                            r.status === "REVIEWED" ? "border-blue-500/30 text-blue-400" :
+                            r.status === "REVIEWED" ? "border-cyan-500/30 text-cyan-400" :
                             r.status === "SENT" ? "border-emerald-500/30 text-emerald-400" :
                             "border-yellow-500/30 text-yellow-400"
                           }`}>

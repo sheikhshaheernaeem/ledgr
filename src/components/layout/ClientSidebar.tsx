@@ -159,9 +159,9 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
           {NAV_SECTIONS.map((section, sIdx) => {
             const isAiSection = section.title === "AI Accountant";
             const isBkSection = section.title === "Book keeping";
-            const accentText = isAiSection ? "text-blue-500 dark:text-blue-400" : isBkSection ? "text-emerald-500 dark:text-emerald-400" : "";
-            const accentBg = isAiSection ? "bg-blue-500/12" : isBkSection ? "bg-emerald-500/12" : "bg-muted";
-            const accentBar = isAiSection ? "bg-blue-500" : isBkSection ? "bg-emerald-500" : "bg-foreground";
+            const accentText = isAiSection ? "text-cyan-500 dark:text-cyan-400" : isBkSection ? "text-emerald-500 dark:text-emerald-400" : "";
+            const accentBg = isAiSection ? "bg-cyan-500/12" : isBkSection ? "bg-emerald-500/12" : "bg-muted";
+            const accentBar = isAiSection ? "bg-cyan-500" : isBkSection ? "bg-emerald-500" : "bg-foreground";
             return (
               <div key={section.title} className="space-y-0.5">
                 {!collapsed && (

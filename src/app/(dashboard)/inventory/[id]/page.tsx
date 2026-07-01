@@ -20,7 +20,7 @@ interface Item { id: string; sku: string; name: string; category: string | null;
 const typeColors: Record<string, string> = {
   PURCHASE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
   SALE: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-  ADJUSTMENT: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  ADJUSTMENT: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   TRANSFER: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
 };
 

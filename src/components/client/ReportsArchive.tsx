@@ -21,9 +21,9 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 function statusStyle(status: string): string {
   switch (status) {
-    case "GENERATED": return "border-blue-500/30 bg-blue-500/10 text-blue-500";
+    case "GENERATED": return "border-cyan-500/30 bg-cyan-500/10 text-cyan-500";
     case "APPROVED": return "border-emerald-500/30 bg-emerald-500/10 text-emerald-500";
-    case "SENT": return "border-blue-500/30 bg-blue-500/10 text-blue-500";
+    case "SENT": return "border-cyan-500/30 bg-cyan-500/10 text-cyan-500";
     case "DRAFT": return "border-border bg-background/60 text-muted-foreground";
     default: return "border-border bg-background/60 text-muted-foreground";
   }
@@ -100,7 +100,7 @@ export function ReportsArchive({ reports, currency }: { reports: Report[]; curre
                 </div>
                 <div>
                   <p className="text-muted-foreground uppercase tracking-wider">net</p>
-                  <p className={`font-semibold mt-0.5 tabular-nums ${(r.netProfit ?? 0) >= 0 ? "text-blue-500" : "text-rose-500"}`}>
+                  <p className={`font-semibold mt-0.5 tabular-nums ${(r.netProfit ?? 0) >= 0 ? "text-cyan-500" : "text-rose-500"}`}>
                     {fmt(r.netProfit)}
                   </p>
                 </div>
@@ -113,11 +113,11 @@ export function ReportsArchive({ reports, currency }: { reports: Report[]; curre
               </p>
             </div>
             <div className="flex flex-col gap-1.5 shrink-0">
-              <Button onClick={() => regenPdf(r.id, "profit_loss")} disabled={!!busyId} size="sm" className="bg-blue-500 hover:bg-blue-400 text-white">
+              <Button onClick={() => regenPdf(r.id, "profit_loss")} disabled={!!busyId} size="sm" className="bg-cyan-500 hover:bg-cyan-400 text-black">
                 {busyId === r.id + ":pdf" ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <FileText className="h-3 w-3 mr-1.5" />}
                 PDF
               </Button>
-              <Button onClick={() => downloadCsv(r.id)} disabled={!!busyId} size="sm" variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+              <Button onClick={() => downloadCsv(r.id)} disabled={!!busyId} size="sm" variant="outline" className="border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10">
                 {busyId === r.id + ":csv" ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <FileSpreadsheet className="h-3 w-3 mr-1.5" />}
                 CSV
               </Button>

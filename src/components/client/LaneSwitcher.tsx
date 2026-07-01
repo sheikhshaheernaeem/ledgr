@@ -18,13 +18,13 @@ export function LaneSwitcher() {
           onClick={() => setLane("ai")}
           className={`rounded-xl p-4 text-left transition-all ${
             lane === "ai"
-              ? "bg-blue-500/[0.10] border border-blue-500/40 shadow-sm"
+              ? "bg-cyan-500/[0.10] border border-cyan-500/40 shadow-sm"
               : "bg-transparent border border-transparent hover:bg-card/60"
           }`}
         >
           <div className="flex items-center gap-2 mb-1.5">
-            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${lane === "ai" ? "bg-blue-500/20" : "bg-card"}`}>
-              <Sparkles className={`h-3.5 w-3.5 ${lane === "ai" ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground"}`} />
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${lane === "ai" ? "bg-cyan-500/20" : "bg-card"}`}>
+              <Sparkles className={`h-3.5 w-3.5 ${lane === "ai" ? "text-cyan-500 dark:text-cyan-400" : "text-muted-foreground"}`} />
             </div>
             <p className={`text-sm font-semibold ${lane === "ai" ? "text-foreground" : "text-muted-foreground"}`}>
               AI Accountant
@@ -42,13 +42,13 @@ export function LaneSwitcher() {
           onClick={() => setLane("human")}
           className={`rounded-xl p-4 text-left transition-all ${
             lane === "human"
-              ? "bg-blue-500/[0.10] border border-blue-500/40 shadow-sm"
+              ? "bg-cyan-500/[0.10] border border-cyan-500/40 shadow-sm"
               : "bg-transparent border border-transparent hover:bg-card/60"
           }`}
         >
           <div className="flex items-center gap-2 mb-1.5">
-            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${lane === "human" ? "bg-blue-500/20" : "bg-card"}`}>
-              <UserCog className={`h-3.5 w-3.5 ${lane === "human" ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground"}`} />
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${lane === "human" ? "bg-cyan-500/20" : "bg-card"}`}>
+              <UserCog className={`h-3.5 w-3.5 ${lane === "human" ? "text-cyan-500 dark:text-cyan-400" : "text-muted-foreground"}`} />
             </div>
             <p className={`text-sm font-semibold ${lane === "human" ? "text-foreground" : "text-muted-foreground"}`}>
               Real Accountant

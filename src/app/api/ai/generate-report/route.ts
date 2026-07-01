@@ -70,7 +70,7 @@ export async function POST(req: Request) {
   let y = margin;
 
   // Brand bar
-  doc.setFillColor(37, 99, 235);             // blue-600
+  doc.setFillColor(37, 99, 235);             // cyan-600
   doc.rect(0, 0, pageW, 6, "F");
 
   // Header

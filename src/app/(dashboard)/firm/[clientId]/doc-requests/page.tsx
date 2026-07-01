@@ -30,7 +30,7 @@ interface DocRequest {
 
 const statusStyle: Record<string, string> = {
   OPEN: "border-amber-500/40 bg-amber-500/[0.08] text-amber-400",
-  PARTIAL: "border-blue-500/40 bg-blue-500/[0.08] text-blue-400",
+  PARTIAL: "border-cyan-500/40 bg-cyan-500/[0.08] text-cyan-400",
   COMPLETE: "border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400",
   CANCELLED: "border-rose-500/40 bg-rose-500/[0.04] text-rose-400",
 };
@@ -160,7 +160,7 @@ export default function DocRequestsPage({ params }: { params: Promise<{ clientId
                       <li key={idx} className="flex items-center gap-2 text-sm py-1">
                         <Icon className={`h-3.5 w-3.5 shrink-0 ${
                           it.status === "approved" ? "text-emerald-400" :
-                          it.status === "submitted" ? "text-blue-400" :
+                          it.status === "submitted" ? "text-cyan-400" :
                           "text-muted-foreground"
                         }`} />
                         <span className={`flex-1 ${it.status === "approved" ? "text-foreground" : "text-muted-foreground"}`}>
@@ -177,7 +177,7 @@ export default function DocRequestsPage({ params }: { params: Promise<{ clientId
                   })}
                 </ul>
                 {submitted > 0 && (
-                  <p className="text-xs text-blue-400 mt-2 font-mono">{submitted} item{submitted > 1 ? "s" : ""} waiting for your review</p>
+                  <p className="text-xs text-cyan-400 mt-2 font-mono">{submitted} item{submitted > 1 ? "s" : ""} waiting for your review</p>
                 )}
               </li>
             );

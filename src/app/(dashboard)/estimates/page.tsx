@@ -18,7 +18,7 @@ import EstimateRowActions from "./EstimateRowActions";
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
-  SENT: "border-blue-500/30 text-blue-400",
+  SENT: "border-cyan-500/30 text-cyan-400",
   ACCEPTED: "border-emerald-500/30 text-emerald-400",
   DECLINED: "border-red-500/30 text-red-400",
   CONVERTED: "border-purple-500/30 text-purple-400",

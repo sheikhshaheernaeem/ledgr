@@ -34,7 +34,7 @@ export default async function ReportsPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_ai_accountant
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <FileText className="h-5 w-5 text-blue-500" /> Reports archive
+          <FileText className="h-5 w-5 text-cyan-500" /> Reports archive
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Every AI-generated report you&apos;ve created. Re-download as PDF or CSV anytime.
@@ -47,7 +47,7 @@ export default async function ReportsPage() {
           <p className="text-sm text-muted-foreground">No reports yet.</p>
           <p className="text-xs text-muted-foreground mt-1.5">
             Process a document on{" "}
-            <Link href="/client" className="text-blue-500 hover:text-blue-400">your AI accountant</Link>{" "}
+            <Link href="/client" className="text-cyan-500 hover:text-cyan-400">your AI accountant</Link>{" "}
             and download a report — it&apos;ll appear here.
           </p>
         </div>

@@ -75,12 +75,12 @@ export function LiveSummary() {
       flash ? "border-emerald-500/50 bg-emerald-500/[0.04]" : "border-border/60"
     }`}>
       <div className="flex items-center justify-between mb-4">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
           <Activity className="h-3 w-3" /> live · auto_refreshing
         </p>
         <div className="flex items-center gap-3">
           {isWorking && (
-            <span className="font-mono text-[10px] text-blue-500 uppercase tracking-wider flex items-center gap-1">
+            <span className="font-mono text-[10px] text-cyan-500 uppercase tracking-wider flex items-center gap-1">
               <Loader2 className="h-2.5 w-2.5 animate-spin" /> processing {data.processing_documents}…
             </span>
           )}
@@ -116,7 +116,7 @@ export function LiveSummary() {
           label="Net profit"
           value={fmt(data.net_profit)}
           icon={Activity}
-          color={data.net_profit >= 0 ? "text-blue-500 dark:text-blue-400" : "text-rose-500"}
+          color={data.net_profit >= 0 ? "text-cyan-500 dark:text-cyan-400" : "text-rose-500"}
           accent
           hasData={hasData}
         />
@@ -147,9 +147,9 @@ function Metric({
   label, value, icon: Icon, color, accent, sub, hasData,
 }: { label: string; value: string; icon: typeof TrendingUp; color: string; accent?: boolean; sub?: string; hasData: boolean }) {
   return (
-    <div className={`rounded-xl border border-border bg-background/50 p-3 ${accent ? "shadow-sm" : ""}`}>
+    <div className={`group rounded-xl border border-border bg-background/50 p-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/20 hover:bg-background hover:shadow-md hover:shadow-black/5 ${accent ? "shadow-sm" : ""}`}>
       <div className="flex items-center justify-between mb-1.5">
-        <Icon className={`h-3.5 w-3.5 ${color}`} />
+        <Icon className={`h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110 ${color}`} />
         <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
       </div>
       <p className={`text-xl font-bold tracking-tight tabular-nums ${hasData ? color : "text-muted-foreground/40"}`}>

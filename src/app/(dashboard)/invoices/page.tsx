@@ -27,7 +27,7 @@ interface Invoice {
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
-  SENT: "border-blue-500/30 text-blue-400",
+  SENT: "border-cyan-500/30 text-cyan-400",
   PAID: "border-emerald-500/30 text-emerald-400",
   OVERDUE: "border-red-500/30 text-red-400",
 };
@@ -198,7 +198,7 @@ export default function InvoicesPage() {
             variant="outline"
             disabled={bulkActing}
             onClick={() => bulkMarkStatus("SENT")}
-            className="gap-1.5 text-xs border-blue-500/30 text-blue-400 hover:text-blue-300"
+            className="gap-1.5 text-xs border-cyan-500/30 text-cyan-400 hover:text-cyan-300"
           >
             {bulkActing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
             Mark as Sent

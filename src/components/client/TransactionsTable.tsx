@@ -95,7 +95,7 @@ export function TransactionsTable({ transactions, currency }: { transactions: Tx
           <option value="all">All categories</option>
           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <Button onClick={exportCsv} disabled={exporting || filtered.length === 0} variant="outline" className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+        <Button onClick={exportCsv} disabled={exporting || filtered.length === 0} variant="outline" className="border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10">
           {exporting ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <Download className="h-3.5 w-3.5 mr-1.5" />}
           CSV
         </Button>

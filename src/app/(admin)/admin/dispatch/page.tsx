@@ -28,7 +28,7 @@ interface Accountant {
 
 const statusStyle: Record<string, string> = {
   OPEN: "border-amber-500/40 bg-amber-500/[0.08] text-amber-400",
-  ALLOCATED: "border-blue-500/40 bg-blue-500/[0.08] text-blue-400",
+  ALLOCATED: "border-cyan-500/40 bg-cyan-500/[0.08] text-cyan-400",
   IN_PROGRESS: "border-violet-500/40 bg-violet-500/[0.08] text-violet-400",
   COMPLETED: "border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-400",
   CANCELLED: "border-border bg-card/60 text-muted-foreground",
@@ -120,7 +120,7 @@ export default function DispatchPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
         <Stat label="needs_allocation" value={counts.open.toString()} color={counts.open > 0 ? "text-amber-400" : "text-foreground"} icon={AlertTriangle} />
-        <Stat label="in_progress" value={counts.allocated.toString()} color="text-blue-400" icon={Clock} />
+        <Stat label="in_progress" value={counts.allocated.toString()} color="text-cyan-400" icon={Clock} />
         <Stat label="completed" value={counts.completed.toString()} color="text-emerald-400" icon={CheckCircle2} />
         <Stat label="total" value={counts.total.toString()} icon={Inbox} />
       </div>

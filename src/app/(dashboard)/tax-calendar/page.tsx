@@ -54,7 +54,7 @@ export default async function TaxCalendarPage() {
         <Card className="border-border bg-card">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Upcoming</p>
-            <p className="text-2xl font-bold text-blue-400">{upcoming.length}</p>
+            <p className="text-2xl font-bold text-cyan-400">{upcoming.length}</p>
           </CardContent>
         </Card>
         <Card className="border-border bg-red-500/5 border-red-500/20">

@@ -46,7 +46,7 @@ interface Workpaper {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   IN_PROGRESS: { label: "In Progress", color: "border-yellow-500/30 text-yellow-400" },
-  REVIEWED: { label: "Reviewed", color: "border-blue-500/30 text-blue-400" },
+  REVIEWED: { label: "Reviewed", color: "border-cyan-500/30 text-cyan-400" },
   SIGNED_OFF: { label: "Signed Off", color: "border-emerald-500/30 text-emerald-400" },
 };
 
@@ -213,7 +213,7 @@ export default function WorkpaperDetailPage({ params }: { params: Promise<{ id: 
             <Button
               variant="outline"
               size="sm"
-              className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+              className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
               onClick={() => handleStatusUpdate("REVIEWED")}
             >
               Mark Reviewed

@@ -11,7 +11,7 @@ import CreditNoteActions from "./CreditNoteActions";
 
 const statusStyle: Record<string, string> = {
   DRAFT: "border-zinc-500/30 text-zinc-400",
-  ISSUED: "border-blue-500/30 text-blue-400",
+  ISSUED: "border-cyan-500/30 text-cyan-400",
   APPLIED: "border-emerald-500/30 text-emerald-400",
 };
 

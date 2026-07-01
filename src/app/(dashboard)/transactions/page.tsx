@@ -416,7 +416,7 @@ export default function TransactionsPage() {
                       <TableCell className="max-w-[220px]">
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-sm">{tx.description}</p>
-                          {tx.isRecurring && <Repeat2 className="h-3 w-3 text-blue-400 shrink-0" aria-label="Recurring" />}
+                          {tx.isRecurring && <Repeat2 className="h-3 w-3 text-cyan-400 shrink-0" aria-label="Recurring" />}
                           {tx.voucherType && (
                             <span className="ml-2 text-[10px] font-medium px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                               {tx.voucherType.replace(/_/g, " ")}
@@ -445,7 +445,7 @@ export default function TransactionsPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={`text-xs ${tx.status === "APPROVED" ? "border-emerald-500/30 text-emerald-400" : tx.status === "EDITED" ? "border-blue-500/30 text-blue-400" : "border-yellow-500/30 text-yellow-400"}`}>
+                        <Badge variant="outline" className={`text-xs ${tx.status === "APPROVED" ? "border-emerald-500/30 text-emerald-400" : tx.status === "EDITED" ? "border-cyan-500/30 text-cyan-400" : "border-yellow-500/30 text-yellow-400"}`}>
                           {tx.status.toLowerCase()}
                         </Badge>
                       </TableCell>

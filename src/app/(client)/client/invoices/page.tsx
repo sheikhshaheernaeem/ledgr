@@ -17,7 +17,7 @@ function statusStyle(status: string): string {
   switch (status) {
     case "PAID": return "border-emerald-500/30 text-emerald-400";
     case "OVERDUE": return "border-red-500/30 text-red-400";
-    case "SENT": return "border-blue-500/30 text-blue-400";
+    case "SENT": return "border-cyan-500/30 text-cyan-400";
     case "DRAFT": return "border-border text-muted-foreground";
     default: return "border-border text-muted-foreground";
   }

@@ -29,7 +29,7 @@ export function LegalPage({
           }}
         />
         <div className="max-w-3xl mx-auto px-6 pt-20 pb-12">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-blue-500 dark:text-blue-400">
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-cyan-500 dark:text-cyan-400">
             <Sparkles className="h-3 w-3" /> {eyebrow}
           </span>
           <h1 className="mt-6 font-serif text-4xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06]">
@@ -63,7 +63,7 @@ export function LegalSection({ heading, children }: { heading: string; children:
 
 export function LegalList({ items }: { items: React.ReactNode[] }) {
   return (
-    <ul className="space-y-2 pl-5 list-disc marker:text-blue-500/70">
+    <ul className="space-y-2 pl-5 list-disc marker:text-cyan-500/70">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}

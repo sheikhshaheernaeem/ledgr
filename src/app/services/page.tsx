@@ -85,7 +85,7 @@ export default function ServicesPage() {
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {SERVICES.map((s) => (
-              <div key={s.title} className="rounded-xl border border-border/60 bg-card/40 p-6 hover:border-cyan-500/30 hover:bg-card/60 transition-colors">
+              <div key={s.title} className="rounded-xl border border-border/60 bg-card/40 p-6 hover:border-cyan-500/40 hover:bg-card/60 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300">
                 <div className="w-10 h-10 rounded-lg border border-border bg-background flex items-center justify-center mb-4">
                   <s.icon className="h-4 w-4 text-cyan-500 dark:text-cyan-400" />
                 </div>

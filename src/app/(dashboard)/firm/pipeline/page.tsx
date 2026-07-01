@@ -28,14 +28,14 @@ interface Lead {
 
 const STAGES = ["NEW", "CONTACTED", "PROPOSAL", "WON", "LOST"] as const;
 const STAGE_STYLE: Record<string, string> = {
-  NEW: "border-blue-500/40 bg-blue-500/[0.08]",
+  NEW: "border-cyan-500/40 bg-cyan-500/[0.08]",
   CONTACTED: "border-amber-500/40 bg-amber-500/[0.08]",
   PROPOSAL: "border-violet-500/40 bg-violet-500/[0.08]",
   WON: "border-emerald-500/40 bg-emerald-500/[0.08]",
   LOST: "border-rose-500/40 bg-rose-500/[0.04]",
 };
 const STAGE_TEXT: Record<string, string> = {
-  NEW: "text-blue-400",
+  NEW: "text-cyan-400",
   CONTACTED: "text-amber-400",
   PROPOSAL: "text-violet-400",
   WON: "text-emerald-400",

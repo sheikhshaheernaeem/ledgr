@@ -192,26 +192,38 @@ export default async function QueuePage() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-border/60 pb-5">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-          <Inbox className="h-3 w-3" /> firm / queue
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight">Your queue</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Everything that needs your attention across {clientIds.length} client{clientIds.length !== 1 ? "s" : ""} — in one place.
-        </p>
+      {/* header with soft ambient glow */}
+      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card/80 via-card/40 to-transparent p-6 sm:p-7">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"
+        />
+        <div className="relative flex items-start gap-4">
+          <div className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 shadow-sm">
+            <Inbox className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> firm / queue
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">Your queue</h1>
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Everything that needs your attention across {clientIds.length} client{clientIds.length !== 1 ? "s" : ""} — in one place.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* My allocated requests (accountant-side) */}
       <MyAllocations />
 
       {/* stat strip */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-border/60 rounded-lg overflow-hidden border border-border/60">
-        <Stat label="awaiting_approval" value={draftReports.length.toString()} icon={FileText} color={draftReports.length > 0 ? "text-amber-400" : "text-foreground"} />
-        <Stat label="anomalies" value={anomalies.length.toString()} icon={AlertTriangle} color={anomalies.length > 5 ? "text-rose-400" : anomalies.length > 0 ? "text-amber-400" : "text-foreground"} />
-        <Stat label="unread_messages" value={unreadMessages.length.toString()} icon={MessageSquare} color={unreadMessages.length > 0 ? "text-amber-400" : "text-foreground"} />
-        <Stat label="failed_uploads" value={failedStatements.length.toString()} icon={Upload} color={failedStatements.length > 0 ? "text-rose-400" : "text-foreground"} />
-        <Stat label="reports_delivered_30d" value={last30Stats[0].toString()} icon={CheckCircle2} color="text-emerald-400" />
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <Stat label="awaiting_approval" value={draftReports.length.toString()} icon={FileText} color={draftReports.length > 0 ? "text-amber-500" : "text-foreground"} accent="16 185 129" />
+        <Stat label="anomalies" value={anomalies.length.toString()} icon={AlertTriangle} color={anomalies.length > 5 ? "text-rose-500" : anomalies.length > 0 ? "text-amber-500" : "text-foreground"} accent="244 63 94" />
+        <Stat label="unread_messages" value={unreadMessages.length.toString()} icon={MessageSquare} color={unreadMessages.length > 0 ? "text-amber-500" : "text-foreground"} accent="6 182 212" />
+        <Stat label="failed_uploads" value={failedStatements.length.toString()} icon={Upload} color={failedStatements.length > 0 ? "text-rose-500" : "text-foreground"} accent="244 63 94" />
+        <Stat label="reports_delivered_30d" value={last30Stats[0].toString()} icon={CheckCircle2} color="text-emerald-500" accent="16 185 129" />
       </div>
 
       {/* items */}
@@ -237,18 +249,18 @@ export default async function QueuePage() {
             <Link
               key={`${it.kind}-${i}`}
               href={it.href}
-              className={`block rounded-lg border p-4 transition-colors hover:bg-card/60 ${severityStyle[it.severity]}`}
+              className={`group block rounded-xl border p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/5 hover:bg-card/70 ${severityStyle[it.severity]}`}
             >
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-md border border-border bg-background flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-lg border border-border bg-background flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                   {it.kind === "report" && <FileText className="h-4 w-4 text-amber-400" />}
                   {it.kind === "anomaly" && <AlertTriangle className="h-4 w-4 text-amber-400" />}
-                  {it.kind === "message" && <MessageSquare className="h-4 w-4 text-blue-400" />}
+                  {it.kind === "message" && <MessageSquare className="h-4 w-4 text-cyan-400" />}
                   {it.kind === "upload_error" && <Upload className="h-4 w-4 text-rose-400" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                    <p className="font-semibold text-foreground truncate">{it.clientName}</p>
+                    <p className="font-semibold text-foreground truncate transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">{it.clientName}</p>
                     <span className={`font-mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${severityChip[it.severity]}`}>
                       {it.kind.replace(/_/g, " ")}
                     </span>
@@ -259,7 +271,7 @@ export default async function QueuePage() {
                   <p className="text-sm text-foreground/90">{it.title}</p>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{it.detail}</p>
                 </div>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 mt-3 shrink-0" />
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 mt-3 shrink-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-emerald-500" />
               </div>
             </Link>
           ))}
@@ -269,16 +281,27 @@ export default async function QueuePage() {
   );
 }
 
-function Stat({ label, value, icon: Icon, color = "text-foreground" }: {
-  label: string; value: string; icon: React.ComponentType<{ className?: string }>; color?: string;
+function Stat({ label, value, icon: Icon, color = "text-foreground", accent = "16 185 129" }: {
+  label: string; value: string; icon: React.ComponentType<{ className?: string }>; color?: string; accent?: string;
 }) {
   return (
-    <div className="bg-card p-4">
-      <div className="flex items-center justify-between mb-1.5">
+    <div className="group relative overflow-hidden rounded-xl border border-border/60 bg-card/60 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-lg hover:shadow-black/5">
+      {/* accent wash on hover */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: `radial-gradient(120px circle at 85% 0%, rgb(${accent} / 0.10), transparent 70%)` }}
+      />
+      <div className="relative flex items-center justify-between mb-2.5">
         <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
-        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+        <span
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-border/70 bg-background transition-transform duration-300 group-hover:scale-110"
+          style={{ borderColor: `rgb(${accent} / 0.35)` }}
+        >
+          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+        </span>
       </div>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      <p className={`relative text-2xl font-bold tabular-nums ${color}`}>{value}</p>
     </div>
   );
 }

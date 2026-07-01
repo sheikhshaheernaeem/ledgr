@@ -107,7 +107,7 @@ export default function AccountsPage() {
   }
 
   const typeColors: Record<string, string> = {
-    CHECKING: "border-blue-500/30 text-blue-400",
+    CHECKING: "border-cyan-500/30 text-cyan-400",
     SAVINGS: "border-emerald-500/30 text-emerald-400",
     CREDIT_CARD: "border-orange-500/30 text-orange-400",
     LOAN: "border-red-500/30 text-red-400",

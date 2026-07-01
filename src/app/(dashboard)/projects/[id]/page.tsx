@@ -21,7 +21,7 @@ interface Profitability { project: { name: string; code: string; budget: number;
 const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 const taskColors: Record<string, string> = {
   TODO: "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300",
-  IN_PROGRESS: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  IN_PROGRESS: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   DONE: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
 };
 

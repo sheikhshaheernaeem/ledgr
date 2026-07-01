@@ -56,7 +56,7 @@ export default function EstimateDetailActions({
           variant="outline"
           onClick={() => updateStatus("SENT")}
           disabled={loading !== null}
-          className="gap-1.5 border-blue-500/30 text-blue-400 hover:text-blue-300"
+          className="gap-1.5 border-cyan-500/30 text-cyan-400 hover:text-cyan-300"
         >
           {loading === "SENT" ? (
             <Loader2 className="h-3 w-3 animate-spin" />

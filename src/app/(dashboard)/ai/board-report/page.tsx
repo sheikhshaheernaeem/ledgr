@@ -77,7 +77,7 @@ export default function BoardReportPage() {
     { label: "Revenue", value: fmt(report.metrics.revenue), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
     { label: "Expenses", value: fmt(report.metrics.expenses), icon: TrendingDown, color: "text-red-600", bg: "bg-red-50 dark:bg-red-900/20" },
     { label: "Net Income", value: fmt(report.metrics.netIncome), icon: DollarSign, color: report.metrics.netIncome >= 0 ? "text-emerald-600" : "text-red-600", bg: report.metrics.netIncome >= 0 ? "bg-emerald-50 dark:bg-emerald-900/20" : "bg-red-50 dark:bg-red-900/20" },
-    { label: "Cash Balance", value: fmt(report.metrics.cashBalance), icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-900/20" },
+    { label: "Cash Balance", value: fmt(report.metrics.cashBalance), icon: DollarSign, color: "text-cyan-600", bg: "bg-cyan-50 dark:bg-cyan-900/20" },
     { label: "Active Clients", value: String(report.metrics.clientCount), icon: Users, color: "text-purple-600", bg: "bg-purple-50 dark:bg-purple-900/20" },
     { label: "Invoices Issued", value: String(report.metrics.invoiceCount), icon: FileText, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/20" },
     { label: "Burn Rate", value: `${fmt(report.metrics.burnRate)}/mo`, icon: TrendingDown, color: "text-orange-600", bg: "bg-orange-50 dark:bg-orange-900/20" },

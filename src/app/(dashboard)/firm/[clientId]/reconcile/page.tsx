@@ -24,7 +24,7 @@ const monthName = (m: number) =>
 
 const statusStyle: Record<string, string> = {
   COMPLETED: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  READY: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  READY: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
   IN_PROGRESS: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   PENDING: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   NO_DATA: "bg-card/60 text-muted-foreground border-border",

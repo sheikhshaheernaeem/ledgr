@@ -24,7 +24,7 @@ interface Event {
 }
 
 const typeStyle: Record<string, string> = {
-  FILING: "border-blue-500/30 text-blue-400",
+  FILING: "border-cyan-500/30 text-cyan-400",
   PAYMENT: "border-red-500/30 text-red-400",
   ESTIMATED: "border-orange-500/30 text-orange-400",
   VAT: "border-purple-500/30 text-purple-400",

@@ -20,7 +20,7 @@ interface Result {
 const labelStyle: Record<Result["label"], { bg: string; text: string; icon: typeof TrendingUp }> = {
   positive: { bg: "bg-emerald-500/10 border-emerald-500/30", text: "text-emerald-500 dark:text-emerald-400", icon: TrendingUp },
   negative: { bg: "bg-rose-500/10 border-rose-500/30", text: "text-rose-500 dark:text-rose-400", icon: TrendingDown },
-  neutral: { bg: "bg-blue-500/10 border-blue-500/30", text: "text-blue-500 dark:text-blue-400", icon: Minus },
+  neutral: { bg: "bg-cyan-500/10 border-cyan-500/30", text: "text-cyan-500 dark:text-cyan-400", icon: Minus },
 };
 
 export function FinBertWidget() {
@@ -54,7 +54,7 @@ export function FinBertWidget() {
   return (
     <div className="rounded-xl border border-border/60 bg-card/40 overflow-hidden">
       <div className="px-4 py-2.5 border-b border-border/40 bg-card/60 flex items-center justify-between">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-blue-500 dark:text-blue-400 flex items-center gap-1.5">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400 flex items-center gap-1.5">
           <Brain className="h-3 w-3" /> finbert · financial_sentiment
         </p>
         <span className="font-mono text-[10px] text-muted-foreground">yiyanghkust/finbert-tone</span>
@@ -77,7 +77,7 @@ export function FinBertWidget() {
         <Button
           onClick={analyze}
           disabled={loading || text.trim().length < 10}
-          className="bg-blue-500 hover:bg-blue-400 text-white font-semibold w-full"
+          className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold w-full"
         >
           {loading ? <><Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />analyzing…</> : <><Sparkles className="h-3.5 w-3.5 mr-1.5" />Analyze tone</>}
         </Button>

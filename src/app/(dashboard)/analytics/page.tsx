@@ -149,7 +149,7 @@ export default async function AnalyticsPage() {
   const summaryStats = [
     { label: "Total Revenue", value: `$${fmt(totalRevenue)}`, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10" },
     { label: "Total Expenses", value: `$${fmt(totalExpenses)}`, icon: TrendingDown, color: "text-red-400", bg: "bg-red-500/10" },
-    { label: "Avg Monthly Revenue", value: `$${fmt(avgMonthlyRevenue)}`, icon: DollarSign, color: "text-blue-400", bg: "bg-blue-500/10", sub: "last 6 months" },
+    { label: "Avg Monthly Revenue", value: `$${fmt(avgMonthlyRevenue)}`, icon: DollarSign, color: "text-cyan-400", bg: "bg-cyan-500/10", sub: "last 6 months" },
     { label: "Invoiced This Year", value: `$${fmt(invoicedThisYear)}`, icon: FileText, color: "text-yellow-400", bg: "bg-yellow-500/10" },
   ];
 

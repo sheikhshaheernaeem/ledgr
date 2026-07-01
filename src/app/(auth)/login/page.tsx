@@ -170,12 +170,12 @@ function LoginForm() {
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/register?plan=ai-starter"
-            className="rounded-lg border border-blue-500/30 bg-blue-500/[0.04] hover:bg-blue-500/[0.10] hover:border-blue-500/50 transition-all p-3 group"
+            className="rounded-lg border border-cyan-500/30 bg-cyan-500/[0.04] hover:bg-cyan-500/[0.10] hover:border-cyan-500/50 transition-all p-3 group"
           >
-            <Sparkles className="h-4 w-4 text-blue-500 dark:text-blue-400 mb-1.5" />
+            <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-400 mb-1.5" />
             <p className="text-sm font-semibold text-foreground">AI Accountant</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Starter → Autonomous · $999–$2,999</p>
-            <p className="text-[10px] font-mono text-blue-500 mt-1.5 inline-flex items-center gap-0.5">
+            <p className="text-[10px] font-mono text-cyan-500 mt-1.5 inline-flex items-center gap-0.5">
               start_free <ArrowRight className="h-2.5 w-2.5" />
             </p>
           </Link>

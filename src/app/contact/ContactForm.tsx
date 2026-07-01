@@ -36,8 +36,8 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-xl border border-blue-500/30 bg-blue-500/[0.06] p-8 text-center">
-        <CheckCircle2 className="h-8 w-8 mx-auto text-blue-500 dark:text-blue-400 mb-3" />
+      <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/[0.06] p-8 text-center">
+        <CheckCircle2 className="h-8 w-8 mx-auto text-cyan-500 dark:text-cyan-400 mb-3" />
         <h3 className="font-semibold text-foreground text-lg">Got it.</h3>
         <p className="text-sm text-muted-foreground mt-2">
           We&apos;ll reply to <span className="font-mono text-foreground">{email}</span> within one business day.
@@ -77,7 +77,7 @@ export function ContactForm() {
         <Label htmlFor="c-message">Message *</Label>
         <Textarea id="c-message" required value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1.5" rows={5} placeholder="Tell us about your business and what you're looking for." />
       </div>
-      <Button type="submit" disabled={sending} className="w-full h-11 bg-blue-500 hover:bg-blue-400 text-white font-semibold">
+      <Button type="submit" disabled={sending} className="w-full h-11 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold">
         {sending ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> sending…</> : <><Send className="h-4 w-4 mr-2" /> Send message</>}
       </Button>
     </form>

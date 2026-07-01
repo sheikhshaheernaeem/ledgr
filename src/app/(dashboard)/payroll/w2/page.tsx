@@ -118,7 +118,7 @@ export default async function W2Page() {
                         {e.is1099 ? (
                           <span className="text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded-full">1099-NEC</span>
                         ) : (
-                          <span className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">W-2</span>
+                          <span className="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full">W-2</span>
                         )}
                       </td>
                     </tr>

@@ -44,7 +44,7 @@ const TYPE_MAP: Record<string, TypeFilter> = {
 };
 
 const TYPE_BADGE: Record<string, string> = {
-  ASSET: "border-blue-500/30 text-blue-400",
+  ASSET: "border-cyan-500/30 text-cyan-400",
   LIABILITY: "border-orange-500/30 text-orange-400",
   EQUITY: "border-purple-500/30 text-purple-400",
   REVENUE: "border-emerald-500/30 text-emerald-400",

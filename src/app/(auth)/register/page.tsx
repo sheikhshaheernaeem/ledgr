@@ -21,9 +21,9 @@ const PLAN_LABELS: Record<string, { name: string; price: string; color: string }
   starter:     { name: "Bookkeeping Basic",    price: "$299/mo",   color: "border-emerald-500/30 text-emerald-400" },
   growth:      { name: "Bookkeeping Pro",      price: "$599/mo",   color: "border-emerald-500/30 text-emerald-400" },
   cfo:         { name: "Bookkeeping Advanced", price: "$1,499/mo", color: "border-emerald-500/30 text-emerald-400" },
-  "ai-starter":{ name: "Starter AI",           price: "$999/mo",   color: "border-blue-500/30 text-blue-400" },
-  "ai-growth": { name: "Growth AI",            price: "$1,999/mo", color: "border-blue-500/30 text-blue-400" },
-  "ai-cfo":    { name: "Autonomous AI",        price: "$2,999/mo", color: "border-blue-500/30 text-blue-400" },
+  "ai-starter":{ name: "Starter AI",           price: "$999/mo",   color: "border-cyan-500/30 text-cyan-400" },
+  "ai-growth": { name: "Growth AI",            price: "$1,999/mo", color: "border-cyan-500/30 text-cyan-400" },
+  "ai-cfo":    { name: "Autonomous AI",        price: "$2,999/mo", color: "border-cyan-500/30 text-cyan-400" },
 };
 
 // Map plan slug → tier
@@ -227,11 +227,11 @@ function RegisterForm() {
                   onClick={() => switchTier("ai")}
                   className={`rounded-lg border p-3 text-left transition-colors ${
                     tier === "ai"
-                      ? "border-blue-500/50 bg-blue-500/[0.06]"
+                      ? "border-cyan-500/50 bg-cyan-500/[0.06]"
                       : "border-border bg-card hover:border-foreground/30"
                   }`}
                 >
-                  <Sparkles className={`h-4 w-4 mb-1.5 ${tier === "ai" ? "text-blue-500 dark:text-blue-400" : "text-muted-foreground"}`} />
+                  <Sparkles className={`h-4 w-4 mb-1.5 ${tier === "ai" ? "text-cyan-500 dark:text-cyan-400" : "text-muted-foreground"}`} />
                   <p className="text-sm font-medium text-foreground">AI Accountant</p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Instant. $999–$2,999/mo.</p>
                 </button>
@@ -259,7 +259,7 @@ function RegisterForm() {
                   const info = PLAN_LABELS[slug];
                   const isActive = selectedPlan === slug;
                   const accent = tier === "ai"
-                    ? "border-blue-500/50 bg-blue-500/[0.06] text-blue-500 dark:text-blue-400"
+                    ? "border-cyan-500/50 bg-cyan-500/[0.06] text-cyan-500 dark:text-cyan-400"
                     : "border-emerald-500/50 bg-emerald-500/[0.06] text-emerald-500 dark:text-emerald-400";
                   return (
                     <button
@@ -290,11 +290,11 @@ function RegisterForm() {
                 onClick={() => setRole("CLIENT")}
                 className={`rounded-lg border p-3 text-left transition-colors ${
                   role === "CLIENT"
-                    ? "border-blue-500/50 bg-blue-500/[0.06]"
+                    ? "border-cyan-500/50 bg-cyan-500/[0.06]"
                     : "border-border bg-card hover:border-foreground/30"
                 }`}
               >
-                <Users className={`h-4 w-4 mb-1.5 ${role === "CLIENT" ? "text-blue-500" : "text-muted-foreground"}`} />
+                <Users className={`h-4 w-4 mb-1.5 ${role === "CLIENT" ? "text-cyan-500" : "text-muted-foreground"}`} />
                 <p className="text-sm font-medium text-foreground">A business owner</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">I need bookkeeping done — AI or human.</p>
               </button>
@@ -303,11 +303,11 @@ function RegisterForm() {
                 onClick={() => setRole("ACCOUNTANT")}
                 className={`rounded-lg border p-3 text-left transition-colors ${
                   role === "ACCOUNTANT"
-                    ? "border-blue-500/50 bg-blue-500/[0.06]"
+                    ? "border-cyan-500/50 bg-cyan-500/[0.06]"
                     : "border-border bg-card hover:border-foreground/30"
                 }`}
               >
-                <Briefcase className={`h-4 w-4 mb-1.5 ${role === "ACCOUNTANT" ? "text-blue-500" : "text-muted-foreground"}`} />
+                <Briefcase className={`h-4 w-4 mb-1.5 ${role === "ACCOUNTANT" ? "text-cyan-500" : "text-muted-foreground"}`} />
                 <p className="text-sm font-medium text-foreground">An accountant</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">I do bookkeeping for clients on this platform.</p>
               </button>

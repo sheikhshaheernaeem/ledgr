@@ -144,9 +144,9 @@ export default function FirmPage() {
       </div>
 
       {/* Explanation Banner */}
-      <Card className="border-blue-500/20 bg-blue-500/5">
+      <Card className="border-cyan-500/20 bg-cyan-500/5">
         <CardContent className="py-3 flex items-start gap-3">
-          <AlertCircle className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
+          <AlertCircle className="h-4 w-4 text-cyan-400 mt-0.5 shrink-0" />
           <p className="text-sm text-muted-foreground">
             Add clients by their Ledgr email to view their books and manage their account. Clients must have an existing Ledgr account.
           </p>

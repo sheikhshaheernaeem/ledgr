@@ -30,7 +30,7 @@ export default async function AdminReportsPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_admin
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <FileText className="h-5 w-5 text-blue-500" /> Reports archive
+          <FileText className="h-5 w-5 text-cyan-500" /> Reports archive
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           All reports generated across all clients. {reports.length} total shown.
@@ -63,7 +63,7 @@ export default async function AdminReportsPage() {
                 <div className="col-span-2 font-mono text-xs text-muted-foreground">{r.month}/{r.year}</div>
                 <div className="col-span-2 text-right font-mono tabular-nums text-emerald-500">{fmt(r.totalIncome)}</div>
                 <div className="col-span-2 text-right font-mono tabular-nums text-rose-500">{fmt(r.totalExpenses)}</div>
-                <div className={`col-span-1 text-right font-mono tabular-nums ${(r.netProfit ?? 0) >= 0 ? "text-blue-500" : "text-rose-500"}`}>{fmt(r.netProfit)}</div>
+                <div className={`col-span-1 text-right font-mono tabular-nums ${(r.netProfit ?? 0) >= 0 ? "text-cyan-500" : "text-rose-500"}`}>{fmt(r.netProfit)}</div>
                 <div className="col-span-1 text-right">
                   <span className="font-mono text-[10px] uppercase tracking-wider border border-border bg-background/60 text-muted-foreground px-1.5 py-0.5 rounded">
                     {r.status.toLowerCase()}

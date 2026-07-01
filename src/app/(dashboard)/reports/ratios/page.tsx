@@ -86,7 +86,7 @@ export default function RatiosPage() {
       ) : ratios ? (
         <div className="space-y-6">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5 text-blue-500" />Liquidity Ratios</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5 text-cyan-500" />Liquidity Ratios</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <RatioCard label="Current Ratio" value={ratios.currentRatio} benchmark="&gt; 2.0" description="Ability to meet short-term obligations" />

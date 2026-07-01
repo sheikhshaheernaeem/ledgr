@@ -217,8 +217,8 @@ export default async function CashFlowStatementPage({
           <Card className="border-border bg-card">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-blue-400" />
-                <CardTitle className="text-base text-blue-400">Investing Activities</CardTitle>
+                <TrendingDown className="h-4 w-4 text-cyan-400" />
+                <CardTitle className="text-base text-cyan-400">Investing Activities</CardTitle>
               </div>
               <p className="text-xs text-muted-foreground">Cash used for long-term investments and assets</p>
             </CardHeader>

@@ -42,7 +42,7 @@ const DOC_TYPES = [
 
 const STATUS_STYLES: Record<string, string> = {
   DRAFT: "border-yellow-500/30 text-yellow-400",
-  SENT: "border-blue-500/30 text-blue-400",
+  SENT: "border-cyan-500/30 text-cyan-400",
   SIGNED: "border-emerald-500/30 text-emerald-400",
 };
 
@@ -260,7 +260,7 @@ export default function DocumentsPage() {
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       {doc.status === "DRAFT" && (
-                        <Button variant="ghost" size="sm" className="h-7 text-xs px-2 gap-1 text-blue-400 hover:text-blue-300" onClick={() => markSent(doc)}>
+                        <Button variant="ghost" size="sm" className="h-7 text-xs px-2 gap-1 text-cyan-400 hover:text-cyan-300" onClick={() => markSent(doc)}>
                           <Send className="h-3 w-3" /> Sent
                         </Button>
                       )}
@@ -358,7 +358,7 @@ export default function DocumentsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDoc(null)}>Close</Button>
             {viewDoc && viewDoc.status === "DRAFT" && (
-              <Button className="bg-blue-500 hover:bg-blue-400 text-foreground gap-2" onClick={() => { markSent(viewDoc); setViewDoc(null); }}>
+              <Button className="bg-cyan-500 hover:bg-cyan-400 text-foreground gap-2" onClick={() => { markSent(viewDoc); setViewDoc(null); }}>
                 <Send className="h-4 w-4" /> Mark as Sent
               </Button>
             )}

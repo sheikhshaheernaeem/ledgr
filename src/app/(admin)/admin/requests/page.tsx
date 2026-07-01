@@ -38,7 +38,7 @@ export default async function AdminRequestsPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_admin
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <Inbox className="h-5 w-5 text-blue-500" /> Service requests
+          <Inbox className="h-5 w-5 text-cyan-500" /> Service requests
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           All requests submitted by clients. Latest 100 shown.
@@ -47,7 +47,7 @@ export default async function AdminRequestsPage() {
 
       <div className="grid grid-cols-3 gap-3">
         <Stat label="Open" value={stats.open} accent="text-amber-500" icon={Clock} />
-        <Stat label="In progress" value={stats.inProgress} accent="text-blue-500" icon={Clock} />
+        <Stat label="In progress" value={stats.inProgress} accent="text-cyan-500" icon={Clock} />
         <Stat label="Completed" value={stats.done} accent="text-emerald-500" icon={CheckCircle2} />
       </div>
 
@@ -102,8 +102,8 @@ function Stat({ label, value, accent, icon: Icon }: { label: string; value: numb
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
     OPEN: "text-amber-500 border-amber-500/30 bg-amber-500/10",
-    ALLOCATED: "text-blue-500 border-blue-500/30 bg-blue-500/10",
-    IN_PROGRESS: "text-blue-500 border-blue-500/30 bg-blue-500/10",
+    ALLOCATED: "text-cyan-500 border-cyan-500/30 bg-cyan-500/10",
+    IN_PROGRESS: "text-cyan-500 border-cyan-500/30 bg-cyan-500/10",
     COMPLETED: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10",
     CANCELLED: "text-muted-foreground border-border bg-background/60",
   };

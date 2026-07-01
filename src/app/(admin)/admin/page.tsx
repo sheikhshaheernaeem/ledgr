@@ -54,7 +54,7 @@ export default async function AdminPage() {
   const accountants = allUsers.filter((u) => u.role === "ACCOUNTANT");
 
   const stats = [
-    { label: "Total Users", value: allUsers.length, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
+    { label: "Total Users", value: allUsers.length, icon: Users, color: "text-cyan-400", bg: "bg-cyan-500/10" },
     { label: "Clients", value: clients.length, icon: UserCheck, color: "text-emerald-400", bg: "bg-emerald-500/10" },
     { label: "Pending Reports", value: pendingReports.length, icon: FileText, color: "text-yellow-400", bg: "bg-yellow-500/10" },
     { label: "Pending Transactions", value: pendingTransactions.length, icon: AlertCircle, color: "text-red-400", bg: "bg-red-500/10" },
@@ -74,7 +74,7 @@ export default async function AdminPage() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <Link href="/admin/ai-insights">
-            <Button variant="outline" className="gap-1.5 border-blue-500/30 text-blue-500 hover:bg-blue-500/10">
+            <Button variant="outline" className="gap-1.5 border-cyan-500/30 text-cyan-500 hover:bg-cyan-500/10">
               <FileText className="h-4 w-4" />
               AI Insights
             </Button>
@@ -136,7 +136,7 @@ export default async function AdminPage() {
                   user.role === "ADMIN"
                     ? "border-red-500/30 text-red-400"
                     : user.role === "ACCOUNTANT"
-                    ? "border-blue-500/30 text-blue-400"
+                    ? "border-cyan-500/30 text-cyan-400"
                     : "border-emerald-500/30 text-emerald-400";
                 const roleIcon =
                   user.role === "ADMIN" ? (
@@ -256,9 +256,9 @@ export default async function AdminPage() {
         </Card>
 
         {/* Accountant Accounts */}
-        <Card className="border-blue-500/20 bg-blue-500/5">
+        <Card className="border-cyan-500/20 bg-cyan-500/5">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2 text-blue-400">
+            <CardTitle className="text-base flex items-center gap-2 text-cyan-400">
               <UserCheck className="h-4 w-4" /> Accountants ({accountants.length})
             </CardTitle>
             <CardDescription>Can review and approve reports</CardDescription>
@@ -269,7 +269,7 @@ export default async function AdminPage() {
             ) : (
               <div className="space-y-3">
                 {accountants.map((a) => (
-                  <div key={a.id} className="flex items-center justify-between p-3 rounded-lg border border-blue-500/20 bg-background">
+                  <div key={a.id} className="flex items-center justify-between p-3 rounded-lg border border-cyan-500/20 bg-background">
                     <div>
                       <p className="text-sm font-medium text-foreground">{a.name ?? a.email}</p>
                       <p className="text-xs text-muted-foreground">{a.email}</p>
@@ -405,7 +405,7 @@ export default async function AdminPage() {
                         variant="outline"
                         className={`text-xs ${
                           report.status === "REVIEWED"
-                            ? "border-blue-500/30 text-blue-400"
+                            ? "border-cyan-500/30 text-cyan-400"
                             : "border-yellow-500/30 text-yellow-400"
                         }`}
                       >

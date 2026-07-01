@@ -47,6 +47,66 @@ function MotionCard({ children, className = "" }: { children: React.ReactNode; c
   );
 }
 
+/* ── elegant cursor-tracking spotlight card ──
+   A soft radial glow follows the cursor across the card, with a matching
+   sheen along the border. Pure CSS transforms — cheap and buttery. */
+function SpotlightCard({
+  children,
+  className = "",
+  glow = "16 185 129", // emerald-500 rgb
+  radius = 260,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  glow?: string;
+  radius?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ x: -300, y: -300 });
+  const [hovering, setHovering] = useState(false);
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setPos({ x: e.clientX - r.left, y: e.clientY - r.top });
+  };
+
+  return (
+    <div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      className={`group relative overflow-hidden ${className}`}
+    >
+      {/* soft glow that tracks the cursor */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        style={{
+          opacity: hovering ? 1 : 0,
+          background: `radial-gradient(${radius}px circle at ${pos.x}px ${pos.y}px, rgb(${glow} / 0.15), transparent 62%)`,
+        }}
+      />
+      {/* crisp border sheen at the cursor */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-px rounded-[inherit] transition-opacity duration-500"
+        style={{
+          opacity: hovering ? 1 : 0,
+          background: `radial-gradient(${radius * 0.7}px circle at ${pos.x}px ${pos.y}px, rgb(${glow} / 0.35), transparent 45%)`,
+          WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+          padding: 1,
+        }}
+      />
+      <div className="relative h-full">{children}</div>
+    </div>
+  );
+}
+
 /* GitHub-style mono label */
 function MonoLabel({ children, icon: Icon }: { children: React.ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
   return (
@@ -238,7 +298,7 @@ export default function Landing() {
               <FadeUp delay={0.24}>
                 <div className="mt-9 flex flex-col sm:flex-row gap-3">
                   <Link href="/register?plan=starter">
-                    <Button size="lg" className="h-11 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-1.5">
+                    <Button size="lg" className="h-11 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-1.5 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5">
                       Get started <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
@@ -371,13 +431,13 @@ export default function Landing() {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {services.map((s) => (
               <MotionCard key={s.title}>
-                <div className="h-full rounded-xl border border-border/60 bg-card/60 hover:bg-card hover:border-emerald-500/30 transition-all duration-200 p-6 group">
-                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] transition-colors">
+                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card/60 hover:bg-card hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 p-6">
+                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110 group-hover:-rotate-3">
                     <s.icon className="h-4 w-4 text-emerald-400" />
                   </div>
                   <h3 className="font-semibold text-foreground mb-2 text-[15px]">{s.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                </div>
+                </SpotlightCard>
               </MotionCard>
             ))}
           </Stagger>
@@ -400,16 +460,16 @@ export default function Landing() {
               { n: "03", icon: Check,       title: "Get clean financials", desc: "P&L, balance sheet, cash flow delivered by the 5th — reviewed and tax-ready." },
             ].map((s) => (
               <MotionCard key={s.n}>
-                <div className="relative h-full p-6 rounded-xl border border-border/60 bg-card/60 hover:border-emerald-500/30 hover:bg-card transition-all duration-200">
+                <SpotlightCard className="h-full p-6 rounded-xl border border-border/60 bg-card/60 hover:border-emerald-500/40 hover:bg-card hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110">
                       <s.icon className="h-4 w-4 text-emerald-400" />
                     </div>
-                    <span className="font-mono text-xs text-muted-foreground">{s.n}</span>
+                    <span className="font-mono text-xs text-muted-foreground transition-colors group-hover:text-emerald-400">{s.n}</span>
                   </div>
                   <h3 className="font-semibold text-foreground mb-2 text-[15px]">{s.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                </div>
+                </SpotlightCard>
               </MotionCard>
             ))}
           </Stagger>
@@ -494,13 +554,13 @@ export default function Landing() {
               { q: "The AI assistant is the real deal. Asked about my Q2 margins and got a detailed breakdown in seconds, with actual numbers from my books.", name: "Priya L.", role: "SaaS founder", initials: "PL" },
             ].map((t) => (
               <MotionCard key={t.name}>
-                <div className="h-full rounded-xl border border-border/60 bg-card/60 p-6 hover:border-border transition-colors">
+                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card/60 p-6 hover:border-emerald-500/40 hover:bg-card hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
                   <div className="flex gap-0.5 mb-4">
                     {[...Array(5)].map((_,i)=><Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">&ldquo;{t.q}&rdquo;</p>
                   <div className="flex items-center gap-3 pt-4 border-t border-border/40">
-                    <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center shrink-0 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.08]">
                       <span className="text-[10px] font-bold text-foreground">{t.initials}</span>
                     </div>
                     <div>
@@ -508,7 +568,7 @@ export default function Landing() {
                       <p className="font-mono text-[11px] text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
-                </div>
+                </SpotlightCard>
               </MotionCard>
             ))}
           </Stagger>
@@ -531,13 +591,13 @@ export default function Landing() {
               { icon:Clock,      title:"Businesses outsourcing today", desc:"Already paying $1,200–$2,000/month to a bookkeeper? We deliver the same output at a fraction of the cost." },
             ].map((w) => (
               <MotionCard key={w.title}>
-                <div className="h-full rounded-xl border border-border/60 bg-card p-6 hover:border-emerald-500/30 transition-colors">
-                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5">
+                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card p-6 hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
+                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110 group-hover:-rotate-3">
                     <w.icon className="h-4 w-4 text-emerald-400" />
                   </div>
                   <h3 className="font-semibold text-foreground mb-2 text-[15px]">{w.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{w.desc}</p>
-                </div>
+                </SpotlightCard>
               </MotionCard>
             ))}
           </Stagger>
@@ -604,10 +664,10 @@ export default function Landing() {
                 : "bg-emerald-500 hover:bg-emerald-400 text-black";
               return (
               <MotionCard key={plan.slug}>
-                <div className={`relative h-full flex flex-col rounded-xl border p-7 ${
+                <div className={`relative h-full flex flex-col rounded-xl border p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
                   plan.hot
                     ? `${accentBorder} ${accentBg}`
-                    : "border-border/60 bg-card/60"
+                    : "border-border/60 bg-card/60 hover:border-border"
                 }`}>
                   {plan.hot && (
                     <span className={`absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 ${accentBadge} text-[10px] font-bold px-3 py-0.5 rounded-full font-mono uppercase tracking-wider`}>
@@ -653,7 +713,7 @@ export default function Landing() {
             <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-3">add_ons · stack_on_any_plan</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {addOns.map((a) => (
-                <div key={a.name} className="rounded-xl border border-border/60 bg-card/30 p-4">
+                <div key={a.name} className="rounded-xl border border-border/60 bg-card/30 p-4 hover:border-emerald-500/30 hover:bg-card/60 hover:-translate-y-0.5 transition-all duration-300">
                   <p className="font-semibold text-foreground text-sm">{a.name}</p>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
                   <p className="font-mono text-[11px] text-cyan-500 dark:text-cyan-400 mt-3">{a.price}</p>
@@ -744,7 +804,7 @@ export default function Landing() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/register?plan=starter">
-                <Button size="lg" className="h-12 px-7 text-base font-semibold bg-emerald-500 hover:bg-emerald-400 text-black gap-1.5">
+                <Button size="lg" className="h-12 px-7 text-base font-semibold bg-emerald-500 hover:bg-emerald-400 text-black gap-1.5 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5">
                   Get started <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>

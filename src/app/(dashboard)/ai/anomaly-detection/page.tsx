@@ -12,7 +12,7 @@ import { Loader2, Scan, AlertTriangle, CheckCircle, Brain } from "lucide-react";
 interface AnomalyFlag { id: string; entityType: string; entityId: string; reason: string; severity: string; riskScore: number; dismissed: boolean; createdAt: string }
 
 const severityColors: Record<string, string> = {
-  LOW: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  LOW: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
   MEDIUM: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
   CRITICAL: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",

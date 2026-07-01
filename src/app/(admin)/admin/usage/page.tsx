@@ -40,7 +40,7 @@ export default async function UsagePage() {
           <ArrowLeft className="h-3 w-3" /> back_to_admin
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <Activity className="h-5 w-5 text-blue-500" /> Usage monitoring
+          <Activity className="h-5 w-5 text-cyan-500" /> Usage monitoring
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Current billing period: {start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
@@ -86,7 +86,7 @@ export default async function UsagePage() {
                     <p className="text-xs font-mono text-muted-foreground truncate">{r.user.email}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className={`text-xs font-mono ${r.tier.family === "ai" ? "text-blue-500" : "text-emerald-500"}`}>
+                    <p className={`text-xs font-mono ${r.tier.family === "ai" ? "text-cyan-500" : "text-emerald-500"}`}>
                       {r.tier.displayName}
                     </p>
                   </div>
@@ -126,7 +126,7 @@ function UsageCell({ used, limit, icon: Icon }: { used: number; limit: number; i
       {limit !== Infinity && (
         <div className="h-1 mt-1 bg-card border border-border rounded overflow-hidden">
           <div
-            className={`h-full ${over ? "bg-rose-500" : warn ? "bg-amber-500" : "bg-blue-500"}`}
+            className={`h-full ${over ? "bg-rose-500" : warn ? "bg-amber-500" : "bg-cyan-500"}`}
             style={{ width: `${pct}%` }}
           />
         </div>

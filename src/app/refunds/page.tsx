@@ -49,7 +49,7 @@ export default function RefundsPage() {
       <LegalSection heading="4. Cancellation">
         <p>
           You can cancel your subscription at any time from your account settings or by emailing{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:support@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:support@ledgr.app">
             support@ledgr.app
           </a>
           . Cancellation stops future renewals and takes effect at the end of your current billing period —
@@ -62,7 +62,7 @@ export default function RefundsPage() {
         <p>
           Payments and refunds are handled by{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com"
             target="_blank"
             rel="noopener noreferrer"
@@ -73,7 +73,7 @@ export default function RefundsPage() {
           payment method. It typically takes a few business days for the refund to appear, depending on your
           bank or card issuer. Paddle’s{" "}
           <a
-            className="text-blue-500 hover:text-blue-400"
+            className="text-cyan-500 hover:text-cyan-400"
             href="https://www.paddle.com/legal/checkout-buyer-terms"
             target="_blank"
             rel="noopener noreferrer"
@@ -87,12 +87,12 @@ export default function RefundsPage() {
       <LegalSection heading="6. How to request a refund">
         <p>
           Email{" "}
-          <a className="text-blue-500 hover:text-blue-400" href="mailto:support@ledgr.app">
+          <a className="text-cyan-500 hover:text-cyan-400" href="mailto:support@ledgr.app">
             support@ledgr.app
           </a>{" "}
           with the email address on your account and the charge you’d like reviewed. We aim to respond within
           one business day. You can also reach us via our{" "}
-          <Link className="text-blue-500 hover:text-blue-400" href="/contact">
+          <Link className="text-cyan-500 hover:text-cyan-400" href="/contact">
             contact page
           </Link>
           .

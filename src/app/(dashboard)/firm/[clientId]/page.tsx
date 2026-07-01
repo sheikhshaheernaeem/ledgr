@@ -88,12 +88,12 @@ const monthName = (m: number, y: number) => new Date(y, m - 1).toLocaleString("e
 const severityBadge: Record<string, string> = {
   HIGH: "border-rose-500/40 bg-rose-500/10 text-rose-400",
   MEDIUM: "border-amber-500/40 bg-amber-500/10 text-amber-400",
-  LOW: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+  LOW: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
 };
 
 const reportStatusBadge: Record<string, string> = {
   DRAFT: "border-amber-500/40 bg-amber-500/10 text-amber-400",
-  ACCOUNTANT_APPROVED: "border-blue-500/40 bg-blue-500/10 text-blue-400",
+  ACCOUNTANT_APPROVED: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
   SENT: "border-violet-500/40 bg-violet-500/10 text-violet-400",
   REVIEWED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
   APPROVED: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",

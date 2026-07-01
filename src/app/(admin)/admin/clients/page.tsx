@@ -29,7 +29,7 @@ export default async function AdminClientsPage() {
           <ArrowLeft className="h-3 w-3" /> back_to_admin
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
-          <Users className="h-5 w-5 text-blue-500" /> Clients
+          <Users className="h-5 w-5 text-cyan-500" /> Clients
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Every client on the platform. {clients.length} total.
