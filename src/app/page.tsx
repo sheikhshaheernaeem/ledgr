@@ -322,11 +322,11 @@ export default function Landing() {
 
             {/* Right: terminal mockup */}
             <FadeUp delay={0.2}>
-              <div className="relative">
-                {/* glow behind */}
-                <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/15 via-transparent to-transparent rounded-2xl blur-xl" />
+              <div className="group relative">
+                {/* glow behind — intensifies on hover */}
+                <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/15 via-transparent to-transparent rounded-2xl blur-xl transition-all duration-700 group-hover:-inset-3 group-hover:from-emerald-500/30 group-hover:via-emerald-500/[0.06]" />
                 {/* terminal */}
-                <div className="relative rounded-xl border border-border/80 bg-card/95 shadow-2xl overflow-hidden font-mono text-[13px]">
+                <div className="relative rounded-xl border border-border/80 bg-card/95 shadow-2xl overflow-hidden font-mono text-[13px] transition-all duration-500 group-hover:-translate-y-1.5 group-hover:border-emerald-500/40 group-hover:shadow-emerald-500/10">
                   {/* terminal chrome */}
                   <div className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-b border-border/60 bg-muted/30">
                     <div className="flex gap-1.5">
@@ -374,9 +374,9 @@ export default function Landing() {
           {stats.map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}
-              className="text-center sm:text-left">
-              <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-1">{s.val}</p>
-              <p className="font-mono text-[11px] text-muted-foreground">{s.label}</p>
+              className="group text-center sm:text-left cursor-default">
+              <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-1 transition-all duration-300 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 group-hover:-translate-y-0.5">{s.val}</p>
+              <p className="font-mono text-[11px] text-muted-foreground transition-colors group-hover:text-foreground/70">{s.label}</p>
             </motion.div>
           ))}
         </div>
@@ -397,9 +397,11 @@ export default function Landing() {
           <Stagger className="grid grid-cols-1 sm:grid-cols-4 gap-px bg-border/60 rounded-xl overflow-hidden border border-border/60">
             {evolution.map((e) => (
               <MotionCard key={e.era}>
-                <div className={`relative h-full p-6 flex flex-col gap-3 ${e.current ? "bg-emerald-500/[0.06]" : "bg-card"}`}>
+                <div className={`group relative h-full p-6 flex flex-col gap-3 transition-colors duration-300 ${e.current ? "bg-emerald-500/[0.06] hover:bg-emerald-500/[0.11]" : "bg-card hover:bg-emerald-500/[0.04]"}`}>
+                  {/* top accent line reveals on hover */}
+                  <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   <div className="flex items-center justify-between">
-                    <span className={`font-mono text-[11px] ${e.current ? "text-emerald-400" : "text-muted-foreground"}`}>{e.era}</span>
+                    <span className={`font-mono text-[11px] origin-left transition-all duration-300 group-hover:scale-110 ${e.current ? "text-emerald-400" : "text-muted-foreground group-hover:text-emerald-400"}`}>{e.era}</span>
                     {e.current && (
                       <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -407,7 +409,7 @@ export default function Landing() {
                       </span>
                     )}
                   </div>
-                  <p className={`font-semibold text-[15px] ${e.current ? "text-foreground" : "text-foreground/80"}`}>{e.label}</p>
+                  <p className={`font-semibold text-[15px] transition-colors ${e.current ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"}`}>{e.label}</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">{e.desc}</p>
                 </div>
               </MotionCard>
@@ -491,7 +493,7 @@ export default function Landing() {
               </p>
               <div className="mt-7 flex flex-wrap gap-2">
                 {["What's my runway at current burn?","Which expenses are tax deductible?","Do I have overdue invoices?","Summarise my Q2 performance"].map((q) => (
-                  <span key={q} className="font-mono text-xs border border-border/80 rounded-md px-2.5 py-1 text-muted-foreground bg-background/60">
+                  <span key={q} className="font-mono text-xs border border-border/80 rounded-md px-2.5 py-1 text-muted-foreground bg-background/60 cursor-default transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:text-foreground hover:bg-emerald-500/[0.06] hover:shadow-sm hover:shadow-emerald-500/20">
                     {q}
                   </span>
                 ))}
@@ -500,7 +502,7 @@ export default function Landing() {
 
             {/* mock AI chat */}
             <FadeUp delay={0.15}>
-              <div className="rounded-xl border border-border/80 bg-card overflow-hidden shadow-xl">
+              <div className="rounded-xl border border-border/80 bg-card overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/10">
                 <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border/60 bg-muted/30">
                   <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
                     <Sparkles className="h-3 w-3 text-background" />
@@ -713,8 +715,8 @@ export default function Landing() {
             <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-3">add_ons · stack_on_any_plan</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {addOns.map((a) => (
-                <div key={a.name} className="rounded-xl border border-border/60 bg-card/30 p-4 hover:border-emerald-500/30 hover:bg-card/60 hover:-translate-y-0.5 transition-all duration-300">
-                  <p className="font-semibold text-foreground text-sm">{a.name}</p>
+                <div key={a.name} className="group rounded-xl border border-border/60 bg-card/30 p-4 hover:border-emerald-500/30 hover:bg-card/60 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
+                  <p className="font-semibold text-foreground text-sm transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">{a.name}</p>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
                   <p className="font-mono text-[11px] text-cyan-500 dark:text-cyan-400 mt-3">{a.price}</p>
                 </div>
@@ -755,11 +757,11 @@ export default function Landing() {
               </div>
               {comparison.map((row, i) => (
                 <Fragment key={i}>
-                  <div className={`p-5 border-r border-t border-border/60 text-left text-sm text-muted-foreground ${i % 2 === 0 ? "bg-card/20" : "bg-card/40"}`}>
+                  <div className={`p-5 border-r border-t border-border/60 text-left text-sm text-muted-foreground transition-colors duration-300 hover:bg-rose-500/[0.05] ${i % 2 === 0 ? "bg-card/20" : "bg-card/40"}`}>
                     × {row.trad}
                   </div>
-                  <div className={`p-5 border-t border-border/60 text-left text-sm text-foreground ${i % 2 === 0 ? "bg-cyan-500/[0.02]" : "bg-cyan-500/[0.05]"}`}>
-                    <span className="text-cyan-500 dark:text-cyan-400 font-semibold">✓</span> {row.ai}
+                  <div className={`group p-5 border-t border-border/60 text-left text-sm text-foreground transition-colors duration-300 hover:bg-cyan-500/[0.12] ${i % 2 === 0 ? "bg-cyan-500/[0.02]" : "bg-cyan-500/[0.05]"}`}>
+                    <span className="text-cyan-500 dark:text-cyan-400 font-semibold inline-block transition-transform duration-300 group-hover:scale-125">✓</span> {row.ai}
                   </div>
                 </Fragment>
               ))}
@@ -768,7 +770,7 @@ export default function Landing() {
 
           {/* Conversion hook */}
           <FadeUp className="mt-14">
-            <div className="inline-block rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] px-6 py-4">
+            <div className="inline-block rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] px-6 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/70 hover:bg-cyan-500/[0.10] hover:shadow-xl hover:shadow-cyan-500/20">
               <p className="text-sm text-muted-foreground font-mono">try_it</p>
               <p className="mt-1 text-xl sm:text-2xl font-bold tracking-tight">
                 Upload 5 invoices <span className="text-cyan-500 dark:text-cyan-400">→</span> get a full financial report instantly.
