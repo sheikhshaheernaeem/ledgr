@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiText, aiTextEnabled } from "@/lib/ai/text";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -59,11 +59,7 @@ export async function POST(request: Request) {
   let narrative = "";
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("No API key");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    if (!aiTextEnabled()) throw new Error("No AI key");
 
     const prompt = `Write a professional board report narrative for ${metrics.company} for ${metrics.period}.
 
@@ -77,8 +73,7 @@ Financial metrics:
 
 Write a 3-4 paragraph executive summary covering: financial performance, key highlights, risks and opportunities, and outlook. Use professional board-ready language.`;
 
-    const result = await model.generateContent(prompt);
-    narrative = result.response.text();
+    narrative = await aiText(prompt, { temperature: 0.5, maxTokens: 1200 });
   } catch {
     narrative = `**Financial Performance — ${metrics.period}**
 

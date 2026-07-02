@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiText, aiTextEnabled } from "@/lib/ai/text";
 
 interface ForecastMonth {
   month: number;
@@ -113,28 +113,29 @@ export async function POST() {
 
   let forecastResult: ForecastResult;
 
-  if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "demo-mode") {
+  if (!aiTextEnabled()) {
     forecastResult = generateMockForecast(transactions);
   } else {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    try {
+      const txSummary = transactions.map((t) => ({
+        date: t.date.toISOString().split("T")[0],
+        description: t.description,
+        amount: t.amount,
+        type: t.type,
+        category: t.category,
+      }));
 
-    const txSummary = transactions.map((t) => ({
-      date: t.date.toISOString().split("T")[0],
-      description: t.description,
-      amount: t.amount,
-      type: t.type,
-      category: t.category,
-    }));
+      const prompt = `You are a CFO. Given these transactions from the last 90 days, predict cash flow for the next 2 months. Return JSON: { months: [{month, year, predictedIncome, predictedExpenses, predictedNet, confidence, notes}], narrative: '...' }. Transactions: ${JSON.stringify(txSummary)}. Respond ONLY with valid JSON, no markdown.`;
 
-    const prompt = `You are a CFO. Given these transactions from the last 90 days, predict cash flow for the next 2 months. Return JSON: { months: [{month, year, predictedIncome, predictedExpenses, predictedNet, confidence, notes}], narrative: '...' }. Transactions: ${JSON.stringify(txSummary)}. Respond ONLY with valid JSON, no markdown.`;
-
-    const result = await model.generateContent(prompt);
-    const text = result.response.text().trim();
-    const json = text.startsWith("```")
-      ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
-      : text;
-    forecastResult = JSON.parse(json) as ForecastResult;
+      const text = await aiText(prompt, { temperature: 0.3, maxTokens: 2000 });
+      const json = text.startsWith("```")
+        ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
+        : text;
+      forecastResult = JSON.parse(json) as ForecastResult;
+    } catch (err) {
+      console.error("[forecast] AI failed, using mock forecast:", err);
+      forecastResult = generateMockForecast(transactions);
+    }
   }
 
   const now = new Date();

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiText, aiTextEnabled } from "@/lib/ai/text";
 
 /**
  * Run anomaly detection on a user's transactions.
@@ -52,11 +52,7 @@ export async function POST(req: Request) {
 
   // Try Gemini first
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === "demo-mode") throw new Error("No API key");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    if (!aiTextEnabled()) throw new Error("No AI key");
 
     const txSummary = transactions.slice(0, 60).map(t => ({
       id: t.id,
@@ -87,8 +83,7 @@ Output JSON shape:
 
 Return [] if nothing found. Be precise — false positives erode trust.`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const text = await aiText(prompt, { temperature: 0.2, maxTokens: 2000 });
 
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) {

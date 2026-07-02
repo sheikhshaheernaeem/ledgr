@@ -44,24 +44,35 @@ export async function POST(
       description: transaction.description,
     };
   } else {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          data: base64,
-          mimeType: mimeType,
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            data: base64,
+            mimeType: mimeType,
+          },
         },
-      },
-      "Extract from this receipt: vendor name, date, total amount, description. Return JSON: { vendor, date, amount, description }. Respond ONLY with valid JSON, no markdown.",
-    ]);
+        "Extract from this receipt: vendor name, date, total amount, description. Return JSON: { vendor, date, amount, description }. Respond ONLY with valid JSON, no markdown.",
+      ]);
 
-    const text = result.response.text().trim();
-    const json = text.startsWith("```")
-      ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
-      : text;
-    ocrData = JSON.parse(json);
+      const text = result.response.text().trim();
+      const json = text.startsWith("```")
+        ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
+        : text;
+      ocrData = JSON.parse(json);
+    } catch (err) {
+      // Vision OCR unavailable (e.g. Gemini quota) — degrade to the transaction's own data.
+      console.error("[receipt] OCR failed, using transaction data:", err);
+      ocrData = {
+        vendor: transaction.description,
+        date: new Date().toISOString().split("T")[0],
+        amount: transaction.amount.toFixed(2),
+        description: transaction.description,
+      };
+    }
   }
 
   await prisma.transaction.update({

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiText, aiTextEnabled } from "@/lib/ai/text";
 
 export async function POST() {
   const session = await auth();
@@ -19,11 +19,7 @@ export async function POST() {
   let riskAssessment: Array<{ entryId: string; entryNumber: string; riskLevel: string; riskScore: number; concerns: string[] }> = [];
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("No API key");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    if (!aiTextEnabled()) throw new Error("No AI key");
 
     const entrySummary = journalEntries.map(e => ({
       id: e.id,
@@ -45,8 +41,7 @@ Return risk assessment:
 
 Check for: unusual account combinations, large round amounts, entries without clear business purpose, self-balancing unusual accounts, entries near period end.`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const text = await aiText(prompt, { temperature: 0.2, maxTokens: 2000 });
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) riskAssessment = JSON.parse(jsonMatch[0]);
   } catch {

@@ -9,6 +9,10 @@ import {
   Inbox, Users, BarChart3, Shield, CheckSquare, Calendar,
   TrendingUp, Activity, UserPlus, Settings,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
+  FileText, Receipt, Wallet, Calculator, BookOpen, Landmark, PieChart,
+  Building2, Briefcase, Coins, FolderOpen, CreditCard, Banknote, Percent,
+  Clock, Car, Layers, Database, Sparkles, Scale, Store, Lock, ScrollText,
+  GitBranch, ClipboardList, FileSpreadsheet, ArrowLeftRight, Boxes,
 } from "lucide-react";
 
 interface NavItem {
@@ -18,6 +22,7 @@ interface NavItem {
   adminOnly?: boolean;
   exact?: boolean;
   badge?: number;
+  section?: string;
 }
 
 interface Props {
@@ -47,6 +52,73 @@ export function FirmSidebar({ children, userEmail, isAdmin, role, signOutAction,
     { href: "/admin/metrics", label: "Metrics", icon: BarChart3, adminOnly: true },
     { href: "/admin", label: "Admin", icon: Shield, adminOnly: true, exact: true },
     { href: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
+  ];
+
+  // QA auditors get the full map of every feature so they can check everywhere.
+  const QA_NAV: NavItem[] = [
+    { section: "Firm", href: "/firm/queue", label: "Queue", icon: Inbox, badge: queueCount > 0 ? queueCount : undefined },
+    { section: "Firm", href: "/firm", label: "Clients", icon: Users, exact: true },
+    { section: "Firm", href: "/firm/tasks", label: "Tasks", icon: CheckSquare },
+    { section: "Firm", href: "/firm/calendar", label: "Calendar", icon: Calendar },
+    { section: "Firm", href: "/firm/pipeline", label: "Pipeline", icon: TrendingUp },
+    { section: "Firm", href: "/firm/audit", label: "Audit", icon: Activity },
+
+    { section: "Accounting", href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
+    { section: "Accounting", href: "/chart-of-accounts", label: "Chart of Accounts", icon: Layers },
+    { section: "Accounting", href: "/journal-entries", label: "Journal Entries", icon: BookOpen },
+    { section: "Accounting", href: "/general-ledger", label: "General Ledger", icon: ScrollText },
+    { section: "Accounting", href: "/trial-balance", label: "Trial Balance", icon: Scale },
+    { section: "Accounting", href: "/reconciliation", label: "Reconciliation", icon: GitBranch },
+    { section: "Accounting", href: "/opening-balances", label: "Opening Balances", icon: Coins },
+    { section: "Accounting", href: "/period-locks", label: "Period Locks", icon: Lock },
+
+    { section: "Sales", href: "/invoices", label: "Invoices", icon: Receipt },
+    { section: "Sales", href: "/estimates", label: "Estimates", icon: FileText },
+    { section: "Sales", href: "/credit-notes", label: "Credit Notes", icon: FileSpreadsheet },
+    { section: "Sales", href: "/ar-aging", label: "AR Aging", icon: Clock },
+    { section: "Sales", href: "/approvals", label: "Approvals", icon: CheckSquare },
+
+    { section: "Purchases", href: "/bills", label: "Bills", icon: FileText },
+    { section: "Purchases", href: "/expenses", label: "Expenses", icon: CreditCard },
+    { section: "Purchases", href: "/vendors", label: "Vendors", icon: Store },
+    { section: "Purchases", href: "/ap-aging", label: "AP Aging", icon: Clock },
+    { section: "Purchases", href: "/contractor-1099", label: "Contractor 1099", icon: FileText },
+
+    { section: "Reports", href: "/reports", label: "Reports", icon: BarChart3 },
+    { section: "Reports", href: "/balance-sheet", label: "Balance Sheet", icon: Scale },
+    { section: "Reports", href: "/cash-flow-statement", label: "Cash Flow", icon: Banknote },
+    { section: "Reports", href: "/analytics", label: "Analytics", icon: TrendingUp },
+    { section: "Reports", href: "/charts", label: "Charts", icon: PieChart },
+    { section: "Reports", href: "/forecast", label: "Forecast", icon: TrendingUp },
+    { section: "Reports", href: "/consolidation", label: "Consolidation", icon: Layers },
+
+    { section: "Tax", href: "/tax-summary", label: "Tax Summary", icon: Percent },
+    { section: "Tax", href: "/tax-calculator", label: "Tax Calculator", icon: Calculator },
+    { section: "Tax", href: "/tax-calendar", label: "Tax Calendar", icon: Calendar },
+    { section: "Tax", href: "/vat-returns", label: "VAT Returns", icon: Percent },
+    { section: "Tax", href: "/deferred-tax", label: "Deferred Tax", icon: Percent },
+    { section: "Tax", href: "/revenue-recognition", label: "Revenue Recognition", icon: Coins },
+
+    { section: "Operations", href: "/fixed-assets", label: "Fixed Assets", icon: Building2 },
+    { section: "Operations", href: "/inventory", label: "Inventory", icon: Boxes },
+    { section: "Operations", href: "/leases", label: "Leases", icon: Building2 },
+    { section: "Operations", href: "/projects", label: "Projects", icon: Briefcase },
+    { section: "Operations", href: "/departments", label: "Departments", icon: Users },
+    { section: "Operations", href: "/entities", label: "Entities", icon: Building2 },
+    { section: "Operations", href: "/time-tracking", label: "Time Tracking", icon: Clock },
+    { section: "Operations", href: "/mileage", label: "Mileage", icon: Car },
+    { section: "Operations", href: "/budget", label: "Budget", icon: Wallet },
+    { section: "Operations", href: "/payroll", label: "Payroll", icon: Wallet },
+
+    { section: "Data & Tools", href: "/documents", label: "Documents", icon: FolderOpen },
+    { section: "Data & Tools", href: "/receipts", label: "Receipts", icon: Receipt },
+    { section: "Data & Tools", href: "/bank-sync", label: "Bank Sync", icon: Landmark },
+    { section: "Data & Tools", href: "/integrations", label: "Integrations", icon: Database },
+    { section: "Data & Tools", href: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
+    { section: "Data & Tools", href: "/accounts", label: "Accounts", icon: Landmark },
+    { section: "Data & Tools", href: "/audit-log", label: "Audit Log", icon: ClipboardList },
+    { section: "Data & Tools", href: "/workpapers", label: "Workpapers", icon: FileSpreadsheet },
+    { section: "Data & Tools", href: "/settings", label: "Settings", icon: Settings },
   ];
 
   useEffect(() => {
@@ -80,7 +152,8 @@ export function FirmSidebar({ children, userEmail, isAdmin, role, signOutAction,
   const sidebarWidth = collapsed ? "lg:w-[64px]" : "lg:w-[232px]";
   const contentLeft = collapsed ? "lg:ml-[64px]" : "lg:ml-[232px]";
 
-  const visibleNav = NAV.filter((n) => !n.adminOnly || isAdmin);
+  const isQA = role === "QA";
+  const visibleNav = (isQA ? QA_NAV : NAV).filter((n) => !n.adminOnly || isAdmin);
 
   return (
     <div className="min-h-screen bg-background">
@@ -146,9 +219,16 @@ export function FirmSidebar({ children, userEmail, isAdmin, role, signOutAction,
         )}
 
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-          {visibleNav.map((item) => {
+          {visibleNav.map((item, i) => {
             const active = isActive(item.href, item.exact);
+            const showHeader = !collapsed && item.section && item.section !== visibleNav[i - 1]?.section;
             return (
+              <div key={item.href}>
+                {showHeader && (
+                  <p className={`px-2.5 pt-3 pb-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70 ${i === 0 ? "pt-1" : ""}`}>
+                    {item.section}
+                  </p>
+                )}
               <Link
                 key={item.href}
                 href={item.href}
@@ -174,6 +254,7 @@ export function FirmSidebar({ children, userEmail, isAdmin, role, signOutAction,
                   </span>
                 )}
               </Link>
+              </div>
             );
           })}
         </nav>

@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { aiText, aiTextEnabled } from "@/lib/ai/text";
 
 export interface RawTransaction {
   date: string;
@@ -90,17 +90,13 @@ const CATEGORIES = [
 async function realCategorizeBatch(
   transactions: RawTransaction[]
 ): Promise<CategorizedTransaction[]> {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
   const prompt = `You are a professional bookkeeper. Categorize these bank transactions for a small business.
 Available categories: ${CATEGORIES.join(", ")}
 For each transaction return a JSON array with: date, description, amount, type, category, subcategory, confidence (0-1), aiNotes.
 Transactions: ${JSON.stringify(transactions)}
 Respond ONLY with valid JSON array, no markdown, no explanation.`;
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
+  const text = await aiText(prompt, { temperature: 0.2, maxTokens: 4000 });
   const json = text.startsWith("```")
     ? text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
     : text;
@@ -126,18 +122,15 @@ async function realCategorize(
 export async function categorizeTransactions(
   transactions: RawTransaction[]
 ): Promise<CategorizedTransaction[]> {
-  if (
-    !process.env.GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY === "demo-mode"
-  ) {
+  if (!aiTextEnabled()) {
     return transactions.map(mockCategorize);
   }
 
   try {
     return await realCategorize(transactions);
   } catch (err) {
-    // Gemini unavailable or key invalid — fall back to keyword matching
-    console.error("[gemini] categorize failed, using mock fallback:", err);
+    // AI provider unavailable or malformed response — fall back to keyword matching
+    console.error("[categorize] AI failed, using keyword fallback:", err);
     return transactions.map(mockCategorize);
   }
 }
@@ -173,33 +166,32 @@ export async function generatePLSummary(
 
   const netProfit = income - expenses;
 
-  if (
-    !process.env.GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY === "demo-mode"
-  ) {
+  const fallbackNarrative = () => {
     const trend = netProfit >= 0 ? "profitable" : "running at a loss";
     const topCat = topExpenseCategories[0];
-    return {
-      totalIncome: income,
-      totalExpenses: expenses,
-      netProfit,
-      topExpenseCategories,
-      narrative: `${monthName} ${year} was ${trend} with $${Math.abs(netProfit).toFixed(0)} net ${netProfit >= 0 ? "profit" : "loss"}. ${topCat ? `Your largest expense category was ${topCat.category} at $${topCat.amount.toFixed(0)}.` : ""} ${netProfit >= 0 ? "Strong performance — consider reinvesting surplus into growth." : "Review discretionary spending to improve margins."}`,
-    };
+    return `${monthName} ${year} was ${trend} with $${Math.abs(netProfit).toFixed(0)} net ${netProfit >= 0 ? "profit" : "loss"}. ${topCat ? `Your largest expense category was ${topCat.category} at $${topCat.amount.toFixed(0)}.` : ""} ${netProfit >= 0 ? "Strong performance — consider reinvesting surplus into growth." : "Review discretionary spending to improve margins."}`;
+  };
+
+  let narrative: string;
+  if (!aiTextEnabled()) {
+    narrative = fallbackNarrative();
+  } else {
+    try {
+      narrative = await aiText(
+        `Write a 2-3 sentence CFO summary for a small business. Month: ${monthName} ${year}. Income: $${income.toFixed(2)}, Expenses: $${expenses.toFixed(2)}, Net: $${netProfit.toFixed(2)}. Top expenses: ${topExpenseCategories.map((c) => `${c.category}: $${c.amount.toFixed(0)}`).join(", ")}. Be direct, friendly, under 80 words. Plain text only.`,
+        { temperature: 0.4, maxTokens: 200 }
+      );
+    } catch (err) {
+      console.error("[pl-summary] AI failed, using template:", err);
+      narrative = fallbackNarrative();
+    }
   }
-
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-  const result = await model.generateContent(
-    `Write a 2-3 sentence CFO summary for a small business. Month: ${monthName} ${year}. Income: $${income.toFixed(2)}, Expenses: $${expenses.toFixed(2)}, Net: $${netProfit.toFixed(2)}. Top expenses: ${topExpenseCategories.map((c) => `${c.category}: $${c.amount.toFixed(0)}`).join(", ")}. Be direct, friendly, under 80 words. Plain text only.`
-  );
 
   return {
     totalIncome: income,
     totalExpenses: expenses,
     netProfit,
     topExpenseCategories,
-    narrative: result.response.text().trim(),
+    narrative,
   };
 }
