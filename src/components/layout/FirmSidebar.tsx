@@ -24,11 +24,12 @@ interface Props {
   children: React.ReactNode;
   userEmail: string;
   isAdmin: boolean;
+  role?: string;
   signOutAction: () => Promise<void>;
   queueCount?: number;
 }
 
-export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queueCount = 0 }: Props) {
+export function FirmSidebar({ children, userEmail, isAdmin, role, signOutAction, queueCount = 0 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -187,7 +188,7 @@ export function FirmSidebar({ children, userEmail, isAdmin, signOutAction, queue
             </div>
             <div className={`min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
               <p className="text-xs text-foreground font-medium truncate">{userEmail}</p>
-              <p className="font-mono text-[10px] text-muted-foreground">{isAdmin ? "admin" : "accountant"}</p>
+              <p className="font-mono text-[10px] text-muted-foreground">{(role ?? (isAdmin ? "admin" : "accountant")).toLowerCase()}</p>
             </div>
           </div>
 

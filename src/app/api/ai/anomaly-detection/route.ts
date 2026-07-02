@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
   // Authorization for cross-user scans
   if (targetUserId !== sessionUserId) {
-    if (sessionRole !== "ACCOUNTANT" && sessionRole !== "ADMIN") {
+    if (sessionRole !== "ACCOUNTANT" && sessionRole !== "ADMIN" && sessionRole !== "QA") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (sessionRole === "ACCOUNTANT") {

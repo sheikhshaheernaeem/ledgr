@@ -6,7 +6,7 @@ async function operatorGate() {
   const session = await auth();
   if (!session?.user?.id) return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") {
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") {
     return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   }
   return { userId: session.user.id as string, role };
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(requests);
   }
 
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") {
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 
   // All requests this operator can see
   const requests = await prisma.documentRequest.findMany({
-    where: role === "ADMIN" ? {} : { requesterId: userId },
+    where: (role === "ADMIN" || role === "QA") ? {} : { requesterId: userId },
     orderBy: { createdAt: "desc" },
     take: 100,
   });

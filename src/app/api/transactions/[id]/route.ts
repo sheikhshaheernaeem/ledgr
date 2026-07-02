@@ -5,7 +5,7 @@ import { writeAudit } from "@/lib/audit";
 
 async function canActOnTransaction(sessionUserId: string, role: string | undefined, txUserId: string) {
   if (txUserId === sessionUserId) return true;
-  if (role === "ADMIN") return true;
+  if (role === "ADMIN" || role === "QA") return true;
   if (role === "ACCOUNTANT") {
     const mc = await prisma.managedClient.findUnique({
       where: { accountantId_clientId: { accountantId: sessionUserId, clientId: txUserId } },

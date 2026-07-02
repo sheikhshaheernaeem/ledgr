@@ -14,9 +14,9 @@ export default async function FirmAuditPage({ searchParams }: { searchParams: Pr
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") redirect("/client");
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") redirect("/client");
   const userId = session.user.id as string;
-  const isAdmin = role === "ADMIN";
+  const isAdmin = role === "ADMIN" || role === "QA"; // QA auditor sees all clients
 
   const params = await searchParams;
   const filterClientId = params.clientId;

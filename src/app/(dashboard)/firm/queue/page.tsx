@@ -47,9 +47,10 @@ export default async function QueuePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") redirect("/client");
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") redirect("/client");
   const userId = session.user.id as string;
-  const isAdmin = role === "ADMIN";
+  // QA auditors see every client's data, same as admins (but no admin panel).
+  const isAdmin = role === "ADMIN" || role === "QA";
   // eslint-disable-next-line react-hooks/purity
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 

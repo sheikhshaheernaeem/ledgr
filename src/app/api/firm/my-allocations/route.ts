@@ -6,7 +6,7 @@ export async function GET() {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const userId = session.user.id as string;
 
   const requests = await prisma.clientServiceRequest.findMany({

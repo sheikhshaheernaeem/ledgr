@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") {
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const operatorId = session.user.id as string;

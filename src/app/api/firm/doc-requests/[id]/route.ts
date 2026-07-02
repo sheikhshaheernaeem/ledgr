@@ -54,7 +54,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const role = (session.user as { role?: string }).role;
   const userId = session.user.id as string;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const existing = await prisma.documentRequest.findUnique({ where: { id } });

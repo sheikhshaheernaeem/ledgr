@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       // mark read if viewer is the message's intended recipient
       const sessionRole = (session.user as { role?: string }).role;
       if (sessionRole === "CLIENT" && m.role === "ACCOUNTANT") return true;
-      if ((sessionRole === "ACCOUNTANT" || sessionRole === "ADMIN") && m.role === "CLIENT") return true;
+      if ((sessionRole === "ACCOUNTANT" || sessionRole === "ADMIN" || sessionRole === "QA") && m.role === "CLIENT") return true;
       return m.userId !== sessionUserId;
     })
     .map((m) => m.id);

@@ -22,7 +22,7 @@ export async function POST(
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const sessionUserId = session.user.id as string;
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") {
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") {
     return NextResponse.json({ error: "Only an accountant or admin can approve a report" }, { status: 403 });
   }
 

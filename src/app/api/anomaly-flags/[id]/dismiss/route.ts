@@ -12,7 +12,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   const flag = await prisma.anomalyFlag.findUnique({ where: { id } });
   if (!flag) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  let allowed = flag.userId === sessionUserId || role === "ADMIN";
+  let allowed = flag.userId === sessionUserId || role === "ADMIN" || role === "QA";
   if (!allowed && role === "ACCOUNTANT") {
     const mc = await prisma.managedClient.findUnique({
       where: { accountantId_clientId: { accountantId: sessionUserId, clientId: flag.userId } },

@@ -6,7 +6,7 @@ async function operatorGate() {
   const session = await auth();
   if (!session?.user?.id) return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   const role = (session.user as { role?: string }).role;
-  if (role !== "ACCOUNTANT" && role !== "ADMIN") {
+  if (role !== "ACCOUNTANT" && role !== "ADMIN" && role !== "QA") {
     return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   }
   return { userId: session.user.id as string, role };
@@ -17,7 +17,7 @@ export async function GET() {
   if ("error" in g) return g.error;
 
   const leads = await prisma.firmLead.findMany({
-    where: g.role === "ADMIN" ? {} : { ownerId: g.userId },
+    where: (g.role === "ADMIN" || g.role === "QA") ? {} : { ownerId: g.userId },
     orderBy: { createdAt: "desc" },
   });
   return NextResponse.json(leads);

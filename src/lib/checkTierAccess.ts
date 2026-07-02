@@ -33,7 +33,7 @@ export async function checkFeatureAccess(
   });
 
   // Admins always pass — they need to investigate anything.
-  if (user?.role === "ADMIN") {
+  if (user?.role === "ADMIN" || user?.role === "QA") {
     const tier = getTier(user.subscriptionStatus);
     return { allowed: true, feature, tier: tier.slug };
   }

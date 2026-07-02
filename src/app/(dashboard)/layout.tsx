@@ -16,6 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (role === "CLIENT") redirect("/client");
 
   const isAdmin = role === "ADMIN";
+  // QA auditors see every client's queue (like admins) but must NOT get the
+  // admin-only sidebar links, so keep `isAdmin` strict and scope data separately.
+  const seesAllClients = role === "ADMIN" || role === "QA";
   const userId = session.user.id as string;
 
   const [localeSettings, queueCount] = await Promise.all([
@@ -25,7 +28,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }),
     // Count of pending items for the badge
     (async () => {
-      const clientIds = isAdmin
+      const clientIds = seesAllClients
         ? (await prisma.user.findMany({ where: { role: "CLIENT" }, select: { id: true } })).map((u) => u.id)
         : (await prisma.managedClient.findMany({ where: { accountantId: userId, isActive: true }, select: { clientId: true } })).map((mc) => mc.clientId);
       if (clientIds.length === 0) return 0;
@@ -54,6 +57,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <FirmSidebar
         userEmail={session.user.email ?? ""}
         isAdmin={isAdmin}
+        role={role ?? "ACCOUNTANT"}
         signOutAction={signOutAction}
         queueCount={queueCount}
       >
