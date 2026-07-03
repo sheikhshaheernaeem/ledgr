@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { Fragment, useRef, useState } from "react";
+import { motion, useInView, useScroll, useSpring, useTransform, useMotionValue } from "framer-motion";
+import { Fragment, useRef, useState, useEffect } from "react";
 import {
   ArrowRight, Check, TrendingUp, TrendingDown, Shield,
   BarChart3, FileText, Zap, Brain, Star, Sparkles, Activity,
@@ -57,11 +57,116 @@ function Pill({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ── scroll progress bar ── */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
+  return (
+    <motion.div
+      style={{ scaleX }}
+      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500"
+    />
+  );
+}
+
+/* ── film grain overlay ── */
+function Grain() {
+  const svg =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-[5] opacity-[0.035] mix-blend-overlay dark:opacity-[0.05]"
+      style={{ backgroundImage: `url("${svg}")`, backgroundSize: "140px 140px" }}
+    />
+  );
+}
+
+/* ── 3D cursor-tilt wrapper ── */
+function Tilt({ children, className = "", max = 8 }: { children: React.ReactNode; className?: string; max?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(my, [0, 1], [max, -max]), { stiffness: 150, damping: 18 });
+  const rotateY = useSpring(useTransform(mx, [0, 1], [-max, max]), { stiffness: 150, damping: 18 });
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={(e) => {
+        const r = ref.current?.getBoundingClientRect();
+        if (!r) return;
+        mx.set((e.clientX - r.left) / r.width);
+        my.set((e.clientY - r.top) / r.height);
+      }}
+      onMouseLeave={() => { mx.set(0.5); my.set(0.5); }}
+      style={{ rotateX, rotateY, transformPerspective: 1000 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── count-up number (animates on scroll into view) ── */
+function CountUp({ value, className = "" }: { value: string; className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const m = value.match(/^([^\d]*)([\d.,]+)([\s\S]*)$/);
+  const prefix = m?.[1] ?? "";
+  const numStr = m?.[2] ?? value;
+  const suffix = m?.[3] ?? "";
+  const target = parseFloat(numStr.replace(/,/g, "")) || 0;
+  const decimals = numStr.includes(".") ? numStr.split(".")[1].length : 0;
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    let raf = 0;
+    const start = performance.now();
+    const dur = 1400;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplay(target * eased);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, target]);
+
+  const shown = decimals > 0 ? display.toFixed(decimals) : Math.round(display).toLocaleString();
+  return <span ref={ref} className={className}>{prefix}{shown}{suffix}</span>;
+}
+
+/* ── cursor-tracking spotlight card ── */
+function Spotlight({ children, className = "", glow = "16 185 129" }: { children: React.ReactNode; className?: string; glow?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ x: -400, y: -400 });
+  return (
+    <div
+      ref={ref}
+      onMouseMove={(e) => {
+        const r = ref.current?.getBoundingClientRect();
+        if (!r) return;
+        setPos({ x: e.clientX - r.left, y: e.clientY - r.top });
+      }}
+      className={`group relative overflow-hidden ${className}`}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: `radial-gradient(340px circle at ${pos.x}px ${pos.y}px, rgb(${glow} / 0.14), transparent 65%)` }}
+      />
+      <div className="relative h-full">{children}</div>
+    </div>
+  );
+}
+
 /* ── data ── */
 const services = [
+  { icon: Brain,      title: "AI Financial Intelligence", desc: "Ask Ledgr AI anything. Get real answers backed by your live data, not generic chatbot advice — it reads your books, forecasts runway, and flags anomalies in real time." },
   { icon: Zap,        title: "Monthly Bookkeeping",       desc: "We categorize every transaction, reconcile your accounts, and deliver clean books by the 5th of every month." },
   { icon: FileText,   title: "P&L + Financial Reports",   desc: "Profit & loss, balance sheet, and cash flow — prepared, reviewed, and delivered without you lifting a finger." },
-  { icon: Brain,      title: "AI Financial Intelligence", desc: "Ask Ledgr AI anything. Get real answers backed by your live data, not generic chatbot advice." },
   { icon: TrendingUp, title: "Tax Preparation",           desc: "Books organized year-round so tax season isn't a crisis. We handle prep, you review and approve." },
   { icon: Shield,     title: "Human Expert Review",       desc: "Every report reviewed by a real accountant before it reaches you. AI lifts heavy. Humans ensure accuracy." },
   { icon: BarChart3,  title: "Cash Flow Forecasting",     desc: "We model your runway, flag issues early, and surface insights so you make decisions with data." },
@@ -129,6 +234,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-emerald-500/25">
+      <ScrollProgress />
+      <Grain />
 
       {/* ── Nav ── */}
       <header className="sticky top-0 z-50">
@@ -170,13 +277,23 @@ export default function Landing() {
             {/* copy */}
             <div>
               <Reveal><Pill>AI-native accounting firm</Pill></Reveal>
-              <Reveal delay={0.05}>
-                <h1 className="mt-6 text-[3.25rem] font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl lg:text-[5rem]">
-                  <span className="text-gradient-ink">Your accounting,</span>
-                  <br />
-                  <span className="text-gradient-brand">done for you.</span>
-                </h1>
-              </Reveal>
+              <h1 className="mt-6 text-[3.25rem] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl lg:text-[5rem]">
+                {[
+                  { t: "Your accounting,", c: "text-gradient-ink", d: 0.08 },
+                  { t: "done for you.", c: "text-gradient-brand", d: 0.2 },
+                ].map((line) => (
+                  <span key={line.t} className="block overflow-hidden py-[0.06em]">
+                    <motion.span
+                      initial={{ y: "115%" }}
+                      animate={{ y: 0 }}
+                      transition={{ duration: 0.85, delay: line.d, ease: [0.22, 1, 0.36, 1] }}
+                      className={`block ${line.c}`}
+                    >
+                      {line.t}
+                    </motion.span>
+                  </span>
+                ))}
+              </h1>
               <Reveal delay={0.12}>
                 <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
                   Ledgr handles your books, reports, and tax prep end-to-end — powered by AI,
@@ -215,7 +332,7 @@ export default function Landing() {
             <Reveal delay={0.15} y={30}>
               <div className="relative animate-float">
                 <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-transparent blur-2xl" />
-                <div className="glass-strong rounded-[1.75rem] p-5 shadow-2xl">
+                <Tilt className="glass-strong rounded-[1.75rem] p-5 shadow-2xl">
                   <div className="mb-5 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold">Acme Inc</p>
@@ -249,7 +366,7 @@ export default function Landing() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </Tilt>
 
                 {/* floating chips */}
                 <div className="glass absolute -left-5 top-14 hidden items-center gap-2 rounded-2xl px-3 py-2 text-xs font-medium shadow-lg animate-float-slow sm:flex">
@@ -291,19 +408,47 @@ export default function Landing() {
             </p>
           </Reveal>
 
-          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((s, i) => (
-              <Reveal key={s.title} delay={i * 0.05}>
-                <div className="group relative h-full overflow-hidden rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-500/10">
-                  <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/70 transition-all duration-300 group-hover:scale-110 group-hover:border-emerald-500/40">
-                    <s.icon className="h-5 w-5 text-emerald-500" />
-                  </div>
-                  <h3 className="relative mt-5 text-lg font-semibold tracking-tight">{s.title}</h3>
-                  <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
-                </div>
-              </Reveal>
-            ))}
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-fr">
+            {services.map((s, i) => {
+              const big = i === 0;
+              return (
+                <Reveal key={s.title} delay={i * 0.05} className={`h-full ${big ? "sm:col-span-2 lg:row-span-2" : ""}`}>
+                  <Spotlight className="h-full rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-500/10">
+                    <div className="flex h-full flex-col">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/70 transition-all duration-300 group-hover:scale-110 group-hover:border-emerald-500/40">
+                          <s.icon className="h-5 w-5 text-emerald-500" />
+                        </div>
+                        {big && (
+                          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-emerald-500">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className={`mt-5 font-semibold tracking-tight ${big ? "text-2xl" : "text-lg"}`}>{s.title}</h3>
+                      <p className={`mt-2 leading-relaxed text-muted-foreground ${big ? "max-w-md text-[15px]" : "text-sm"}`}>{s.desc}</p>
+                      {big && (
+                        <div className="mt-6 flex-1 rounded-2xl border border-border/60 bg-background/40 p-4">
+                          <div className="flex justify-end">
+                            <div className="rounded-2xl rounded-br-sm bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 px-3 py-2 text-xs">
+                              What&apos;s my burn this quarter?
+                            </div>
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500">
+                              <Sparkles className="h-3 w-3 text-black" />
+                            </div>
+                            <div className="rounded-2xl rounded-bl-sm border border-border/60 bg-card/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                              Your Q2 burn is <span className="font-semibold text-foreground">$28,020/mo</span>, down 12% vs Q1. Runway <span className="font-semibold text-emerald-500">~14 months</span>. ✓
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Spotlight>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -405,7 +550,7 @@ export default function Landing() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 sm:grid-cols-4">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08} className="text-center">
-              <p className="text-4xl font-bold tracking-tight sm:text-5xl text-gradient-brand">{s.val}</p>
+              <CountUp value={s.val} className="block text-4xl font-bold tracking-tight sm:text-5xl text-gradient-brand" />
               <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
             </Reveal>
           ))}
@@ -421,8 +566,8 @@ export default function Landing() {
           </Reveal>
           <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 0.06}>
-                <div className="group h-full rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-500/10">
+              <Reveal key={t.name} delay={i * 0.06} className="h-full">
+                <Spotlight glow="6 182 212" className="h-full rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/10">
                   <div className="mb-4 flex gap-0.5">
                     {[...Array(5)].map((_, k) => <Star key={k} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                   </div>
@@ -436,7 +581,7 @@ export default function Landing() {
                       <p className="mt-1 text-xs text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
-                </div>
+                </Spotlight>
               </Reveal>
             ))}
           </div>
