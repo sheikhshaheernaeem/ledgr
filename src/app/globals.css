@@ -133,3 +133,93 @@
     @apply font-sans;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Framer-style motion, surfaces & gradients
+   ───────────────────────────────────────────────────────────── */
+
+@keyframes aurora-move {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(6%, -5%) scale(1.12); }
+  66%  { transform: translate(-5%, 6%) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+@keyframes float-y-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes shine {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.animate-aurora      { animation: aurora-move 20s ease-in-out infinite; }
+.animate-aurora-slow { animation: aurora-move 30s ease-in-out infinite; }
+.animate-float       { animation: float-y 6s ease-in-out infinite; }
+.animate-float-slow  { animation: float-y-slow 8s ease-in-out infinite; }
+.animate-marquee     { animation: marquee-x 34s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora, .animate-aurora-slow, .animate-float,
+  .animate-float-slow, .animate-marquee { animation: none; }
+}
+
+/* Animated brand gradient text (emerald → teal → cyan) */
+.text-gradient-brand {
+  background-image: linear-gradient(100deg, #10b981, #2dd4bf 45%, #06b6d4);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 7s ease infinite;
+}
+/* Muted ink gradient for large display headings */
+.text-gradient-ink {
+  background-image: linear-gradient(180deg,
+    color-mix(in oklab, var(--foreground) 100%, transparent),
+    color-mix(in oklab, var(--foreground) 62%, transparent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Frosted glass surfaces */
+.glass {
+  background: color-mix(in oklab, var(--card) 62%, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+}
+.glass-strong {
+  background: color-mix(in oklab, var(--card) 82%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
+}
+
+/* Gradient ring/border wrapper (Framer-style bordered glow) */
+.gradient-ring {
+  position: relative;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(120deg, rgba(16,185,129,0.5), rgba(6,182,212,0.35), transparent 70%) border-box;
+  border: 1px solid transparent;
+}
+
+/* Edge-fade mask for marquees */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}

@@ -4,114 +4,54 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { Fragment, useRef, useState } from "react";
 import {
-  ArrowRight, Check, TrendingUp, Shield, Clock,
-  BarChart3, FileText, Zap, Brain, Users, Star, ChevronRight, Terminal, Code2, GitBranch, Sparkles,
+  ArrowRight, Check, TrendingUp, TrendingDown, Shield,
+  BarChart3, FileText, Zap, Brain, Star, Sparkles, Activity,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
-/* ── animation variants ── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
-};
-const stagger = (d = 0.07) => ({ hidden: {}, show: { transition: { staggerChildren: d } } });
-
-function FadeUp({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+/* ── scroll reveal ── */
+function Reveal({
+  children, delay = 0, y = 22, className = "",
+}: { children: React.ReactNode; delay?: number; y?: number; className?: string }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
-    <motion.div ref={ref} variants={fadeUp} initial="hidden"
-      animate={inView ? "show" : "hidden"} transition={{ delay }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-function Stagger({ children, className = "", delay = 0.07 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-50px" });
-  return (
-    <motion.div ref={ref} variants={stagger(delay)} initial="hidden"
-      animate={inView ? "show" : "hidden"} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-function MotionCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <motion.div variants={fadeUp} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-/* ── elegant cursor-tracking spotlight card ──
-   A soft radial glow follows the cursor across the card, with a matching
-   sheen along the border. Pure CSS transforms — cheap and buttery. */
-function SpotlightCard({
-  children,
-  className = "",
-  glow = "16 185 129", // emerald-500 rgb
-  radius = 260,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  glow?: string;
-  radius?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState({ x: -300, y: -300 });
-  const [hovering, setHovering] = useState(false);
-
-  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    setPos({ x: e.clientX - r.left, y: e.clientY - r.top });
-  };
-
-  return (
-    <div
+    <motion.div
       ref={ref}
-      onMouseMove={handleMove}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      className={`group relative overflow-hidden ${className}`}
+      initial={{ opacity: 0, y }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
     >
-      {/* soft glow that tracks the cursor */}
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── aurora mesh background ── */
+function Aurora({ className = "" }: { className?: string }) {
+  return (
+    <div className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden ${className}`}>
+      <div className="absolute -top-48 left-1/2 h-[620px] w-[920px] -translate-x-1/2 rounded-full bg-emerald-500/25 blur-[130px] animate-aurora" />
+      <div className="absolute top-24 -left-40 h-[440px] w-[440px] rounded-full bg-cyan-500/20 blur-[130px] animate-aurora-slow" />
+      <div className="absolute -bottom-52 right-0 h-[500px] w-[500px] rounded-full bg-teal-400/20 blur-[130px] animate-aurora" />
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        className="absolute inset-0 opacity-[0.05] dark:opacity-[0.08]"
         style={{
-          opacity: hovering ? 1 : 0,
-          background: `radial-gradient(${radius}px circle at ${pos.x}px ${pos.y}px, rgb(${glow} / 0.15), transparent 62%)`,
+          backgroundImage:
+            "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+          maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%)",
         }}
       />
-      {/* crisp border sheen at the cursor */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -inset-px rounded-[inherit] transition-opacity duration-500"
-        style={{
-          opacity: hovering ? 1 : 0,
-          background: `radial-gradient(${radius * 0.7}px circle at ${pos.x}px ${pos.y}px, rgb(${glow} / 0.35), transparent 45%)`,
-          WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-          padding: 1,
-        }}
-      />
-      <div className="relative h-full">{children}</div>
     </div>
   );
 }
 
-/* GitHub-style mono label */
-function MonoLabel({ children, icon: Icon }: { children: React.ReactNode; icon?: React.ComponentType<{ className?: string }> }) {
+function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.08em] uppercase text-emerald-400">
-      {Icon ? <Icon className="h-3 w-3" /> : <span className="w-1.5 h-1.5 bg-emerald-400 rounded-sm" />}
+    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[12px] font-medium text-emerald-600 dark:text-emerald-300 backdrop-blur">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
       {children}
     </span>
   );
@@ -129,78 +69,47 @@ const services = [
 
 const pricingBookkeeping = [
   { name: "Basic", price: 299, desc: "Very small businesses · low volume", slug: "starter",
-    features: [
-      "Up to 100 transactions/month",
-      "Manual bookkeeping by human",
-      "Monthly financial reports",
-      "Basic expense categorization",
-      "3–7 day turnaround",
-    ],
+    features: ["Up to 100 transactions/month", "Manual bookkeeping by human", "Monthly financial reports", "Basic expense categorization", "3–7 day turnaround"],
     cta: "Start free", hot: false },
   { name: "Pro", price: 599, desc: "Small businesses scaling operations", slug: "growth",
-    features: [
-      "Up to 500 transactions/month",
-      "Manual bookkeeping",
-      "Weekly updates",
-      "Categorized expense tracking",
-      "Improved accuracy checks",
-      "1–3 day turnaround",
-    ],
+    features: ["Up to 500 transactions/month", "Manual bookkeeping", "Weekly updates", "Categorized expense tracking", "Improved accuracy checks", "1–3 day turnaround"],
     cta: "Start free", hot: true },
   { name: "Advanced", price: 1499, desc: "Businesses needing human oversight", slug: "cfo",
-    features: [
-      "High transaction volume support",
-      "Dedicated bookkeeper",
-      "Real-time transaction updates",
-      "Tax-ready financial reports",
-      "Custom reporting support",
-      "Same-day / near real-time updates",
-    ],
+    features: ["High transaction volume support", "Dedicated bookkeeper", "Real-time transaction updates", "Tax-ready financial reports", "Custom reporting support", "Same-day / near real-time updates"],
     cta: "Talk to us", hot: false },
 ];
 
 const pricingAiAccountant = [
   { name: "Starter AI", price: 999, desc: "Freelancers & small businesses starting automation", slug: "ai-starter",
-    features: [
-      "Up to 200 documents/month",
-      "AI-powered automatic bookkeeping (no manual entry)",
-      "Smart transaction categorization (auto-learns)",
-      "Real-time financial dashboard",
-      "Basic P&L reports",
-      "~80% autonomous",
-      "Standard queue · 30–90 sec / document",
-    ],
+    features: ["Up to 200 documents/month", "AI-powered automatic bookkeeping (no manual entry)", "Smart transaction categorization (auto-learns)", "Real-time financial dashboard", "Basic P&L reports", "~80% autonomous", "Standard queue · 30–90 sec / document"],
     cta: "Start free", hot: false },
   { name: "Growth AI", price: 1999, desc: "Scaling startups & growing businesses", slug: "ai-growth",
-    features: [
-      "Up to 1,000 documents/month",
-      "Multi-source ingestion (uploads, email, integrations)",
-      "Full end-to-end AI accounting pipeline",
-      "Real-time P&L + cash flow tracking",
-      "AI anomaly + duplicate detection",
-      "Multi-user access + role permissions",
-      "~95% autonomous · Priority queue",
-    ],
+    features: ["Up to 1,000 documents/month", "Multi-source ingestion (uploads, email, integrations)", "Full end-to-end AI accounting pipeline", "Real-time P&L + cash flow tracking", "AI anomaly + duplicate detection", "Multi-user access + role permissions", "~95% autonomous · Priority queue"],
     cta: "Start free", hot: true },
   { name: "Autonomous AI", price: 2999, desc: "Flagship — replaces human accounting workflows", slug: "ai-cfo",
-    features: [
-      "Unlimited documents + transactions",
-      "100% autonomous · zero manual work",
-      "Auto-reconciliation (bank ↔ transactions)",
-      "Predictive forecasting + trend analysis",
-      "Real-time P&L, balance sheet, cash flow",
-      "Self-healing data validation",
-      "Tax-ready summaries · Fraud detection",
-      "Instant processing (<10s) · Priority SLA",
-      "Dedicated onboarding",
-    ],
+    features: ["Unlimited documents + transactions", "100% autonomous · zero manual work", "Auto-reconciliation (bank ↔ transactions)", "Predictive forecasting + trend analysis", "Real-time P&L, balance sheet, cash flow", "Self-healing data validation", "Tax-ready summaries · Fraud detection", "Instant processing (<10s) · Priority SLA", "Dedicated onboarding"],
     cta: "Talk to us", hot: false },
 ];
 
 const addOns = [
-  { icon: "plug", name: "Integrations", desc: "Bank sync · Stripe / PayPal · ERP connectors", price: "from $99/mo" },
-  { icon: "chart", name: "Advanced Reports Pack", desc: "Balance Sheet · Cash Flow Forecast · Custom KPI dashboards", price: "from $149/mo" },
-  { icon: "headset", name: "Dedicated Support", desc: "Account manager · Priority SLA · 1-hour response", price: "from $199/mo" },
+  { name: "Integrations", desc: "Bank sync · Stripe / PayPal · ERP connectors", price: "from $99/mo" },
+  { name: "Advanced Reports Pack", desc: "Balance Sheet · Cash Flow Forecast · Custom KPI dashboards", price: "from $149/mo" },
+  { name: "Dedicated Support", desc: "Account manager · Priority SLA · 1-hour response", price: "from $199/mo" },
+];
+
+const stats = [
+  { val: "500+", label: "Businesses served" },
+  { val: "$50M+", label: "Transactions processed" },
+  { val: "99.9%", label: "On-time delivery" },
+  { val: "70%", label: "Avg. cost savings" },
+];
+
+const marquee = ["Stripe", "PayPal", "Shopify", "QuickBooks", "Plaid", "Xero", "AWS", "Mercury", "Ramp", "Brex", "Gusto", "Wise"];
+
+const testimonials = [
+  { q: "Switched from Bench after they shut down. Ledgr onboarded us in 2 hours and had our first P&L by the 5th. Absolutely seamless.", name: "Sarah K.", role: "Founder, e-commerce", initials: "SK" },
+  { q: "Finally stopped doing my own bookkeeping. The AI catches things my old accountant missed, and it costs 3x less. Genuinely impressed.", name: "Marcus T.", role: "Freelance consultant", initials: "MT" },
+  { q: "The AI assistant is the real deal. Asked about my Q2 margins and got a detailed breakdown in seconds, with actual numbers from my books.", name: "Priya L.", role: "SaaS founder", initials: "PL" },
 ];
 
 const comparison = [
@@ -208,676 +117,493 @@ const comparison = [
   { trad: "Delayed reports", ai: "Real-time data" },
   { trad: "Human errors", ai: "AI validation" },
   { trad: "Expensive scaling", ai: "Infinite scalability" },
-  { trad: "$3,000+/month per accountant", ai: "24/7 — never sleeps" },
+  { trad: "$3,000+/mo per accountant", ai: "24/7 — never sleeps" },
 ];
 
-const evolution = [
-  { era: "v1.0", label: "Outsourced Service", desc: "Hired a bookkeeper. Expensive, slow, opaque.", current: false },
-  { era: "v2.0", label: "SaaS Software",      desc: "QuickBooks, Xero. Better tools — you still do the work.", current: false },
-  { era: "v3.0", label: "AI Copilot",         desc: "AI-assisted tools. Still software. Still your job.", current: false },
-  { era: "v4.0", label: "AI-Native Service",  desc: "We do the work. You get the output. This is Ledgr.", current: true },
-];
-
-const stats = [
-  { val: "500+", label: "businesses_served" },
-  { val: "$50M+", label: "transactions_processed" },
-  { val: "99.9%", label: "on_time_delivery" },
-  { val: "70%", label: "avg_cost_savings" },
-];
-
-type ServiceTier = "ai" | "bookkeeping";
+type Tier = "ai" | "bookkeeping";
 
 export default function Landing() {
-  const [tier, setTier] = useState<ServiceTier>("ai");
-  const pricing = tier === "ai" ? pricingAiAccountant : pricingBookkeeping;
+  const [tier, setTier] = useState<Tier>("ai");
   const isAi = tier === "ai";
+  const pricing = isAi ? pricingAiAccountant : pricingBookkeeping;
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-emerald-500/20">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-emerald-500/25">
 
-      {/* ── Navbar ── */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+      {/* ── Nav ── */}
+      <header className="sticky top-0 z-50">
+        <div className="mx-auto mt-3 max-w-6xl px-4">
+          <div className="glass flex h-14 items-center justify-between rounded-2xl px-3 pl-4 shadow-lg shadow-black/5">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
-                <span className="text-background font-black text-[11px] leading-none">L</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                <span className="text-[12px] font-black leading-none text-black">L</span>
               </div>
-              <span className="font-semibold text-foreground tracking-tight">ledgr</span>
+              <span className="font-semibold tracking-tight">ledgr</span>
             </Link>
-            <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground">
-              {[["/services","Services"],["/about","About"],["/contact","Contact"],["#pricing","Pricing"]].map(([href,label])=>(
-                <Link key={href} href={href} className="hover:text-foreground transition-colors">{label}</Link>
+            <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
+              {[["/services", "Services"], ["/about", "About"], ["#pricing", "Pricing"], ["/contact", "Contact"]].map(([href, label]) => (
+                <Link key={href} href={href} className="transition-colors hover:text-foreground">{label}</Link>
               ))}
             </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-sm">Sign in</Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm h-8">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link href="/login" className="hidden rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block">
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-sm font-semibold text-black shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/40"
+              >
                 Get started
-              </Button>
-            </Link>
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden border-b border-border/60">
-        {/* dot grid background */}
-        <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
-          style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        {/* subtle radial glow */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[600px] bg-gradient-radial from-emerald-500/10 via-emerald-500/[0.02] to-transparent blur-3xl" />
-        </div>
-
-        <div className="max-w-6xl mx-auto px-6 pt-24 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: copy */}
+      <section className="relative">
+        <Aurora />
+        <div className="mx-auto max-w-6xl px-6 pt-20 pb-24 sm:pt-28">
+          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+            {/* copy */}
             <div>
-              <FadeUp>
-                <MonoLabel icon={GitBranch}>AI-NATIVE / BOOKKEEPING</MonoLabel>
-              </FadeUp>
-              <FadeUp delay={0.08}>
-                <h1 className="mt-6 font-serif text-5xl sm:text-6xl lg:text-[5.5rem] font-medium tracking-[-0.02em] leading-[1.02]">
-                  Your accounting,
+              <Reveal><Pill>AI-native accounting firm</Pill></Reveal>
+              <Reveal delay={0.05}>
+                <h1 className="mt-6 text-[3.25rem] font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl lg:text-[5rem]">
+                  <span className="text-gradient-ink">Your accounting,</span>
                   <br />
-                  <span className="text-emerald-500 dark:text-emerald-400 italic">done for you.</span>
+                  <span className="text-gradient-brand">done for you.</span>
                 </h1>
-              </FadeUp>
-              <FadeUp delay={0.16}>
-                <p className="mt-7 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
-                  Ledgr is an AI-native accounting firm. We handle your books, reports, and tax prep
-                  end-to-end — reviewed by expert accountants. Not software you use. A service you receive.
+              </Reveal>
+              <Reveal delay={0.12}>
+                <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                  Ledgr handles your books, reports, and tax prep end-to-end — powered by AI,
+                  reviewed by expert accountants. Not software you use. A service you receive.
                 </p>
-              </FadeUp>
-              <FadeUp delay={0.24}>
-                <div className="mt-9 flex flex-col sm:flex-row gap-3">
-                  <Link href="/register?plan=starter">
-                    <Button size="lg" className="h-11 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold gap-1.5 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5">
-                      Get started <ArrowRight className="h-4 w-4" />
-                    </Button>
+              </Reveal>
+              <Reveal delay={0.18}>
+                <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/register?plan=starter"
+                    className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-7 text-base font-semibold text-black shadow-xl shadow-emerald-500/25 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/45"
+                  >
+                    Start free
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
-                  <Link href="#how-it-works">
-                    <Button size="lg" variant="outline" className="h-11 px-6 border-border hover:border-foreground/40 font-medium">
-                      How it works <ChevronRight className="h-4 w-4" />
-                    </Button>
+                  <Link
+                    href="#how"
+                    className="glass inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-base font-medium text-foreground transition-all hover:-translate-y-0.5"
+                  >
+                    See how it works
                   </Link>
                 </div>
-              </FadeUp>
-              <FadeUp delay={0.32}>
-                <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+              </Reveal>
+              <Reveal delay={0.24}>
+                <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                   {["First month free", "No credit card", "Setup in 30 min"].map((t) => (
                     <span key={t} className="flex items-center gap-1.5">
-                      <Check className="h-3 w-3 text-emerald-400" />{t}
+                      <Check className="h-4 w-4 text-emerald-500" />{t}
                     </span>
                   ))}
                 </div>
-              </FadeUp>
+              </Reveal>
             </div>
 
-            {/* Right: terminal mockup */}
-            <FadeUp delay={0.2}>
-              <div className="group relative">
-                {/* glow behind — intensifies on hover */}
-                <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/15 via-transparent to-transparent rounded-2xl blur-xl transition-all duration-700 group-hover:-inset-3 group-hover:from-emerald-500/30 group-hover:via-emerald-500/[0.06]" />
-                {/* terminal */}
-                <div className="relative rounded-xl border border-border/80 bg-card/95 shadow-2xl overflow-hidden font-mono text-[13px] transition-all duration-500 group-hover:-translate-y-1.5 group-hover:border-emerald-500/40 group-hover:shadow-emerald-500/10">
-                  {/* terminal chrome */}
-                  <div className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-b border-border/60 bg-muted/30">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-rose-400/70" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
+            {/* glass product mockup */}
+            <Reveal delay={0.15} y={30}>
+              <div className="relative animate-float">
+                <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-transparent blur-2xl" />
+                <div className="glass-strong rounded-[1.75rem] p-5 shadow-2xl">
+                  <div className="mb-5 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold">Acme Inc</p>
+                      <p className="text-xs text-muted-foreground">March 2026 · overview</p>
                     </div>
-                    <span className="text-[11px] text-muted-foreground">~/ledgr — bash</span>
-                    <div className="flex items-center gap-1 text-[10px] text-emerald-400">
-                      <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" /> live
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-500">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> live
+                    </span>
+                  </div>
+
+                  <div className="rounded-2xl border border-border/60 bg-background/50 p-4">
+                    <p className="text-xs text-muted-foreground">Net profit</p>
+                    <p className="mt-1 text-4xl font-bold tracking-tight text-gradient-brand">$15,460</p>
+                    <div className="mt-4 flex items-end gap-1.5">
+                      {[38, 52, 44, 61, 49, 72, 58, 83, 67, 91, 78, 100].map((h, i) => (
+                        <div key={i} className="flex-1 rounded-sm bg-gradient-to-t from-emerald-500/30 to-cyan-500/70" style={{ height: `${h * 0.7}px` }} />
+                      ))}
                     </div>
                   </div>
-                  {/* terminal body */}
-                  <div className="p-4 space-y-2 leading-relaxed">
-                    <TerminalLine prompt user="acme-corp" cmd="ledgr upload statement.csv" delay={0.5} />
-                    <TerminalLine output text="✓ Parsed 247 transactions" color="text-emerald-400" delay={1.0} />
-                    <TerminalLine output text="✓ Categorized via Llama 3.3 70B (4.2s)" color="text-emerald-400" delay={1.4} />
-                    <TerminalLine output text="✓ Human review queued · Sarah K." color="text-emerald-400" delay={1.8} />
-                    <div className="h-1" />
-                    <TerminalLine prompt user="acme-corp" cmd="ledgr report --month=mar" delay={2.3} />
-                    <TerminalLine output text="┌─────────────────────────────┐" color="text-muted-foreground" delay={2.7} />
-                    <TerminalLine output text="│  Revenue MTD       $24,800  │" color="text-foreground/80" delay={2.85} />
-                    <TerminalLine output text="│  Expenses MTD       $9,340  │" color="text-foreground/80" delay={3.0} />
-                    <TerminalLine output text="│  Net profit        $15,460  │" color="text-emerald-400" delay={3.15} />
-                    <TerminalLine output text="│  Runway          ~14 months │" color="text-foreground/80" delay={3.30} />
-                    <TerminalLine output text="└─────────────────────────────┘" color="text-muted-foreground" delay={3.45} />
-                    <TerminalLine output text="↪ P&L emailed to founder@acme.com" color="text-muted-foreground" delay={3.85} />
-                    <div className="flex items-center gap-2 pt-1">
-                      <span className="text-emerald-400">acme-corp</span>
-                      <span className="text-muted-foreground">$</span>
-                      <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 1.1, repeat: Infinity }}
-                        className="inline-block w-1.5 h-3.5 bg-foreground/70" />
-                    </div>
+
+                  <div className="mt-4 grid grid-cols-3 gap-3">
+                    {[
+                      { l: "Revenue", v: "$24,800", i: TrendingUp, c: "text-emerald-500" },
+                      { l: "Expenses", v: "$9,340", i: TrendingDown, c: "text-rose-500" },
+                      { l: "Runway", v: "14 mo", i: Activity, c: "text-cyan-500" },
+                    ].map((m) => (
+                      <div key={m.l} className="rounded-xl border border-border/60 bg-background/40 p-3">
+                        <m.i className={`h-4 w-4 ${m.c}`} />
+                        <p className="mt-2 text-[15px] font-semibold tracking-tight tabular-nums">{m.v}</p>
+                        <p className="text-[10px] text-muted-foreground">{m.l}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
+
+                {/* floating chips */}
+                <div className="glass absolute -left-5 top-14 hidden items-center gap-2 rounded-2xl px-3 py-2 text-xs font-medium shadow-lg animate-float-slow sm:flex">
+                  <Check className="h-3.5 w-3.5 text-emerald-500" /> Books closed by the 5th
+                </div>
+                <div className="glass absolute -right-4 bottom-16 hidden items-center gap-2 rounded-2xl px-3 py-2 text-xs font-medium shadow-lg animate-float sm:flex">
+                  <Sparkles className="h-3.5 w-3.5 text-cyan-500" /> 247 txns categorized
+                </div>
               </div>
-            </FadeUp>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ── Stats bar ── */}
-      <section className="border-b border-border/60 bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4">
-          {stats.map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}
-              className="group text-center sm:text-left cursor-default">
-              <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-1 transition-all duration-300 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 group-hover:-translate-y-0.5">{s.val}</p>
-              <p className="font-mono text-[11px] text-muted-foreground transition-colors group-hover:text-foreground/70">{s.label}</p>
-            </motion.div>
-          ))}
+      {/* ── Logo marquee ── */}
+      <section className="border-y border-border/60 bg-card/30 py-8">
+        <p className="mb-6 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          Connects with the tools you already use
+        </p>
+        <div className="mask-fade-x relative overflow-hidden">
+          <div className="flex w-max animate-marquee gap-12">
+            {[...marquee, ...marquee].map((m, i) => (
+              <span key={i} className="whitespace-nowrap text-xl font-semibold text-muted-foreground/50">{m}</span>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── Evolution ── */}
-      <section className="border-b border-border/60">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
-            <MonoLabel>WHY LEDGR</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              The next step after AI copilots.
+      {/* ── Bento features ── */}
+      <section id="services" className="relative py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">What we do</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+              Services we <span className="text-gradient-brand">perform for you.</span>
             </h2>
-            <p className="mt-4 text-muted-foreground text-base leading-relaxed">
-              Four generations of accounting. Ledgr is the last: we do the work, you get the result.
+            <p className="mt-4 text-lg text-muted-foreground">
+              Not features in software. Real accounting work — so you never have to.
             </p>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-4 gap-px bg-border/60 rounded-xl overflow-hidden border border-border/60">
-            {evolution.map((e) => (
-              <MotionCard key={e.era}>
-                <div className={`group relative h-full p-6 flex flex-col gap-3 transition-colors duration-300 ${e.current ? "bg-emerald-500/[0.06] hover:bg-emerald-500/[0.11]" : "bg-card hover:bg-emerald-500/[0.04]"}`}>
-                  {/* top accent line reveals on hover */}
-                  <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div className="flex items-center justify-between">
-                    <span className={`font-mono text-[11px] origin-left transition-all duration-300 group-hover:scale-110 ${e.current ? "text-emerald-400" : "text-muted-foreground group-hover:text-emerald-400"}`}>{e.era}</span>
-                    {e.current && (
-                      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-emerald-400">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        current
-                      </span>
-                    )}
+          </Reveal>
+
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((s, i) => (
+              <Reveal key={s.title} delay={i * 0.05}>
+                <div className="group relative h-full overflow-hidden rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-500/10">
+                  <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/70 transition-all duration-300 group-hover:scale-110 group-hover:border-emerald-500/40">
+                    <s.icon className="h-5 w-5 text-emerald-500" />
                   </div>
-                  <p className={`font-semibold text-[15px] transition-colors ${e.current ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"}`}>{e.label}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{e.desc}</p>
+                  <h3 className="relative mt-5 text-lg font-semibold tracking-tight">{s.title}</h3>
+                  <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
                 </div>
-              </MotionCard>
+              </Reveal>
             ))}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* ── Services ── */}
-      <section id="services" className="border-b border-border/60">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
-            <MonoLabel icon={Code2}>WHAT WE DO</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              Services we perform for you.
-            </h2>
-            <p className="mt-4 text-muted-foreground text-base leading-relaxed">
-              Not features in software. Services we perform — so you never have to.
-            </p>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {services.map((s) => (
-              <MotionCard key={s.title}>
-                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card/60 hover:bg-card hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 p-6">
-                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110 group-hover:-rotate-3">
-                    <s.icon className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2 text-[15px]">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                </SpotlightCard>
-              </MotionCard>
-            ))}
-          </Stagger>
+          </div>
         </div>
       </section>
 
       {/* ── How it works ── */}
-      <section id="how-it-works" className="border-b border-border/60">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
-            <MonoLabel icon={Terminal}>PROCESS</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              Three steps. Then just wait for your books.
+      <section id="how" className="relative border-t border-border/60 py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-500">Process</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+              Three steps. Then just <span className="text-gradient-brand">wait for your books.</span>
             </h2>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          </Reveal>
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[
-              { n: "01", icon: FileText,    title: "Share your data",      desc: "Upload a CSV or connect your bank. 30 minutes. No accountant meetings." },
-              { n: "02", icon: Brain,       title: "We do the work",       desc: "AI categorizes and analyses every transaction. Accountants review and finalise." },
-              { n: "03", icon: Check,       title: "Get clean financials", desc: "P&L, balance sheet, cash flow delivered by the 5th — reviewed and tax-ready." },
-            ].map((s) => (
-              <MotionCard key={s.n}>
-                <SpotlightCard className="h-full p-6 rounded-xl border border-border/60 bg-card/60 hover:border-emerald-500/40 hover:bg-card hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110">
-                      <s.icon className="h-4 w-4 text-emerald-400" />
+              { n: "01", icon: FileText, title: "Share your data", desc: "Upload a CSV or connect your bank. 30 minutes. No accountant meetings." },
+              { n: "02", icon: Brain, title: "We do the work", desc: "AI categorizes and analyses every transaction. Accountants review and finalise." },
+              { n: "03", icon: Check, title: "Get clean financials", desc: "P&L, balance sheet, cash flow delivered by the 5th — reviewed and tax-ready." },
+            ].map((s, i) => (
+              <Reveal key={s.n} delay={i * 0.08}>
+                <div className="group relative h-full rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/70 bg-background/70 transition-transform duration-300 group-hover:scale-110">
+                      <s.icon className="h-5 w-5 text-cyan-500" />
                     </div>
-                    <span className="font-mono text-xs text-muted-foreground transition-colors group-hover:text-emerald-400">{s.n}</span>
+                    <span className="text-4xl font-bold tracking-tight text-muted-foreground/20">{s.n}</span>
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2 text-[15px]">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-                </SpotlightCard>
-              </MotionCard>
+                  <h3 className="mt-5 text-lg font-semibold tracking-tight">{s.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                </div>
+              </Reveal>
             ))}
-          </Stagger>
+          </div>
         </div>
       </section>
 
-      {/* ── AI callout ── */}
-      <section className="border-b border-border/60 bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <FadeUp>
-              <MonoLabel icon={Sparkles}>AI INTELLIGENCE</MonoLabel>
-              <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-                AI that actually knows your numbers.
+      {/* ── AI section ── */}
+      <section className="relative border-t border-border/60 py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
+            <Reveal>
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">AI intelligence</p>
+              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+                AI that actually <span className="text-gradient-brand">knows your numbers.</span>
               </h2>
-              <p className="mt-5 text-muted-foreground leading-relaxed">
-                Ledgr AI runs on Llama 3.3 70B — open-source and built into your account at no extra cost.
+              <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+                Ledgr AI runs on Llama 3.3 70B — built into your account at no extra cost.
                 Ask it anything with live access to your actual financial data.
               </p>
               <div className="mt-7 flex flex-wrap gap-2">
-                {["What's my runway at current burn?","Which expenses are tax deductible?","Do I have overdue invoices?","Summarise my Q2 performance"].map((q) => (
-                  <span key={q} className="font-mono text-xs border border-border/80 rounded-md px-2.5 py-1 text-muted-foreground bg-background/60 cursor-default transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:text-foreground hover:bg-emerald-500/[0.06] hover:shadow-sm hover:shadow-emerald-500/20">
+                {["What's my runway at current burn?", "Which expenses are tax deductible?", "Do I have overdue invoices?", "Summarise my Q2 performance"].map((q) => (
+                  <span key={q} className="cursor-default rounded-full border border-border/70 bg-card/50 px-3.5 py-1.5 text-sm text-muted-foreground backdrop-blur transition-all hover:-translate-y-0.5 hover:border-emerald-500/50 hover:text-foreground">
                     {q}
                   </span>
                 ))}
               </div>
-            </FadeUp>
+            </Reveal>
 
-            {/* mock AI chat */}
-            <FadeUp delay={0.15}>
-              <div className="rounded-xl border border-border/80 bg-card overflow-hidden shadow-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/10">
-                <div className="flex items-center gap-2.5 px-4 py-3 border-b border-border/60 bg-muted/30">
-                  <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
-                    <Sparkles className="h-3 w-3 text-background" />
+            <Reveal delay={0.12} y={28}>
+              <div className="glass-strong overflow-hidden rounded-3xl shadow-2xl">
+                <div className="flex items-center gap-2.5 border-b border-border/60 px-5 py-3.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                    <Sparkles className="h-3.5 w-3.5 text-black" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-foreground">Ledgr AI</p>
-                  </div>
-                  <span className="font-mono text-[10px] text-emerald-400 flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" /> live
+                  <p className="flex-1 text-sm font-semibold">Ledgr AI</p>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-500">
+                    <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" /> live
                   </span>
                 </div>
-                <div className="p-4 space-y-3.5">
+                <div className="space-y-4 p-5">
                   <div className="flex justify-end">
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2 text-sm text-foreground max-w-[80%]">
+                    <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 px-4 py-2.5 text-sm">
                       What&apos;s my runway at current burn?
                     </div>
                   </div>
                   <div className="flex gap-2.5">
-                    <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center shrink-0 mt-0.5">
-                      <Sparkles className="h-3 w-3 text-background" />
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                      <Sparkles className="h-3.5 w-3.5 text-black" />
                     </div>
-                    <div className="bg-background border border-border/60 rounded-lg px-3 py-2 text-sm text-muted-foreground max-w-[85%] leading-relaxed">
-                      Based on your <span className="font-mono text-foreground">$15,460</span> net profit this month and current cash of <span className="font-mono text-foreground">$84,200</span>, your runway is <span className="text-emerald-400 font-semibold">~14 months</span> at current burn. No overdue invoices. ✓
+                    <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/60 bg-background/60 px-4 py-2.5 text-sm leading-relaxed text-muted-foreground">
+                      Based on your <span className="font-semibold text-foreground">$15,460</span> net profit this month and current cash of <span className="font-semibold text-foreground">$84,200</span>, your runway is <span className="font-semibold text-emerald-500">~14 months</span> at current burn. No overdue invoices. ✓
                     </div>
                   </div>
                 </div>
-                <div className="border-t border-border/60 p-3">
-                  <div className="bg-background border border-border/60 rounded-md px-3 py-2 text-sm text-muted-foreground/60">
+                <div className="border-t border-border/60 p-4">
+                  <div className="rounded-full border border-border/60 bg-background/60 px-4 py-2.5 text-sm text-muted-foreground/60">
                     Ask anything about your finances…
                   </div>
                 </div>
               </div>
-            </FadeUp>
+            </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ── Stats band ── */}
+      <section className="relative overflow-hidden border-y border-border/60 py-16">
+        <Aurora />
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 sm:grid-cols-4">
+          {stats.map((s, i) => (
+            <Reveal key={s.label} delay={i * 0.08} className="text-center">
+              <p className="text-4xl font-bold tracking-tight sm:text-5xl text-gradient-brand">{s.val}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+            </Reveal>
+          ))}
         </div>
       </section>
 
       {/* ── Testimonials ── */}
-      <section className="border-b border-border/60">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
-            <MonoLabel>TESTIMONIALS</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              What clients say.
-            </h2>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { q: "Switched from Bench after they shut down. Ledgr onboarded us in 2 hours and had our first P&L by the 5th. Absolutely seamless.", name: "Sarah K.", role: "Founder, e-commerce", initials: "SK" },
-              { q: "Finally stopped doing my own bookkeeping. The AI catches things my old accountant missed, and it costs 3x less. Genuinely impressed.", name: "Marcus T.", role: "Freelance consultant", initials: "MT" },
-              { q: "The AI assistant is the real deal. Asked about my Q2 margins and got a detailed breakdown in seconds, with actual numbers from my books.", name: "Priya L.", role: "SaaS founder", initials: "PL" },
-            ].map((t) => (
-              <MotionCard key={t.name}>
-                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card/60 p-6 hover:border-emerald-500/40 hover:bg-card hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
-                  <div className="flex gap-0.5 mb-4">
-                    {[...Array(5)].map((_,i)=><Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
+      <section className="py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">Loved by founders</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">What clients say.</h2>
+          </Reveal>
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <Reveal key={t.name} delay={i * 0.06}>
+                <div className="group h-full rounded-3xl border border-border/60 bg-card/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-500/10">
+                  <div className="mb-4 flex gap-0.5">
+                    {[...Array(5)].map((_, k) => <Star key={k} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">&ldquo;{t.q}&rdquo;</p>
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/40">
-                    <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center shrink-0 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.08]">
-                      <span className="text-[10px] font-bold text-foreground">{t.initials}</span>
+                  <p className="mb-6 text-[15px] leading-relaxed text-foreground/90">&ldquo;{t.q}&rdquo;</p>
+                  <div className="flex items-center gap-3 border-t border-border/40 pt-5">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 text-[11px] font-bold">
+                      {t.initials}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground leading-none mb-0.5">{t.name}</p>
-                      <p className="font-mono text-[11px] text-muted-foreground">{t.role}</p>
+                      <p className="text-sm font-semibold leading-none">{t.name}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{t.role}</p>
                     </div>
                   </div>
-                </SpotlightCard>
-              </MotionCard>
+                </div>
+              </Reveal>
             ))}
-          </Stagger>
-        </div>
-      </section>
-
-      {/* ── Who it's for ── */}
-      <section className="border-b border-border/60 bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-14 max-w-2xl">
-            <MonoLabel>AUDIENCE</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              Built for founders done doing their own books.
-            </h2>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { icon:Users,      title:"Founders & freelancers",       desc:"You're running a business, not an accounting department. Hand off your books entirely and get back to work." },
-              { icon:TrendingUp, title:"Companies replacing Bench",    desc:"Bench shut down. We're built for exactly this: full accounting service, better AI, lower cost, immediate onboarding." },
-              { icon:Clock,      title:"Businesses outsourcing today", desc:"Already paying $1,200–$2,000/month to a bookkeeper? We deliver the same output at a fraction of the cost." },
-            ].map((w) => (
-              <MotionCard key={w.title}>
-                <SpotlightCard className="h-full rounded-xl border border-border/60 bg-card p-6 hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300">
-                  <div className="w-9 h-9 rounded-lg border border-border/80 bg-background flex items-center justify-center mb-5 transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/[0.06] group-hover:scale-110 group-hover:-rotate-3">
-                    <w.icon className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-2 text-[15px]">{w.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{w.desc}</p>
-                </SpotlightCard>
-              </MotionCard>
-            ))}
-          </Stagger>
+          </div>
         </div>
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="border-b border-border/60">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeUp className="mb-8 max-w-2xl">
-            <MonoLabel>PRICING</MonoLabel>
-            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium tracking-tight">
-              Two ways to use Ledgr.
+      <section id="pricing" className="relative border-t border-border/60 py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-500">Pricing</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+              Two ways to <span className="text-gradient-brand">use Ledgr.</span>
             </h2>
-            <p className="mt-4 text-muted-foreground text-base">
-              Pick the service tier that fits. Switch later anytime.
-            </p>
-          </FadeUp>
+            <p className="mt-4 text-lg text-muted-foreground">Pick the service tier that fits. Switch anytime.</p>
+          </Reveal>
 
-          {/* Service tier toggle */}
-          <FadeUp className="mb-10">
-            <div className="inline-flex p-1 bg-card/40 border border-border/60 rounded-xl">
+          {/* toggle */}
+          <Reveal className="mt-10 flex justify-center">
+            <div className="glass inline-flex rounded-full p-1">
               <button
                 onClick={() => setTier("ai")}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                  isAi
-                    ? "bg-cyan-500 text-black shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${isAi ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-black shadow" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <span className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  AI Accountant Services
-                </span>
+                <Sparkles className="h-4 w-4" /> AI Accountant
               </button>
               <button
                 onClick={() => setTier("bookkeeping")}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                  !isAi
-                    ? "bg-emerald-500 text-black shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${!isAi ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-black shadow" : "text-muted-foreground hover:text-foreground"}`}
               >
-                <span className="flex items-center gap-2">
-                  <FileText className="h-3.5 w-3.5" />
-                  Book keeping Services
-                </span>
+                <FileText className="h-4 w-4" /> Bookkeeping
               </button>
             </div>
-            <p className="text-xs text-muted-foreground mt-3 font-mono">
-              {isAi
-                ? "ai_accountant · llama_3.3 + finbert · autonomous_pipeline · instant_reports"
-                : "book_keeping · human_review · monthly_close · tax_prep · plaid_sync"}
-            </p>
-          </FadeUp>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {pricing.map((plan) => {
-              const accentBorder = isAi ? "border-cyan-500/50" : "border-emerald-500/50";
-              const accentBg = isAi ? "bg-cyan-500/[0.04]" : "bg-emerald-500/[0.04]";
-              const accentBadge = isAi ? "bg-cyan-500 text-black" : "bg-emerald-500 text-black";
-              const accentCheck = isAi ? "text-cyan-500 dark:text-cyan-400" : "text-emerald-400";
-              const accentBtn = isAi
-                ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                : "bg-emerald-500 hover:bg-emerald-400 text-black";
-              return (
-              <MotionCard key={plan.slug}>
-                <div className={`relative h-full flex flex-col rounded-xl border p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
-                  plan.hot
-                    ? `${accentBorder} ${accentBg}`
-                    : "border-border/60 bg-card/60 hover:border-border"
-                }`}>
+          </Reveal>
+
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {pricing.map((plan, i) => (
+              <Reveal key={plan.slug} delay={i * 0.06}>
+                <div className={`relative flex h-full flex-col rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1.5 ${plan.hot ? "gradient-ring shadow-2xl shadow-emerald-500/10" : "border border-border/60 bg-card/50 backdrop-blur hover:border-border"}`}>
                   {plan.hot && (
-                    <span className={`absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 ${accentBadge} text-[10px] font-bold px-3 py-0.5 rounded-full font-mono uppercase tracking-wider`}>
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-black">
                       Most popular
                     </span>
                   )}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground text-lg">{plan.name}</h3>
-                      <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">{plan.slug}</span>
-                    </div>
-                    <p className="text-muted-foreground text-sm mb-5">{plan.desc}</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-foreground tracking-tight">${plan.price}</span>
-                      <span className="text-muted-foreground text-sm">/month</span>
-                    </div>
+                  <h3 className="text-lg font-semibold">{plan.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
+                  <div className="mt-5 flex items-baseline gap-1">
+                    <span className="text-5xl font-bold tracking-tight">${plan.price}</span>
+                    <span className="text-sm text-muted-foreground">/mo</span>
                   </div>
-                  <ul className="space-y-2.5 mb-7 flex-1">
+                  <ul className="mt-6 mb-7 flex-1 space-y-3">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <Check className={`h-4 w-4 ${accentCheck} shrink-0 mt-0.5`} />
+                      <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                         <span>{f}</span>
                       </li>
                     ))}
                   </ul>
-                  <Link href={`/register?plan=${plan.slug}`}>
-                    <Button className={`w-full h-10 font-semibold ${
-                      plan.hot
-                        ? accentBtn
-                        : "bg-foreground hover:bg-foreground/90 text-background"
-                    }`}>
-                      {plan.cta} <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                    </Button>
+                  <Link
+                    href={`/register?plan=${plan.slug}`}
+                    className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 ${plan.hot ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-black shadow-lg shadow-emerald-500/25" : "border border-border bg-foreground text-background hover:opacity-90"}`}
+                  >
+                    {plan.cta} <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-              </MotionCard>
-              );
-            })}
-          </Stagger>
+              </Reveal>
+            ))}
+          </div>
 
-          {/* Add-ons */}
-          <FadeUp className="mt-16">
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground mb-3">add_ons · stack_on_any_plan</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* add-ons */}
+          <Reveal className="mt-14">
+            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Add-ons · stack on any plan</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {addOns.map((a) => (
-                <div key={a.name} className="group rounded-xl border border-border/60 bg-card/30 p-4 hover:border-emerald-500/30 hover:bg-card/60 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
-                  <p className="font-semibold text-foreground text-sm transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">{a.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
-                  <p className="font-mono text-[11px] text-cyan-500 dark:text-cyan-400 mt-3">{a.price}</p>
+                <div key={a.name} className="group rounded-2xl border border-border/60 bg-card/40 p-5 backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/10">
+                  <p className="text-sm font-semibold transition-colors group-hover:text-emerald-500">{a.name}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{a.desc}</p>
+                  <p className="mt-3 text-[11px] font-medium text-cyan-500">{a.price}</p>
                 </div>
               ))}
             </div>
-          </FadeUp>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── Positioning + Comparison ── */}
-      <section className="border-b border-border/60 relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
-          style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-radial from-cyan-500/10 via-cyan-500/[0.02] to-transparent blur-3xl" />
-        </div>
-        <div className="max-w-5xl mx-auto px-6 py-24 text-center">
-          <FadeUp>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-cyan-500 dark:text-cyan-400">
-              positioning
-            </p>
-            <h2 className="mt-4 font-serif text-3xl sm:text-5xl font-medium tracking-[-0.02em] leading-[1.06] max-w-3xl mx-auto">
-              Replace a <span className="text-cyan-500 dark:text-cyan-400">$3,000/month accountant</span> with a 24/7 AI system.
+      {/* ── Comparison ── */}
+      <section className="border-t border-border/60 py-28">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <Reveal>
+            <h2 className="text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+              Replace a <span className="text-gradient-brand">$3,000/month accountant</span> with a 24/7 AI system.
             </h2>
-            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Never sleeps. Never misses transactions. Updates your finances in real time.
-            </p>
-          </FadeUp>
-
-          {/* Traditional vs AI comparison */}
-          <FadeUp className="mt-14 max-w-3xl mx-auto">
-            <div className="grid grid-cols-2 rounded-2xl border border-border/60 overflow-hidden">
-              <div className="bg-card/40 p-5 border-r border-border/60 text-left">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-rose-500">traditional_bookkeeping</p>
+            <p className="mt-5 text-lg text-muted-foreground">Never sleeps. Never misses transactions. Updates in real time.</p>
+          </Reveal>
+          <Reveal delay={0.1} className="mx-auto mt-12 max-w-2xl">
+            <div className="grid grid-cols-2 overflow-hidden rounded-3xl border border-border/60">
+              <div className="border-r border-border/60 bg-card/40 p-4 text-left">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-rose-500">Traditional</p>
               </div>
-              <div className="bg-cyan-500/[0.04] p-5 text-left">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-cyan-500 dark:text-cyan-400">ai_accountant</p>
+              <div className="bg-emerald-500/[0.05] p-4 text-left">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-500">AI accountant</p>
               </div>
               {comparison.map((row, i) => (
                 <Fragment key={i}>
-                  <div className={`p-5 border-r border-t border-border/60 text-left text-sm text-muted-foreground transition-colors duration-300 hover:bg-rose-500/[0.05] ${i % 2 === 0 ? "bg-card/20" : "bg-card/40"}`}>
-                    × {row.trad}
+                  <div className={`border-t border-r border-border/60 p-4 text-left text-sm text-muted-foreground transition-colors hover:bg-rose-500/[0.05] ${i % 2 ? "bg-card/40" : "bg-card/20"}`}>
+                    ✗ {row.trad}
                   </div>
-                  <div className={`group p-5 border-t border-border/60 text-left text-sm text-foreground transition-colors duration-300 hover:bg-cyan-500/[0.12] ${i % 2 === 0 ? "bg-cyan-500/[0.02]" : "bg-cyan-500/[0.05]"}`}>
-                    <span className="text-cyan-500 dark:text-cyan-400 font-semibold inline-block transition-transform duration-300 group-hover:scale-125">✓</span> {row.ai}
+                  <div className={`group border-t border-border/60 p-4 text-left text-sm transition-colors hover:bg-emerald-500/[0.12] ${i % 2 ? "bg-emerald-500/[0.05]" : "bg-emerald-500/[0.02]"}`}>
+                    <span className="inline-block font-semibold text-emerald-500 transition-transform group-hover:scale-125">✓</span> {row.ai}
                   </div>
                 </Fragment>
               ))}
             </div>
-          </FadeUp>
-
-          {/* Conversion hook */}
-          <FadeUp className="mt-14">
-            <div className="inline-block rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] px-6 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/70 hover:bg-cyan-500/[0.10] hover:shadow-xl hover:shadow-cyan-500/20">
-              <p className="text-sm text-muted-foreground font-mono">try_it</p>
-              <p className="mt-1 text-xl sm:text-2xl font-bold tracking-tight">
-                Upload 5 invoices <span className="text-cyan-500 dark:text-cyan-400">→</span> get a full financial report instantly.
-              </p>
-            </div>
-          </FadeUp>
-
-          <FadeUp className="mt-10">
-            <p className="text-xs text-muted-foreground italic max-w-xl mx-auto">
-              We&apos;re not selling bookkeeping. We&apos;re selling an autonomous financial intelligence system that replaces humans.
-            </p>
-          </FadeUp>
+          </Reveal>
         </div>
       </section>
 
       {/* ── Final CTA ── */}
-      <section className="border-b border-border/60 relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-[0.05] dark:opacity-[0.10]"
-          style={{ backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-gradient-radial from-emerald-500/10 via-emerald-500/[0.02] to-transparent blur-3xl" />
-        </div>
-        <div className="max-w-3xl mx-auto px-6 py-28 text-center">
-          <FadeUp>
-            <MonoLabel>JOIN 500+ BUSINESSES</MonoLabel>
-            <h2 className="mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl font-medium tracking-[-0.02em] leading-[1.04]">
-              Stop buying<br />accounting software.<br />
-              <span className="text-emerald-400">Start getting it done.</span>
+      <section className="relative overflow-hidden py-32">
+        <Aurora />
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <Reveal>
+            <Pill>Join 500+ businesses</Pill>
+            <h2 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+              Stop buying accounting software.
+              <br />
+              <span className="text-gradient-brand">Start getting it done.</span>
             </h2>
-            <p className="mt-7 text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-              Total spend on accounting services is many times larger than spend on accounting software.
-              We&apos;re replacing the service — not just improving the tool.
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              We&apos;re replacing the service — not just improving the tool. Books, reports and tax,
+              delivered on time, every month.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/register?plan=starter">
-                <Button size="lg" className="h-12 px-7 text-base font-semibold bg-emerald-500 hover:bg-emerald-400 text-black gap-1.5 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5">
-                  Get started <ArrowRight className="h-4 w-4" />
-                </Button>
+            <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/register?plan=starter"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-3.5 text-base font-semibold text-black shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/50"
+              >
+                Get started free
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="#pricing">
-                <Button size="lg" variant="outline" className="h-12 px-7 text-base font-medium border-border hover:border-foreground/40">
-                  See pricing
-                </Button>
+              <Link href="#pricing" className="glass inline-flex items-center justify-center rounded-full px-8 py-3.5 text-base font-medium transition-all hover:-translate-y-0.5">
+                See pricing
               </Link>
             </div>
-            <p className="mt-6 font-mono text-xs text-muted-foreground">
-              first_month_free · no_credit_card · cancel_anytime
-            </p>
-          </FadeUp>
+            <p className="mt-6 font-mono text-xs text-muted-foreground">first_month_free · no_credit_card · cancel_anytime</p>
+          </Reveal>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+      <footer className="border-t border-border/60 bg-card/30">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-muted-foreground sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-foreground flex items-center justify-center">
-              <span className="text-background font-black text-[9px]">L</span>
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500">
+              <span className="text-[9px] font-black text-black">L</span>
             </div>
             <span className="font-semibold text-foreground">ledgr</span>
-            <span className="text-xs text-muted-foreground">· AI-native accounting firm</span>
+            <span className="text-xs">· AI-native accounting firm</span>
           </div>
           <p className="font-mono text-xs">© 2026 ledgr — we do your accounting.</p>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs">
-            {[["Pricing","#pricing"],["Privacy","/privacy"],["Terms","/terms"],["Refunds","/refunds"],["Contact","/contact"]].map(([l,href])=>(
-              <Link key={l} href={href} className="hover:text-foreground transition-colors">{l}</Link>
+            {[["Pricing", "#pricing"], ["Privacy", "/privacy"], ["Terms", "/terms"], ["Refunds", "/refunds"], ["Contact", "/contact"]].map(([l, href]) => (
+              <Link key={l} href={href} className="transition-colors hover:text-foreground">{l}</Link>
             ))}
           </div>
         </div>
       </footer>
     </div>
-  );
-}
-
-/* ── terminal line subcomponent ── */
-function TerminalLine({
-  prompt = false,
-  output = false,
-  user,
-  cmd,
-  text,
-  color = "text-foreground/80",
-  delay = 0,
-}: {
-  prompt?: boolean;
-  output?: boolean;
-  user?: string;
-  cmd?: string;
-  text?: string;
-  color?: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -4 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.25, delay }}
-      className="flex items-start gap-2"
-    >
-      {prompt && (
-        <>
-          <span className="text-emerald-400 shrink-0">{user}</span>
-          <span className="text-muted-foreground shrink-0">$</span>
-          <span className="text-foreground/90">{cmd}</span>
-        </>
-      )}
-      {output && <span className={`${color} pl-0`}>{text}</span>}
-    </motion.div>
   );
 }
