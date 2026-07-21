@@ -26,6 +26,7 @@ import { UserPlus, Loader2, Copy, CheckCircle2, Eye, EyeOff } from "lucide-react
 const ROLES = [
   { value: "CLIENT", label: "Client — accesses client portal" },
   { value: "ACCOUNTANT", label: "Accountant — can review and approve reports" },
+  { value: "QA", label: "QA / Reviewer — sees every client like an admin, no admin panel" },
   { value: "ADMIN", label: "Admin — full platform access" },
 ];
 

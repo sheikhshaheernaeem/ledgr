@@ -28,9 +28,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
   }
 
-  const ALLOWED_ROLES = ["ADMIN", "ACCOUNTANT", "CLIENT"] as const;
+  const ALLOWED_ROLES = ["ADMIN", "ACCOUNTANT", "CLIENT", "QA"] as const;
   if (!role || !ALLOWED_ROLES.includes(role as typeof ALLOWED_ROLES[number])) {
-    return NextResponse.json({ error: "Role must be ADMIN, ACCOUNTANT, or CLIENT" }, { status: 400 });
+    return NextResponse.json({ error: "Role must be ADMIN, ACCOUNTANT, CLIENT, or QA" }, { status: 400 });
   }
 
   const existing = await prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: hashed,
-      role: role as "ADMIN" | "ACCOUNTANT" | "CLIENT",
+      role: role as "ADMIN" | "ACCOUNTANT" | "CLIENT" | "QA",
       emailVerified: true,
       ...(companyName?.trim() ? { companyName: companyName.trim() } : {}),
       ...(subscriptionStatus?.trim() ? { subscriptionStatus: subscriptionStatus.trim().toUpperCase() } : {}),
