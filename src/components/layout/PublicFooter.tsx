@@ -1,13 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useMode } from "@/components/providers/ModeProvider";
 
 export function PublicFooter() {
-   
+  const { mode } = useMode();
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-border/60 bg-card/30 mt-16">
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
         <div className="col-span-2 sm:col-span-1">
-          <Link href="/" className="flex items-center gap-2 mb-3">
+          <Link href={`/${mode}`} className="flex items-center gap-2 mb-3">
             <div className="w-6 h-6 rounded bg-foreground flex items-center justify-center">
               <span className="text-background font-black text-[10px]">L</span>
             </div>
@@ -21,7 +24,7 @@ export function PublicFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">product</p>
           <ul className="space-y-1.5">
-            {[["/services", "Services"], ["/from-bench", "From Bench"], ["/register", "Get started"]].map(([href, label]) => (
+            {[["/services", "Services"], ["/from-bench", "From Bench"], [`/${mode}/register`, "Get started"]].map(([href, label]) => (
               <li key={href}>
                 <Link href={href} className="text-muted-foreground hover:text-foreground transition-colors text-xs">{label}</Link>
               </li>
@@ -43,7 +46,7 @@ export function PublicFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">legal</p>
           <ul className="space-y-1.5">
-            {[["/privacy", "Privacy Policy"], ["/terms", "Terms of Service"], ["/refunds", "Refund Policy"], ["/#pricing", "Pricing"]].map(([href, label]) => (
+            {[["/privacy", "Privacy Policy"], ["/terms", "Terms of Service"], ["/refunds", "Refund Policy"], [`/${mode}#pricing`, "Pricing"]].map(([href, label]) => (
               <li key={href}>
                 <Link href={href} className="text-muted-foreground hover:text-foreground transition-colors text-xs">{label}</Link>
               </li>

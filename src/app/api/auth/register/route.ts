@@ -11,6 +11,8 @@ const VALID_PLANS = [
   "ai-starter", "ai-growth", "ai-cfo",
 ] as const;
 
+const FAMILY_LABEL: Record<string, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
+
 const schema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -54,6 +56,19 @@ export async function POST(req: Request) {
       if (!canLink) {
         return NextResponse.json(
           { error: "An account with this email already exists" },
+          { status: 409 }
+        );
+      }
+
+      // Same email can add the *other* family to this account, but not
+      // re-register for a family it already holds — that would silently
+      // overwrite the existing subscription via upsert below.
+      const alreadyHasFamily = await prisma.subscription.findUnique({
+        where: { userId_family: { userId: existing.id, family } },
+      });
+      if (alreadyHasFamily?.status === "ACTIVE") {
+        return NextResponse.json(
+          { error: `You already have a ${FAMILY_LABEL[family] ?? family} account — sign in instead.` },
           { status: 409 }
         );
       }

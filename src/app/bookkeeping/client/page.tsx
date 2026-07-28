@@ -1,25 +1,15 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getUserFamilies } from "@/lib/clientAccess";
 import {
-  Wallet, Calculator, Receipt, FolderOpen, Upload, Lightbulb,
+  Wallet, Calculator, Receipt, FolderOpen, Upload,
   TrendingUp, TrendingDown, Activity, MessageSquare, FileText, ChevronRight, Sparkles,
 } from "lucide-react";
 
+// Auth + role + family("bookkeeping") are already enforced by src/app/bookkeeping/client/layout.tsx.
 export default async function BookkeepingHome() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  const role = (session.user as { role?: string }).role;
-  if (role !== "CLIENT") redirect("/dashboard");
-
-  const userId = session.user.id;
-
-  const families = await getUserFamilies(userId);
-  if (!families.includes("bookkeeping")) {
-    redirect(families.includes("ai") ? "/client" : "/register?plan=starter&mode=bookkeeping");
-  }
+  const userId = session!.user!.id!;
 
   const [user, txnCount, docCount, reportCount, unreadMsgs, incomeAgg, expenseAgg] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, companyName: true, currency: true } }),
@@ -36,7 +26,7 @@ export default async function BookkeepingHome() {
   const netProfit = totalIncome - totalExpenses;
   const currency = user?.currency ?? "USD";
   const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(n);
-  const firstName = (user?.name ?? session.user.email ?? "").split(" ")[0]?.split("@")[0] ?? "there";
+  const firstName = (user?.name ?? session!.user!.email ?? "").split(" ")[0]?.split("@")[0] ?? "there";
 
   return (
     <div className="max-w-5xl mx-auto space-y-7">
@@ -66,49 +56,36 @@ export default async function BookkeepingHome() {
         <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">your_workspace</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <FeatureCard
-            href="/client/financials"
+            href="/bookkeeping/client/financials"
             icon={Wallet}
             title="My Books"
             desc="Monthly close, journal, accounts, balance sheet."
             badge={`${txnCount.toLocaleString()} txns`}
           />
           <FeatureCard
-            href="/client/tax"
+            href="/bookkeeping/client/tax"
             icon={Calculator}
             title="Tax dashboard"
             desc="Quarterly estimates, deductions, tax-ready reports."
           />
           <FeatureCard
-            href="/client/invoices"
+            href="/bookkeeping/client/invoices"
             icon={Receipt}
             title="Invoices"
             desc="Create, send, track invoices and accounts receivable."
           />
           <FeatureCard
-            href="/client/documents"
+            href="/bookkeeping/client/documents"
             icon={FolderOpen}
             title="Document vault"
             desc="Receipts, contracts, statements — all securely stored."
             badge={`${docCount} files`}
           />
           <FeatureCard
-            href="/client/upload"
+            href="/bookkeeping/client/upload"
             icon={Upload}
             title="Upload statement"
             desc="Drop a CSV/PDF — your accountant categorizes it."
-          />
-          <FeatureCard
-            href="/client/analytics"
-            icon={Lightbulb}
-            title="Insights"
-            desc="Trends, anomalies, opportunities — proactive advice."
-          />
-          <FeatureCard
-            href="/client/reports"
-            icon={FileText}
-            title="Reports archive"
-            desc="Every monthly P&L, balance sheet, cash flow."
-            badge={`${reportCount} reports`}
           />
           <FeatureCard
             href="/client/messages"
@@ -137,7 +114,7 @@ export default async function BookkeepingHome() {
           </p>
         </div>
         <Link
-          href="/client"
+          href="/ai"
           className="font-mono text-xs text-cyan-500 hover:text-cyan-400 inline-flex items-center gap-1 shrink-0"
         >
           try ai_accountant <ChevronRight className="h-3 w-3" />
@@ -188,7 +165,6 @@ function FeatureCard({
 }
 
 function greeting(): string {
-   
   const h = new Date().getHours();
   if (h < 5) return "Good night";
   if (h < 12) return "Good morning";

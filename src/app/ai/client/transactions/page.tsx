@@ -39,7 +39,7 @@ export default async function TransactionsPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div>
-        <Link href="/client" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5">
+        <Link href="/ai/client" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5">
           <ArrowLeft className="h-3 w-3" /> back_to_ai_accountant
         </Link>
         <h1 className="text-2xl font-bold tracking-tight mt-2 flex items-center gap-2">
@@ -62,7 +62,7 @@ export default async function TransactionsPage() {
           <p className="text-sm text-muted-foreground">No transactions yet.</p>
           <p className="text-xs text-muted-foreground mt-1.5">
             Upload a document on{" "}
-            <Link href="/client" className="text-cyan-500 hover:text-cyan-400">your AI accountant</Link>{" "}
+            <Link href="/ai/client" className="text-cyan-500 hover:text-cyan-400">your AI accountant</Link>{" "}
             and they&apos;ll appear here.
           </p>
         </div>

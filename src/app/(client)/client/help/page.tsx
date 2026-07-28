@@ -163,8 +163,8 @@ export default function HelpPage() {
         <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground mb-3">quick_links</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {[
-            { href: "/client/upload", label: "Upload", icon: Upload },
-            { href: "/client/financials", label: "My Books", icon: Wallet },
+            { href: "/bookkeeping/client/upload", label: "Upload", icon: Upload },
+            { href: "/bookkeeping/client/financials", label: "My Books", icon: Wallet },
             { href: "/client/requests", label: "Requests", icon: FileCheck },
             { href: "/client/messages", label: "Message accountant", icon: MessageSquare },
             { href: "/client/mileage", label: "Mileage", icon: Car },

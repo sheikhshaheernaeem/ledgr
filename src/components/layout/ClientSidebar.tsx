@@ -11,7 +11,7 @@ import { ClientNotificationsBell } from "@/components/layout/ClientNotifications
 import type { Family } from "@/config/tiers";
 import {
   Sparkles, FileText, BarChart2, MessageSquare, Settings, Inbox,
-  LogOut, ChevronLeft, ChevronRight, Menu, X,
+  LogOut, ChevronLeft, ChevronRight, Menu, X, ArrowRight,
   Activity, Receipt, Wallet, Calculator, FolderOpen, Upload,
 } from "lucide-react";
 
@@ -22,44 +22,48 @@ const NAV_SECTIONS: { title: string; family: Family | null; items: NavItem[] }[]
     title: "AI Accountant",
     family: "ai",
     items: [
-      { href: "/client", label: "AI Accountant", icon: Sparkles, exact: true },
-      { href: "/client/transactions", label: "Transactions", icon: FileText },
-      { href: "/client/reports", label: "Reports", icon: BarChart2 },
-      { href: "/client/requests", label: "Requests", icon: Inbox },
+      { href: "/ai/client", label: "AI Accountant", icon: Sparkles, exact: true },
+      { href: "/ai/client/transactions", label: "Transactions", icon: FileText },
+      { href: "/ai/client/reports", label: "Reports", icon: BarChart2 },
     ],
   },
   {
     title: "Book keeping",
     family: "bookkeeping",
     items: [
-      { href: "/client/bookkeeping", label: "Overview", icon: Activity, exact: true },
-      { href: "/client/financials", label: "My Books", icon: Wallet },
-      { href: "/client/tax", label: "Tax", icon: Calculator },
-      { href: "/client/invoices", label: "Invoices", icon: Receipt },
-      { href: "/client/documents", label: "Documents", icon: FolderOpen },
-      { href: "/client/upload", label: "Upload", icon: Upload },
+      { href: "/bookkeeping/client", label: "Overview", icon: Activity, exact: true },
+      { href: "/bookkeeping/client/financials", label: "My Books", icon: Wallet },
+      { href: "/bookkeeping/client/tax", label: "Tax", icon: Calculator },
+      { href: "/bookkeeping/client/invoices", label: "Invoices", icon: Receipt },
+      { href: "/bookkeeping/client/documents", label: "Documents", icon: FolderOpen },
+      { href: "/bookkeeping/client/upload", label: "Upload", icon: Upload },
     ],
   },
   {
     title: "Account",
     family: null,
     items: [
+      { href: "/client/requests", label: "Requests", icon: Inbox },
       { href: "/client/messages", label: "Messages", icon: MessageSquare },
       { href: "/client/settings", label: "Settings", icon: Settings },
     ],
   },
 ];
 
-const FAMILY_HOME: Record<Family, string> = { ai: "/client", bookkeeping: "/client/bookkeeping" };
+const FAMILY_HOME: Record<Family, string> = { ai: "/ai/client", bookkeeping: "/bookkeeping/client" };
+const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
+const FAMILY_LABEL: Record<Family, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
 
 interface Props {
   children: React.ReactNode;
   userEmail: string;
   families: Family[];
   signOutAction: () => Promise<void>;
+  /** Set by /ai/client and /bookkeeping/client layouts to fix the section — the URL, not the shared mode cookie, decides. */
+  activeFamily?: Family;
 }
 
-export function ClientSidebar({ children, userEmail, families, signOutAction }: Props) {
+export function ClientSidebar({ children, userEmail, families, signOutAction, activeFamily: fixedFamily }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -68,7 +72,7 @@ export function ClientSidebar({ children, userEmail, families, signOutAction }: 
 
   const hasBoth = families.includes("ai") && families.includes("bookkeeping");
   // Single-product clients always see their own section, regardless of the shared mode cookie.
-  const activeFamily: Family = hasBoth ? mode : (families[0] ?? "ai");
+  const activeFamily: Family = fixedFamily ?? (hasBoth ? mode : (families[0] ?? "ai"));
   const visibleSections = NAV_SECTIONS.filter((s) => s.family === null || s.family === activeFamily);
 
   // hydrate from localStorage on mount
@@ -166,8 +170,25 @@ export function ClientSidebar({ children, userEmail, families, signOutAction }: 
           </button>
         </div>
 
-        {/* mode switcher — only meaningful once both products are on the account */}
-        {hasBoth && (
+        {/* cross-family nav — only meaningful once both products are on the account */}
+        {hasBoth && fixedFamily && (
+          <div className={`px-2 pt-2 ${collapsed ? "flex justify-center" : ""}`}>
+            <Link
+              href={FAMILY_HOME[OTHER_FAMILY[fixedFamily]]}
+              title={collapsed ? `Also on your account: ${FAMILY_LABEL[OTHER_FAMILY[fixedFamily]]}` : undefined}
+              className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
+                fixedFamily === "ai"
+                  ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-500 hover:bg-emerald-500/[0.12]"
+                  : "border-cyan-500/30 bg-cyan-500/[0.06] text-cyan-500 hover:bg-cyan-500/[0.12]"
+              } ${collapsed ? "lg:justify-center lg:px-0" : "w-full justify-center"}`}
+            >
+              {!collapsed && <span className="whitespace-nowrap">Also on your account: {FAMILY_LABEL[OTHER_FAMILY[fixedFamily]]}</span>}
+              <ArrowRight className="h-3 w-3 shrink-0" />
+            </Link>
+          </div>
+        )}
+        {/* mode toggle — shared /client/* pages (messages, settings, …) with no fixed family */}
+        {hasBoth && !fixedFamily && (
           <div className={`px-2 pt-2 ${collapsed ? "flex justify-center" : ""}`}>
             <ModeToggle
               compact

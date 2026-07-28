@@ -220,7 +220,7 @@ export default function ClientRequestsPage() {
               {pendingReports.map((r) => (
                 <Link
                   key={r.id}
-                  href={r.clientApprovalToken ? `/p/report/${r.clientApprovalToken}` : "/client/reports"}
+                  href={r.clientApprovalToken ? `/p/report/${r.clientApprovalToken}` : "/ai/client/reports"}
                   className="block rounded-lg border border-amber-500/30 bg-amber-500/[0.05] p-4 hover:bg-amber-500/[0.08] transition-colors"
                 >
                   <div className="flex items-start gap-3">

@@ -8,23 +8,34 @@ import { Menu, X } from "lucide-react";
 import { ModeToggle } from "@/components/layout/ModeToggle";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useMode } from "@/components/providers/ModeProvider";
+import type { Family } from "@/config/tiers";
 
-const LINKS = [
-  { href: "/", label: "Home" },
+const STATIC_LINKS = [
   { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
+const FAMILY_LABEL: Record<Family, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
+const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
+
 export function PublicNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { mode } = useMode();
+  const homeHref = `/${mode}`;
+  const links = [{ href: homeHref, label: "Home" }, ...STATIC_LINKS];
+
+  // /ai/* and /bookkeeping/* are dedicated single-service sites — no toggle
+  // that surfaces the other service's name there. The switcher only makes
+  // sense on the neutral shared pages (splash, services, about, contact).
+  const fixedFamily = pathname?.startsWith("/ai") ? "ai" : pathname?.startsWith("/bookkeeping") ? "bookkeeping" : null;
+  const otherFamily = fixedFamily ? OTHER_FAMILY[fixedFamily] : null;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href={homeHref} className="flex items-center gap-2 shrink-0">
           <div className="w-7 h-7 rounded-md bg-foreground flex items-center justify-center">
             <span className="text-background font-black text-xs leading-none">L</span>
           </div>
@@ -33,8 +44,8 @@ export function PublicNav() {
 
         {/* Desktop */}
         <nav className="hidden md:flex items-center gap-7 text-sm">
-          {LINKS.map((l) => {
-            const active = pathname === l.href || (l.href !== "/" && pathname?.startsWith(l.href));
+          {links.map((l) => {
+            const active = pathname === l.href || (l.href !== homeHref && pathname?.startsWith(l.href));
             return (
               <Link
                 key={l.href}
@@ -48,14 +59,20 @@ export function PublicNav() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <ModeToggle />
+          {otherFamily ? (
+            <Link href={`/${otherFamily}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Looking for {FAMILY_LABEL[otherFamily]}?
+            </Link>
+          ) : (
+            <ModeToggle />
+          )}
           <ThemeToggle />
-          <Link href="/login">
+          <Link href={`/${mode}/login`}>
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-sm">
               Sign in
             </Button>
           </Link>
-          <Link href={`/register?mode=${mode}`}>
+          <Link href={`/${mode}/register`}>
             <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm h-8">
               Client portal
             </Button>
@@ -76,7 +93,7 @@ export function PublicNav() {
       {open && (
         <div className="md:hidden border-t border-border/60 bg-background">
           <div className="px-4 py-3 space-y-1">
-            {LINKS.map((l) => (
+            {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -88,10 +105,20 @@ export function PublicNav() {
             ))}
             <div className="border-t border-border/60 my-2" />
             <div className="px-3 py-1">
-              <ModeToggle className="w-full justify-center" />
+              {otherFamily ? (
+                <Link
+                  href={`/${otherFamily}`}
+                  onClick={() => setOpen(false)}
+                  className="block text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Looking for {FAMILY_LABEL[otherFamily]}?
+                </Link>
+              ) : (
+                <ModeToggle className="w-full justify-center" />
+              )}
             </div>
-            <Link href="/login" onClick={() => setOpen(false)} className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-card">Sign in</Link>
-            <Link href={`/register?mode=${mode}`} onClick={() => setOpen(false)} className="block">
+            <Link href={`/${mode}/login`} onClick={() => setOpen(false)} className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-card">Sign in</Link>
+            <Link href={`/${mode}/register`} onClick={() => setOpen(false)} className="block">
               <div className="bg-emerald-500 text-black font-semibold rounded-md px-3 py-2 text-sm text-center">Client portal</div>
             </Link>
           </div>

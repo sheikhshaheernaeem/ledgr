@@ -448,8 +448,8 @@ export default function SettingsPage() {
               </SectionCard>
               <SectionCard title="exports">
                 <div className="p-5">
-                  <IntegrationItem name="QuickBooks export" desc="Export categorized transactions to QBO" status="available" actionLabel="Export" onClick={() => router.push("/client/financials")} />
-                  <IntegrationItem name="Xero export" desc="Export to Xero CSV" status="available" actionLabel="Export" onClick={() => router.push("/client/financials")} />
+                  <IntegrationItem name="QuickBooks export" desc="Export categorized transactions to QBO" status="available" actionLabel="Export" onClick={() => router.push("/bookkeeping/client/financials")} />
+                  <IntegrationItem name="Xero export" desc="Export to Xero CSV" status="available" actionLabel="Export" onClick={() => router.push("/bookkeeping/client/financials")} />
                 </div>
               </SectionCard>
             </>

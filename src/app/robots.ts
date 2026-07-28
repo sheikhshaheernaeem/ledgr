@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // Keep authenticated app surfaces out of search results.
-      disallow: ["/api/", "/admin/", "/client/", "/dashboard/", "/p/"],
+      disallow: ["/api/", "/admin/", "/client/", "/ai/client/", "/bookkeeping/client/", "/dashboard/", "/p/"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
