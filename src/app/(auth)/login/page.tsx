@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -26,6 +27,7 @@ function LoginForm() {
   const verified = params.get("verified") === "1";
   const justLinked = params.get("justLinked") === "1";
   const { mode, setMode } = useMode();
+  const isAi = mode === "ai";
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -89,8 +91,17 @@ function LoginForm() {
         <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-2">
         <ModeToggle />
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Signing in to:</span>
+          <Badge
+            variant="outline"
+            className={isAi ? "border-cyan-500/30 text-cyan-400" : "border-emerald-500/30 text-emerald-400"}
+          >
+            {isAi ? "AI Accountant" : "Book keeping"}
+          </Badge>
+        </div>
       </div>
 
       {justLinked && (
@@ -128,7 +139,9 @@ function LoginForm() {
       <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Enter your credentials to access your dashboard</CardDescription>
+          <CardDescription>
+            {isAi ? "Sign in to your AI Accountant dashboard" : "Sign in to your bookkeeping dashboard"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -172,7 +185,11 @@ function LoginForm() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white font-semibold"
+              className={`w-full font-semibold text-white ${
+                isAi
+                  ? "bg-cyan-600 hover:bg-cyan-500 dark:bg-cyan-500 dark:hover:bg-cyan-400"
+                  : "bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400"
+              }`}
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
