@@ -16,15 +16,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2, CheckCircle2, Mail, Eye, EyeOff, Sparkles, FileText, ArrowRight } from "lucide-react";
+import { ModeToggle } from "@/components/layout/ModeToggle";
+import { useMode } from "@/components/providers/ModeProvider";
+import type { Family } from "@/config/tiers";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const verified = params.get("verified") === "1";
+  const justLinked = params.get("justLinked") === "1";
+  const { mode, setMode } = useMode();
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: params.get("email") ?? "", password: "" });
   const [unverified, setUnverified] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -55,7 +60,18 @@ function LoginForm() {
         } else if (sessionData?.user?.role === "ACCOUNTANT" || sessionData?.user?.role === "QA") {
           router.push("/firm/queue");
         } else {
-          router.push("/client");
+          // CLIENT: land on whichever product(s) they actually hold —
+          // never dump a Book-keeping-only subscriber on the AI home.
+          const famRes = await fetch("/api/me/families");
+          const famData = famRes.ok ? await famRes.json() : null;
+          const families: Family[] = famData?.families ?? [];
+          if (families.length === 1) {
+            router.push(families[0] === "bookkeeping" ? "/client/bookkeeping" : "/client");
+          } else if (families.length === 2) {
+            router.push(mode === "bookkeeping" ? "/client/bookkeeping" : "/client");
+          } else {
+            router.push("/client");
+          }
         }
         router.refresh();
       }
@@ -72,6 +88,17 @@ function LoginForm() {
         </Link>
         <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
       </div>
+
+      <div className="flex justify-center">
+        <ModeToggle />
+      </div>
+
+      {justLinked && (
+        <div className="flex items-center gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">The other plan is now on your account — sign in to see both.</p>
+        </div>
+      )}
 
       {verified && (
         <div className="flex items-center gap-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
@@ -170,6 +197,7 @@ function LoginForm() {
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/register?plan=ai-starter"
+            onClick={() => setMode("ai")}
             className="rounded-lg border border-cyan-500/30 bg-cyan-500/[0.04] hover:bg-cyan-500/[0.10] hover:border-cyan-500/50 transition-all p-3 group"
           >
             <Sparkles className="h-4 w-4 text-cyan-500 dark:text-cyan-400 mb-1.5" />
@@ -181,6 +209,7 @@ function LoginForm() {
           </Link>
           <Link
             href="/register?plan=starter"
+            onClick={() => setMode("bookkeeping")}
             className="rounded-lg border border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.10] hover:border-emerald-500/50 transition-all p-3 group"
           >
             <FileText className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mb-1.5" />

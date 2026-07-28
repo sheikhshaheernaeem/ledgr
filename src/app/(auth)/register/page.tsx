@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users, Sparkles, FileText } from "lucide-react";
+import { useMode } from "@/components/providers/ModeProvider";
 
 const PLAN_LABELS: Record<string, { name: string; price: string; color: string }> = {
   starter:     { name: "Bookkeeping Basic",    price: "$299/mo",   color: "border-emerald-500/30 text-emerald-400" },
@@ -132,8 +133,12 @@ function validateEmail(email: string): {
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { mode, setMode } = useMode();
   const planParam = searchParams.get("plan")?.toLowerCase() ?? "";
-  const initialTier: "ai" | "bookkeeping" = planParam in PLAN_LABELS ? tierOf(planParam) : "ai";
+  const modeParam = searchParams.get("mode");
+  const initialTier: "ai" | "bookkeeping" = planParam in PLAN_LABELS
+    ? tierOf(planParam)
+    : modeParam === "ai" || modeParam === "bookkeeping" ? modeParam : mode;
   const initialPlan = planParam in PLAN_LABELS ? planParam : DEFAULT_PLAN[initialTier];
 
   const [loading, setLoading] = useState(false);
@@ -144,12 +149,19 @@ function RegisterForm() {
   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
   const [emailTouched, setEmailTouched] = useState(false);
 
+  // Keep the header's mode toggle in sync with whatever tier this page landed on.
+  useEffect(() => {
+    setMode(initialTier);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const planInfo = PLAN_LABELS[selectedPlan] ?? null;
 
-  // When tier changes, reset selected plan to that tier's default
+  // When tier changes, reset selected plan to that tier's default — and keep the shared mode in sync.
   function switchTier(next: "ai" | "bookkeeping") {
     setTier(next);
     setSelectedPlan(DEFAULT_PLAN[next]);
+    setMode(next);
   }
 
   const emailStatus = useMemo(() => validateEmail(form.email), [form.email]);
@@ -179,6 +191,9 @@ function RegisterForm() {
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error ?? "Registration failed");
+      } else if (data.linked) {
+        toast.success(`${tier === "ai" ? "AI Accountant" : "Book keeping"} added to your existing account — sign in to see both.`);
+        router.push(`/login?email=${encodeURIComponent(form.email)}&justLinked=1`);
       } else {
         router.push(`/check-email?email=${encodeURIComponent(form.email)}`);
       }
@@ -276,6 +291,9 @@ function RegisterForm() {
                   );
                 })}
               </div>
+              <p className="mt-2.5 text-[11px] text-muted-foreground">
+                Already have a Ledgr account for the other one? Use the same email — we&apos;ll add this plan to it instead of making a new account.
+              </p>
             </div>
           )}
 

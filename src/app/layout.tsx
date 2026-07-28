@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/Providers";
 import { KeyboardShortcuts } from "@/components/search/KeyboardShortcuts";
+import { MODE_COOKIE } from "@/components/providers/ModeProvider";
+import type { Family } from "@/config/tiers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,11 +64,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieMode = (await cookies()).get(MODE_COOKIE)?.value;
+  const initialMode: Family = cookieMode === "bookkeeping" ? "bookkeeping" : "ai";
+
   return (
     <html
       lang="en"
@@ -73,7 +79,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground antialiased">
-        <Providers>
+        <Providers initialMode={initialMode}>
           {children}
           <KeyboardShortcuts />
           <Toaster richColors position="top-right" />

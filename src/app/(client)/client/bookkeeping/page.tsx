@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getUserFamilies } from "@/lib/clientAccess";
 import {
   Wallet, Calculator, Receipt, FolderOpen, Upload, Lightbulb,
   TrendingUp, TrendingDown, Activity, MessageSquare, FileText, ChevronRight, Sparkles,
@@ -14,6 +15,11 @@ export default async function BookkeepingHome() {
   if (role !== "CLIENT") redirect("/dashboard");
 
   const userId = session.user.id;
+
+  const families = await getUserFamilies(userId);
+  if (!families.includes("bookkeeping")) {
+    redirect(families.includes("ai") ? "/client" : "/register?plan=starter&mode=bookkeeping");
+  }
 
   const [user, txnCount, docCount, reportCount, unreadMsgs, incomeAgg, expenseAgg] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, companyName: true, currency: true } }),

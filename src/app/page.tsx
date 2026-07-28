@@ -7,7 +7,9 @@ import {
   ArrowRight, Check, TrendingUp, TrendingDown, Shield,
   BarChart3, FileText, Zap, Brain, Star, Sparkles, Activity,
 } from "lucide-react";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { PublicNav } from "@/components/layout/PublicNav";
+import { ModeToggle } from "@/components/layout/ModeToggle";
+import { useMode } from "@/components/providers/ModeProvider";
 
 /* ── scroll reveal ── */
 function Reveal({
@@ -64,7 +66,7 @@ function ScrollProgress() {
   return (
     <motion.div
       style={{ scaleX }}
-      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500"
+      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-emerald-500"
     />
   );
 }
@@ -225,11 +227,36 @@ const comparison = [
   { trad: "$3,000+/mo per accountant", ai: "24/7 — never sleeps" },
 ];
 
-type Tier = "ai" | "bookkeeping";
+// Mode-specific copy — same layout, honest framing per product.
+const COPY = {
+  ai: {
+    heroLine1: "Your books,",
+    heroLine2: "run by AI.",
+    heroSub: "Ledgr's AI reads every transaction, categorizes it, and closes your books — instantly. Reviewed by expert accountants when it matters. Not software you use. An accountant that never sleeps.",
+    servicesIntro: "Not features in software. An AI accountant working for you, 24/7.",
+    howIntro: "Three steps. Then just watch it work.",
+    aiEyebrow: "AI intelligence",
+    comparisonHeadline: "$3,000/month accountant",
+    finalCtaHeadline: "Start getting it done.",
+    finalCtaSub: "We're replacing the accountant — not just improving the tool. Books closed and reports delivered, automatically, every month.",
+  },
+  bookkeeping: {
+    heroLine1: "Your accounting,",
+    heroLine2: "done for you.",
+    heroSub: "Ledgr handles your books, reports, and tax prep end-to-end — a dedicated bookkeeper reviews every transaction by hand. Not software you use. A service you receive.",
+    servicesIntro: "Not features in software. Real accounting work, done by a human — so you never have to.",
+    howIntro: "Three steps. Then just wait for your books.",
+    aiEyebrow: "Backed by AI",
+    comparisonHeadline: "$3,000/month in-house hire",
+    finalCtaHeadline: "Stop buying accounting software.",
+    finalCtaSub: "We're replacing the service — not just improving the tool. Books, reports and tax, delivered on time, every month.",
+  },
+} as const;
 
 export default function Landing() {
-  const [tier, setTier] = useState<Tier>("ai");
-  const isAi = tier === "ai";
+  const { mode } = useMode();
+  const isAi = mode === "ai";
+  const copy = COPY[mode];
   const pricing = isAi ? pricingAiAccountant : pricingBookkeeping;
 
   return (
@@ -237,37 +264,7 @@ export default function Landing() {
       <ScrollProgress />
       <Grain />
 
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-50">
-        <div className="mx-auto mt-3 max-w-6xl px-4">
-          <div className="glass flex h-14 items-center justify-between rounded-2xl px-3 pl-4 shadow-lg shadow-black/5">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
-                <span className="text-[12px] font-black leading-none text-black">L</span>
-              </div>
-              <span className="font-semibold tracking-tight">ledgr</span>
-            </Link>
-            <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-              {[["/services", "Services"], ["/about", "About"], ["#pricing", "Pricing"], ["/contact", "Contact"]].map(([href, label]) => (
-                <Link key={href} href={href} className="transition-colors hover:text-foreground">{label}</Link>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <Link href="/login" className="hidden rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:block">
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-sm font-semibold text-black shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/40"
-              >
-                Get started
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PublicNav />
 
       {/* ── Hero ── */}
       <section className="relative">
@@ -276,11 +273,11 @@ export default function Landing() {
           <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
             {/* copy */}
             <div>
-              <Reveal><Pill>AI-native accounting firm</Pill></Reveal>
+              <Reveal><Pill>{isAi ? "AI-native accounting firm" : "Human-reviewed bookkeeping"}</Pill></Reveal>
               <h1 className="mt-6 text-[3.25rem] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl lg:text-[5rem]">
                 {[
-                  { t: "Your accounting,", c: "text-gradient-ink", d: 0.08 },
-                  { t: "done for you.", c: "text-gradient-brand", d: 0.2 },
+                  { t: copy.heroLine1, c: "text-gradient-ink", d: 0.08 },
+                  { t: copy.heroLine2, c: "text-gradient-brand", d: 0.2 },
                 ].map((line) => (
                   <span key={line.t} className="block overflow-hidden py-[0.06em]">
                     <motion.span
@@ -296,15 +293,14 @@ export default function Landing() {
               </h1>
               <Reveal delay={0.12}>
                 <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                  Ledgr handles your books, reports, and tax prep end-to-end — powered by AI,
-                  reviewed by expert accountants. Not software you use. A service you receive.
+                  {copy.heroSub}
                 </p>
               </Reveal>
               <Reveal delay={0.18}>
                 <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                   <Link
-                    href="/register?plan=starter"
-                    className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-7 text-base font-semibold text-black shadow-xl shadow-emerald-500/25 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/45"
+                    href={`/register?plan=${isAi ? "ai-starter" : "starter"}`}
+                    className={`group inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-base font-semibold text-black shadow-xl transition-all hover:-translate-y-0.5 ${isAi ? "bg-cyan-500 shadow-cyan-500/25 hover:bg-cyan-400 hover:shadow-cyan-500/45" : "bg-emerald-500 shadow-emerald-500/25 hover:bg-emerald-400 hover:shadow-emerald-500/45"}`}
                   >
                     Start free
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -331,7 +327,7 @@ export default function Landing() {
             {/* glass product mockup */}
             <Reveal delay={0.15} y={30}>
               <div className="relative animate-float">
-                <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-transparent blur-2xl" />
+                <div className={`absolute -inset-6 -z-10 rounded-[2rem] blur-2xl ${isAi ? "bg-cyan-500/15" : "bg-emerald-500/15"}`} />
                 <Tilt className="glass-strong rounded-[1.75rem] p-5 shadow-2xl">
                   <div className="mb-5 flex items-center justify-between">
                     <div>
@@ -348,7 +344,7 @@ export default function Landing() {
                     <p className="mt-1 text-4xl font-bold tracking-tight text-gradient-brand">$15,460</p>
                     <div className="mt-4 flex items-end gap-1.5">
                       {[38, 52, 44, 61, 49, 72, 58, 83, 67, 91, 78, 100].map((h, i) => (
-                        <div key={i} className="flex-1 rounded-sm bg-gradient-to-t from-emerald-500/30 to-cyan-500/70" style={{ height: `${h * 0.7}px` }} />
+                        <div key={i} className={`flex-1 rounded-sm ${isAi ? "bg-cyan-500/70" : "bg-emerald-500/70"}`} style={{ height: `${h * 0.7}px` }} />
                       ))}
                     </div>
                   </div>
@@ -404,7 +400,7 @@ export default function Landing() {
               Services we <span className="text-gradient-brand">perform for you.</span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Not features in software. Real accounting work — so you never have to.
+              {copy.servicesIntro}
             </p>
           </Reveal>
 
@@ -430,12 +426,12 @@ export default function Landing() {
                       {big && (
                         <div className="mt-6 flex-1 rounded-2xl border border-border/60 bg-background/40 p-4">
                           <div className="flex justify-end">
-                            <div className="rounded-2xl rounded-br-sm bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 px-3 py-2 text-xs">
+                            <div className="rounded-2xl rounded-br-sm bg-cyan-500/10 px-3 py-2 text-xs">
                               What&apos;s my burn this quarter?
                             </div>
                           </div>
                           <div className="mt-3 flex gap-2">
-                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500">
+                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-cyan-500">
                               <Sparkles className="h-3 w-3 text-black" />
                             </div>
                             <div className="rounded-2xl rounded-bl-sm border border-border/60 bg-card/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
@@ -458,8 +454,8 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-500">Process</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-              Three steps. Then just <span className="text-gradient-brand">wait for your books.</span>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl text-gradient-brand">
+              {copy.howIntro}
             </h2>
           </Reveal>
           <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -490,7 +486,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">AI intelligence</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">{copy.aiEyebrow}</p>
               <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
                 AI that actually <span className="text-gradient-brand">knows your numbers.</span>
               </h2>
@@ -510,7 +506,7 @@ export default function Landing() {
             <Reveal delay={0.12} y={28}>
               <div className="glass-strong overflow-hidden rounded-3xl shadow-2xl">
                 <div className="flex items-center gap-2.5 border-b border-border/60 px-5 py-3.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500">
                     <Sparkles className="h-3.5 w-3.5 text-black" />
                   </div>
                   <p className="flex-1 text-sm font-semibold">Ledgr AI</p>
@@ -520,12 +516,12 @@ export default function Landing() {
                 </div>
                 <div className="space-y-4 p-5">
                   <div className="flex justify-end">
-                    <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 px-4 py-2.5 text-sm">
+                    <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-cyan-500/10 px-4 py-2.5 text-sm">
                       What&apos;s my runway at current burn?
                     </div>
                   </div>
                   <div className="flex gap-2.5">
-                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500">
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cyan-500">
                       <Sparkles className="h-3.5 w-3.5 text-black" />
                     </div>
                     <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/60 bg-background/60 px-4 py-2.5 text-sm leading-relaxed text-muted-foreground">
@@ -573,7 +569,7 @@ export default function Landing() {
                   </div>
                   <p className="mb-6 text-[15px] leading-relaxed text-foreground/90">&ldquo;{t.q}&rdquo;</p>
                   <div className="flex items-center gap-3 border-t border-border/40 pt-5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 text-[11px] font-bold">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15 text-[11px] font-bold">
                       {t.initials}
                     </div>
                     <div>
@@ -599,30 +595,17 @@ export default function Landing() {
             <p className="mt-4 text-lg text-muted-foreground">Pick the service tier that fits. Switch anytime.</p>
           </Reveal>
 
-          {/* toggle */}
+          {/* toggle — shared with the header nav */}
           <Reveal className="mt-10 flex justify-center">
-            <div className="glass inline-flex rounded-full p-1">
-              <button
-                onClick={() => setTier("ai")}
-                className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${isAi ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-black shadow" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Sparkles className="h-4 w-4" /> AI Accountant
-              </button>
-              <button
-                onClick={() => setTier("bookkeeping")}
-                className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${!isAi ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-black shadow" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <FileText className="h-4 w-4" /> Bookkeeping
-              </button>
-            </div>
+            <ModeToggle />
           </Reveal>
 
           <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
             {pricing.map((plan, i) => (
               <Reveal key={plan.slug} delay={i * 0.06}>
-                <div className={`relative flex h-full flex-col rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1.5 ${plan.hot ? "gradient-ring shadow-2xl shadow-emerald-500/10" : "border border-border/60 bg-card/50 backdrop-blur hover:border-border"}`}>
+                <div className={`relative flex h-full flex-col rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1.5 ${plan.hot ? `border-2 shadow-2xl bg-card/50 backdrop-blur ${isAi ? "border-cyan-500/50 shadow-cyan-500/10" : "border-emerald-500/50 shadow-emerald-500/10"}` : "border border-border/60 bg-card/50 backdrop-blur hover:border-border"}`}>
                   {plan.hot && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-black">
+                    <span className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-black ${isAi ? "bg-cyan-500" : "bg-emerald-500"}`}>
                       Most popular
                     </span>
                   )}
@@ -642,7 +625,7 @@ export default function Landing() {
                   </ul>
                   <Link
                     href={`/register?plan=${plan.slug}`}
-                    className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 ${plan.hot ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-black shadow-lg shadow-emerald-500/25" : "border border-border bg-foreground text-background hover:opacity-90"}`}
+                    className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 ${plan.hot ? `text-black shadow-lg ${isAi ? "bg-cyan-500 shadow-cyan-500/25 hover:bg-cyan-400" : "bg-emerald-500 shadow-emerald-500/25 hover:bg-emerald-400"}` : "border border-border bg-foreground text-background hover:opacity-90"}`}
                   >
                     {plan.cta} <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -672,7 +655,7 @@ export default function Landing() {
         <div className="mx-auto max-w-4xl px-6 text-center">
           <Reveal>
             <h2 className="text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-              Replace a <span className="text-gradient-brand">$3,000/month accountant</span> with a 24/7 AI system.
+              Replace a <span className="text-gradient-brand">{copy.comparisonHeadline}</span> with {isAi ? "a 24/7 AI system" : "a done-for-you team"}.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground">Never sleeps. Never misses transactions. Updates in real time.</p>
           </Reveal>
@@ -682,7 +665,7 @@ export default function Landing() {
                 <p className="font-mono text-[10px] uppercase tracking-wider text-rose-500">Traditional</p>
               </div>
               <div className="bg-emerald-500/[0.05] p-4 text-left">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-500">AI accountant</p>
+                <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-500">{isAi ? "AI accountant" : "Ledgr bookkeeping"}</p>
               </div>
               {comparison.map((row, i) => (
                 <Fragment key={i}>
@@ -706,18 +689,17 @@ export default function Landing() {
           <Reveal>
             <Pill>Join 500+ businesses</Pill>
             <h2 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
-              Stop buying accounting software.
+              {isAi ? "Stop doing your own books." : "Stop buying accounting software."}
               <br />
-              <span className="text-gradient-brand">Start getting it done.</span>
+              <span className="text-gradient-brand">{copy.finalCtaHeadline}</span>
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              We&apos;re replacing the service — not just improving the tool. Books, reports and tax,
-              delivered on time, every month.
+              {copy.finalCtaSub}
             </p>
             <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
-                href="/register?plan=starter"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-3.5 text-base font-semibold text-black shadow-xl shadow-emerald-500/30 transition-all hover:-translate-y-0.5 hover:shadow-emerald-500/50"
+                href={`/register?plan=${isAi ? "ai-starter" : "starter"}`}
+                className={`group inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-black shadow-xl transition-all hover:-translate-y-0.5 ${isAi ? "bg-cyan-500 shadow-cyan-500/30 hover:bg-cyan-400 hover:shadow-cyan-500/50" : "bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-400 hover:shadow-emerald-500/50"}`}
               >
                 Get started free
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -735,11 +717,11 @@ export default function Landing() {
       <footer className="border-t border-border/60 bg-card/30">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 text-sm text-muted-foreground sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500 to-cyan-500">
-              <span className="text-[9px] font-black text-black">L</span>
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-foreground">
+              <span className="text-[9px] font-black text-background">L</span>
             </div>
             <span className="font-semibold text-foreground">ledgr</span>
-            <span className="text-xs">· AI-native accounting firm</span>
+            <span className="text-xs">· {isAi ? "AI-native accounting firm" : "human-reviewed bookkeeping"}</span>
           </div>
           <p className="font-mono text-xs">© 2026 ledgr — we do your accounting.</p>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs">

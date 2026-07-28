@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   User as UserIcon, Globe, Bell, Shield, CreditCard, UserCheck, Database,
   Loader2, Check, Sparkles, ExternalLink, Save, Plug, Mail,
-  Receipt, FileSignature, Download, Trash2,
+  Receipt, FileSignature, Download, Trash2, FileText,
 } from "lucide-react";
+import { getTier } from "@/config/tiers";
 
 interface MeData {
   id: string; email: string; name: string | null;
@@ -96,7 +97,7 @@ export default function SettingsPage() {
   });
   const [notifs, setNotifs] = useState<NotifPrefs>(DEFAULT_NOTIFS);
   const [emailSig, setEmailSig] = useState("");
-  const [plan, setPlan] = useState<{ plan: string; status: string; price: number } | null>(null);
+  const [plans, setPlans] = useState<{ family: string; plan: string; status: string; price: number; displayName: string }[]>([]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -132,12 +133,11 @@ export default function SettingsPage() {
       } catch {}
       if (planRes.ok) {
         const p = await planRes.json();
-        const PRICE: Record<string, number> = { STARTER: 299, GROWTH: 599, CFO: 1499 };
-        setPlan({
-          plan: (p.plan ?? "STARTER").toUpperCase(),
-          status: p.status ?? "ACTIVE",
-          price: PRICE[(p.plan ?? "STARTER").toUpperCase()] ?? 299,
-        });
+        const subs = (p.subscriptions ?? []) as { family: string; plan: string; status: string }[];
+        setPlans(subs.map((s) => {
+          const tier = getTier(s.plan);
+          return { family: s.family, plan: s.plan, status: s.status, price: tier.price, displayName: tier.displayName };
+        }));
       }
     } catch {
       toast.error("Could not load settings");
@@ -455,30 +455,36 @@ export default function SettingsPage() {
             </>
           )}
 
-          {tab === "plan" && plan && (
+          {tab === "plan" && plans.length > 0 && (
             <SectionCard title="current_plan">
-              <div className="p-5">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-emerald-400" />
+              <div className="p-5 space-y-4">
+                {plans.map((p) => {
+                  const isAiPlan = p.family === "ai";
+                  return (
+                    <div key={p.family} className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-lg border flex items-center justify-center ${isAiPlan ? "border-cyan-500/30 bg-cyan-500/[0.08]" : "border-emerald-500/30 bg-emerald-500/[0.08]"}`}>
+                          {isAiPlan ? <Sparkles className="h-4 w-4 text-cyan-400" /> : <FileText className="h-4 w-4 text-emerald-400" />}
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{isAiPlan ? "AI Accountant" : "Book keeping"}</p>
+                          <h3 className="font-semibold text-foreground text-lg">{p.displayName}</h3>
+                          <p className="text-2xl font-bold text-foreground mt-0.5">
+                            ${p.price}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" onClick={openBillingPortal}>
+                          Manage billing <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                        </Button>
+                        <Button onClick={() => router.push("/upgrade")} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
+                          Change plan
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-lg">{plan.plan}</h3>
-                      <p className="text-2xl font-bold text-foreground mt-0.5">
-                        ${plan.price}<span className="text-sm font-normal text-muted-foreground">/mo</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={openBillingPortal}>
-                      Manage billing <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
-                    </Button>
-                    <Button onClick={() => router.push("/upgrade")} className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold">
-                      Change plan
-                    </Button>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </SectionCard>
           )}

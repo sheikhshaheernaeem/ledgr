@@ -4,6 +4,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
+import { getTier } from "@/config/tiers";
 
 const VALID_PLANS = [
   "starter", "growth", "cfo",
@@ -37,23 +38,42 @@ export async function POST(req: Request) {
     const subscriptionStatus = VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
       ? plan!.replace("-", "_").toUpperCase()
       : "STARTER";
-
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json(
-        { error: "An account with this email already exists" },
-        { status: 409 }
-      );
-    }
+    const family = getTier(subscriptionStatus).family;
 
     // Public registration: CLIENT or ACCOUNTANT (admins provisioned separately).
     const finalRole = role === "ACCOUNTANT" ? "ACCOUNTANT" : "CLIENT";
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      // One Ledgr login can hold both products. If this is the same person
+      // adding the *other* family to their existing CLIENT account, verify
+      // their password and attach the plan instead of blocking them.
+      const canLink = finalRole === "CLIENT" && existing.role === "CLIENT" && !!existing.password
+        && (await bcrypt.compare(password, existing.password));
+
+      if (!canLink) {
+        return NextResponse.json(
+          { error: "An account with this email already exists" },
+          { status: 409 }
+        );
+      }
+
+      await prisma.subscription.upsert({
+        where: { userId_family: { userId: existing.id, family } },
+        create: { userId: existing.id, family, plan: subscriptionStatus, status: "ACTIVE" },
+        update: { plan: subscriptionStatus, status: "ACTIVE" },
+      });
+
+      return NextResponse.json({ linked: true, email: existing.email }, { status: 200 });
+    }
+
     const hashed = await bcrypt.hash(password, 12);
     const user = await prisma.user.create({
       data: {
         name, email, password: hashed, emailVerified: false,
         subscriptionStatus,
         role: finalRole,
+        subscriptions: { create: { family, plan: subscriptionStatus, status: "ACTIVE" } },
       },
     });
 

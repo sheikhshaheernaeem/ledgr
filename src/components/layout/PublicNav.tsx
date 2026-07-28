@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { ModeToggle } from "@/components/layout/ModeToggle";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { useMode } from "@/components/providers/ModeProvider";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -16,6 +19,7 @@ const LINKS = [
 export function PublicNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { mode } = useMode();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
@@ -43,13 +47,15 @@ export function PublicNav() {
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
+          <ModeToggle />
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-sm">
               Sign in
             </Button>
           </Link>
-          <Link href="/register">
+          <Link href={`/register?mode=${mode}`}>
             <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm h-8">
               Client portal
             </Button>
@@ -81,8 +87,11 @@ export function PublicNav() {
               </Link>
             ))}
             <div className="border-t border-border/60 my-2" />
+            <div className="px-3 py-1">
+              <ModeToggle className="w-full justify-center" />
+            </div>
             <Link href="/login" onClick={() => setOpen(false)} className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-card">Sign in</Link>
-            <Link href="/register" onClick={() => setOpen(false)} className="block">
+            <Link href={`/register?mode=${mode}`} onClick={() => setOpen(false)} className="block">
               <div className="bg-emerald-500 text-black font-semibold rounded-md px-3 py-2 text-sm text-center">Client portal</div>
             </Link>
           </div>

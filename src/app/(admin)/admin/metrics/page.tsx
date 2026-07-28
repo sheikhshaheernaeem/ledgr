@@ -44,7 +44,7 @@ export default async function AdminMetricsPage() {
   ] = await Promise.all([
     prisma.user.findMany({
       where: { role: "CLIENT" },
-      include: { subscription: true, _count: { select: { transactions: true, statements: true } } },
+      include: { subscriptions: true, _count: { select: { transactions: true, statements: true } } },
       orderBy: { createdAt: "desc" },
     }),
     prisma.subscription.findMany({ where: { status: "ACTIVE" } }),
@@ -241,8 +241,8 @@ export default async function AdminMetricsPage() {
               </thead>
               <tbody className="divide-y divide-border/40">
                 {clients.slice(0, 25).map((c) => {
-                  const plan = c.subscription?.plan?.toUpperCase() ?? "STARTER";
-                  const subStatus = c.subscription?.status ?? "INACTIVE";
+                  const plan = c.subscriptions?.[0]?.plan?.toUpperCase() ?? "STARTER";
+                  const subStatus = c.subscriptions?.[0]?.status ?? "INACTIVE";
                   const active = subStatus === "ACTIVE";
                   const activity = activityByClient.get(c.id) ?? 0;
                   return (

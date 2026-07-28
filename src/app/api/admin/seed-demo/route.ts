@@ -66,7 +66,8 @@ export async function POST() {
         data: {
           email: c.email, name: c.name, companyName: c.companyName,
           password, role: "CLIENT", emailVerified: true,
-          subscription: { create: { plan: c.plan, status: "ACTIVE" } },
+          subscriptionStatus: c.plan,
+          subscriptions: { create: { family: "bookkeeping", plan: c.plan, status: "ACTIVE" } },
         },
       });
       created.clients++;

@@ -7,16 +7,16 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = session.user.id as string;
 
-  const sub = await prisma.subscription.findUnique({
+  const subs = await prisma.subscription.findMany({
     where: { userId },
-    select: { plan: true, status: true, stripeId: true, startedAt: true, expiresAt: true },
+    select: { family: true, plan: true, status: true, stripeId: true, startedAt: true, expiresAt: true },
   });
 
-  return NextResponse.json({
-    plan: sub?.plan ?? "STARTER",
-    status: sub?.status ?? "ACTIVE",
-    stripeId: sub?.stripeId ?? null,
-    startedAt: sub?.startedAt ?? null,
-    expiresAt: sub?.expiresAt ?? null,
-  });
+  if (subs.length === 0) {
+    return NextResponse.json({
+      subscriptions: [{ family: "bookkeeping", plan: "STARTER", status: "ACTIVE", stripeId: null, startedAt: null, expiresAt: null }],
+    });
+  }
+
+  return NextResponse.json({ subscriptions: subs });
 }

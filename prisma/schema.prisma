@@ -20,7 +20,7 @@ model User {
   sessions          Session[]
   transactions      Transaction[]
   reports           Report[]
-  subscription      Subscription?
+  subscriptions     Subscription[]
   bankAccounts      BankAccount[]
   invoices          Invoice[]
   budgets           Budget[]
@@ -233,13 +233,17 @@ model Report {
 
 model Subscription {
   id        String    @id @default(cuid())
-  userId    String    @unique
+  userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family    String    @default("bookkeeping") // "ai" | "bookkeeping" — see src/config/tiers.ts Family
   plan      String    @default("STARTER")
   status    String    @default("ACTIVE")
   stripeId  String?
   startedAt DateTime  @default(now())
   expiresAt DateTime?
+
+  // One active subscription per family per user — up to 2 rows (AI + Bookkeeping) = a dual subscriber.
+  @@unique([userId, family])
 }
 
 model BankAccount {

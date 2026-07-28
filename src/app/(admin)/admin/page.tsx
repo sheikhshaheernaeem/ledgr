@@ -27,7 +27,7 @@ export default async function AdminPage() {
     prisma.user.findMany({
       include: {
         _count: { select: { transactions: true, reports: true, invoices: true } },
-        subscription: true,
+        subscriptions: true,
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -171,7 +171,7 @@ export default async function AdminPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs border-border text-muted-foreground">
-                        {user.subscription?.plan?.toLowerCase() ?? "free"}
+                        {user.subscriptions?.map((s) => s.plan?.toLowerCase()).join(", ") || "free"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center text-sm text-muted-foreground">

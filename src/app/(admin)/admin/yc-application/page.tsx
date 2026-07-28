@@ -22,7 +22,7 @@ export default async function YCApplicationPage() {
   const ninetyDaysAgo = new Date(now); ninetyDaysAgo.setDate(now.getDate() - 90);
 
   const [clients, activeSubs, newClients30, newClients90, reportsApproved, statementsLast30] = await Promise.all([
-    prisma.user.findMany({ where: { role: "CLIENT" }, include: { subscription: true } }),
+    prisma.user.findMany({ where: { role: "CLIENT" }, include: { subscriptions: true } }),
     prisma.subscription.findMany({ where: { status: "ACTIVE" } }),
     prisma.user.count({ where: { role: "CLIENT", createdAt: { gte: thirtyDaysAgo } } }),
     prisma.user.count({ where: { role: "CLIENT", createdAt: { gte: ninetyDaysAgo } } }),

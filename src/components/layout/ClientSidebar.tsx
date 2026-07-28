@@ -2,21 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { ModeToggle } from "@/components/layout/ModeToggle";
+import { useMode } from "@/components/providers/ModeProvider";
 import { FloatingChat } from "@/components/layout/FloatingChat";
 import { ClientNotificationsBell } from "@/components/layout/ClientNotificationsBell";
+import type { Family } from "@/config/tiers";
 import {
   Sparkles, FileText, BarChart2, MessageSquare, Settings, Inbox,
   LogOut, ChevronLeft, ChevronRight, Menu, X,
-  Activity, Receipt, Wallet, Calculator, FolderOpen, Lightbulb, Upload,
+  Activity, Receipt, Wallet, Calculator, FolderOpen, Upload,
 } from "lucide-react";
 
 interface NavItem { href: string; label: string; icon: typeof Sparkles; exact?: boolean }
 
-const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
+const NAV_SECTIONS: { title: string; family: Family | null; items: NavItem[] }[] = [
   {
     title: "AI Accountant",
+    family: "ai",
     items: [
       { href: "/client", label: "AI Accountant", icon: Sparkles, exact: true },
       { href: "/client/transactions", label: "Transactions", icon: FileText },
@@ -26,6 +30,7 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   },
   {
     title: "Book keeping",
+    family: "bookkeeping",
     items: [
       { href: "/client/bookkeeping", label: "Overview", icon: Activity, exact: true },
       { href: "/client/financials", label: "My Books", icon: Wallet },
@@ -33,11 +38,11 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
       { href: "/client/invoices", label: "Invoices", icon: Receipt },
       { href: "/client/documents", label: "Documents", icon: FolderOpen },
       { href: "/client/upload", label: "Upload", icon: Upload },
-      { href: "/client/insights", label: "Insights", icon: Lightbulb },
     ],
   },
   {
     title: "Account",
+    family: null,
     items: [
       { href: "/client/messages", label: "Messages", icon: MessageSquare },
       { href: "/client/settings", label: "Settings", icon: Settings },
@@ -45,19 +50,26 @@ const NAV_SECTIONS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
-// Flat nav for back-compat with usePathname matching
-const NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
+const FAMILY_HOME: Record<Family, string> = { ai: "/client", bookkeeping: "/client/bookkeeping" };
 
 interface Props {
   children: React.ReactNode;
   userEmail: string;
+  families: Family[];
   signOutAction: () => Promise<void>;
 }
 
-export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
+export function ClientSidebar({ children, userEmail, families, signOutAction }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { mode } = useMode();
+
+  const hasBoth = families.includes("ai") && families.includes("bookkeeping");
+  // Single-product clients always see their own section, regardless of the shared mode cookie.
+  const activeFamily: Family = hasBoth ? mode : (families[0] ?? "ai");
+  const visibleSections = NAV_SECTIONS.filter((s) => s.family === null || s.family === activeFamily);
 
   // hydrate from localStorage on mount
   useEffect(() => {
@@ -104,7 +116,7 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
           >
             <Menu className="h-4 w-4" />
           </button>
-          <Link href="/client" className="flex items-center gap-2">
+          <Link href={FAMILY_HOME[activeFamily]} className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center">
               <span className="text-background font-black text-[11px] leading-none">L</span>
             </div>
@@ -136,7 +148,7 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
       >
         {/* brand row */}
         <div className="h-14 flex items-center justify-between px-3 border-b border-border/60 shrink-0">
-          <Link href="/client" className={`flex items-center gap-2 overflow-hidden ${collapsed ? "lg:justify-center lg:w-full" : ""}`}>
+          <Link href={FAMILY_HOME[activeFamily]} className={`flex items-center gap-2 overflow-hidden ${collapsed ? "lg:justify-center lg:w-full" : ""}`}>
             <div className="w-7 h-7 rounded-md bg-foreground flex items-center justify-center shrink-0">
               <span className="text-background font-black text-xs leading-none">L</span>
             </div>
@@ -154,9 +166,20 @@ export function ClientSidebar({ children, userEmail, signOutAction }: Props) {
           </button>
         </div>
 
-        {/* nav — grouped by section (AI Accountant / Book keeping / Account) */}
+        {/* mode switcher — only meaningful once both products are on the account */}
+        {hasBoth && (
+          <div className={`px-2 pt-2 ${collapsed ? "flex justify-center" : ""}`}>
+            <ModeToggle
+              compact
+              className="w-full justify-center"
+              onSelect={(next) => router.push(FAMILY_HOME[next])}
+            />
+          </div>
+        )}
+
+        {/* nav — grouped by section (active product / Account) */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
-          {NAV_SECTIONS.map((section, sIdx) => {
+          {visibleSections.map((section, sIdx) => {
             const isAiSection = section.title === "AI Accountant";
             const isBkSection = section.title === "Book keeping";
             const accentText = isAiSection ? "text-cyan-500 dark:text-cyan-400" : isBkSection ? "text-emerald-500 dark:text-emerald-400" : "";

@@ -27,7 +27,7 @@ export default async function FirmRevenuePage() {
     prisma.user.findMany({
       where: { role: "CLIENT" },
       include: {
-        subscription: true,
+        subscriptions: true,
         managedByAccounts: { where: { isActive: true }, select: { accountantId: true } },
       },
     }),
@@ -50,7 +50,7 @@ export default async function FirmRevenuePage() {
   // Per-operator stats
   const opStats = operators.map((op) => {
     const opClients = allClients.filter((c) => c.managedByAccounts.some((m) => m.accountantId === op.id));
-    const opMrr = opClients.reduce((s, c) => s + (PLAN_PRICE[(c.subscription?.plan ?? "STARTER").toUpperCase()] ?? PLAN_PRICE.STARTER), 0);
+    const opMrr = opClients.reduce((s, c) => s + (PLAN_PRICE[(c.subscriptions?.[0]?.plan ?? "STARTER").toUpperCase()] ?? PLAN_PRICE.STARTER), 0);
     const opEntries = timeEntries.filter((e) => e.operatorId === op.id);
     const opSec = opEntries.reduce((s, e) => s + (e.durationSec ?? 0), 0);
     const opBillableSec = opEntries.filter((e) => e.billable).reduce((s, e) => s + (e.durationSec ?? 0), 0);
@@ -72,9 +72,9 @@ export default async function FirmRevenuePage() {
     .map((c) => ({
       id: c.id,
       name: c.companyName ?? c.name ?? c.email,
-      mrr: PLAN_PRICE[(c.subscription?.plan ?? "STARTER").toUpperCase()] ?? PLAN_PRICE.STARTER,
-      plan: (c.subscription?.plan ?? "STARTER").toUpperCase(),
-      status: c.subscription?.status ?? "ACTIVE",
+      mrr: PLAN_PRICE[(c.subscriptions?.[0]?.plan ?? "STARTER").toUpperCase()] ?? PLAN_PRICE.STARTER,
+      plan: (c.subscriptions?.[0]?.plan ?? "STARTER").toUpperCase(),
+      status: c.subscriptions?.[0]?.status ?? "ACTIVE",
     }))
     .filter((c) => c.status === "ACTIVE")
     .sort((a, b) => b.mrr - a.mrr)
@@ -96,7 +96,7 @@ export default async function FirmRevenuePage() {
         <Stat label="firm_mrr" value={fmt(totalMrr)} icon={DollarSign} color="text-emerald-400" />
         <Stat label="total_hours_30d" value={`${(totalSec / 3600).toFixed(1)}h`} icon={Clock} />
         <Stat label="realization" value={`${realizationRate.toFixed(0)}%`} icon={TrendingUp} color={realizationRate > 70 ? "text-emerald-400" : realizationRate > 50 ? "text-amber-400" : "text-rose-400"} />
-        <Stat label="active_clients" value={allClients.filter((c) => c.subscription?.status === "ACTIVE").length.toString()} icon={Users} />
+        <Stat label="active_clients" value={allClients.filter((c) => c.subscriptions?.[0]?.status === "ACTIVE").length.toString()} icon={Users} />
       </div>
 
       {/* Per-operator table */}
