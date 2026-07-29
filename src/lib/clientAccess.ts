@@ -24,6 +24,18 @@ const FAMILY_HOME: Record<Family, string> = { ai: "/ai/client", bookkeeping: "/b
 const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
 
 /**
+ * Internal (ADMIN/QA) accounts that may preview the client portal despite
+ * not holding a CLIENT role — e.g. the founder's own login or a reviewer
+ * account, so they can see both AI Accountant and Book keeping as a
+ * customer would without a separate throwaway account.
+ */
+const CLIENT_PORTAL_PREVIEW_EMAILS = new Set(["admin@ledgr.app", "yc-review@ledgr.app"]);
+
+export function canPreviewClientPortal(email: string | null | undefined): boolean {
+  return !!email && CLIENT_PORTAL_PREVIEW_EMAILS.has(email);
+}
+
+/**
  * Auth + role + family gate for the /ai/client and /bookkeeping/client route
  * trees — one call per layout closes the direct-URL family-crossing gap that
  * used to let e.g. an AI-only client load bookkeeping data by URL alone.
@@ -33,7 +45,7 @@ export async function requireClientFamily(family: Family) {
   if (!session?.user) redirect("/login");
 
   const role = (session.user as { role?: string }).role;
-  if (role !== "CLIENT") redirect("/dashboard");
+  if (role !== "CLIENT" && !canPreviewClientPortal(session.user.email)) redirect("/dashboard");
 
   const userId = session.user.id as string;
   const families = await getUserFamilies(userId);

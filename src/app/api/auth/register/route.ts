@@ -18,7 +18,6 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   plan: z.string().optional(),
-  role: z.enum(["CLIENT", "ACCOUNTANT"]).optional(),
 });
 
 function getAppUrl(req: Request): string {
@@ -35,22 +34,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const { name, email, password, plan, role } = parsed.data;
+    const { name, email, password, plan } = parsed.data;
     // Map plan slug → subscription status (uppercase with AI_ prefix for AI tier)
     const subscriptionStatus = VALID_PLANS.includes(plan as typeof VALID_PLANS[number])
       ? plan!.replace("-", "_").toUpperCase()
       : "STARTER";
     const family = getTier(subscriptionStatus).family;
 
-    // Public registration: CLIENT or ACCOUNTANT (admins provisioned separately).
-    const finalRole = role === "ACCOUNTANT" ? "ACCOUNTANT" : "CLIENT";
-
+    // Public registration is CLIENT-only — accountants are provisioned by
+    // admins via /api/admin/create-account, never self-serve.
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       // One Ledgr login can hold both products. If this is the same person
       // adding the *other* family to their existing CLIENT account, verify
       // their password and attach the plan instead of blocking them.
-      const canLink = finalRole === "CLIENT" && existing.role === "CLIENT" && !!existing.password
+      const canLink = existing.role === "CLIENT" && !!existing.password
         && (await bcrypt.compare(password, existing.password));
 
       if (!canLink) {
@@ -87,7 +85,7 @@ export async function POST(req: Request) {
       data: {
         name, email, password: hashed, emailVerified: false,
         subscriptionStatus,
-        role: finalRole,
+        role: "CLIENT",
         subscriptions: { create: { family, plan: subscriptionStatus, status: "ACTIVE" } },
       },
     });

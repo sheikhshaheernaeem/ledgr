@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, Briefcase, Users, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, ArrowRight } from "lucide-react";
 import { useMode } from "@/components/providers/ModeProvider";
 import type { Family } from "@/config/tiers";
 
@@ -155,7 +155,6 @@ export function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [role, setRole] = useState<"CLIENT" | "ACCOUNTANT">("CLIENT");
   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
   const [emailTouched, setEmailTouched] = useState(false);
 
@@ -189,7 +188,7 @@ export function RegisterForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, plan: selectedPlan, role }),
+        body: JSON.stringify({ ...form, plan: selectedPlan }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -240,78 +239,41 @@ export function RegisterForm() {
           <CardDescription>First month completely free. Upload your bank statement, we handle the rest.</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Plan picker — only relevant when signing up as a CLIENT */}
-          {role === "CLIENT" && (
-            <div className="mb-5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-mono">
-                choose_your_plan
-              </Label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {FAMILY_PLANS[mode].map((slug) => {
-                  const info = PLAN_LABELS[slug];
-                  const isActive = selectedPlan === slug;
-                  const accent = isAi
-                    ? "border-cyan-500/50 bg-cyan-500/[0.06] text-cyan-500 dark:text-cyan-400"
-                    : "border-emerald-500/50 bg-emerald-500/[0.06] text-emerald-500 dark:text-emerald-400";
-                  return (
-                    <button
-                      key={slug}
-                      type="button"
-                      onClick={() => setSelectedPlan(slug)}
-                      className={`rounded-md border p-2 text-center text-[11px] font-mono transition-colors ${
-                        isActive ? accent : "border-border bg-card hover:border-foreground/30 text-muted-foreground"
-                      }`}
-                    >
-                      <p className="font-semibold uppercase tracking-wider text-[10px]">{shortPlanLabel(slug)}</p>
-                      <p className="text-foreground mt-0.5">{info.price}</p>
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="mt-2.5 text-[11px] text-muted-foreground">
-                Already have a Ledgr account? Use the same email — we&apos;ll add this plan to it instead of making a new account.
-              </p>
-            </div>
-          )}
-
-          {/* Role selector */}
+          {/* Plan picker */}
           <div className="mb-5">
             <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-mono">
-              i&apos;m signing up as
+              choose_your_plan
             </Label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setRole("CLIENT")}
-                className={`rounded-lg border p-3 text-left transition-colors ${
-                  role === "CLIENT"
-                    ? "border-cyan-500/50 bg-cyan-500/[0.06]"
-                    : "border-border bg-card hover:border-foreground/30"
-                }`}
-              >
-                <Users className={`h-4 w-4 mb-1.5 ${role === "CLIENT" ? "text-cyan-500" : "text-muted-foreground"}`} />
-                <p className="text-sm font-medium text-foreground">A business owner</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">I need bookkeeping done — AI or human.</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("ACCOUNTANT")}
-                className={`rounded-lg border p-3 text-left transition-colors ${
-                  role === "ACCOUNTANT"
-                    ? "border-cyan-500/50 bg-cyan-500/[0.06]"
-                    : "border-border bg-card hover:border-foreground/30"
-                }`}
-              >
-                <Briefcase className={`h-4 w-4 mb-1.5 ${role === "ACCOUNTANT" ? "text-cyan-500" : "text-muted-foreground"}`} />
-                <p className="text-sm font-medium text-foreground">An accountant</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">I do bookkeeping for clients on this platform.</p>
-              </button>
+            <div className="grid grid-cols-3 gap-1.5">
+              {FAMILY_PLANS[mode].map((slug) => {
+                const info = PLAN_LABELS[slug];
+                const isActive = selectedPlan === slug;
+                const accent = isAi
+                  ? "border-cyan-500/50 bg-cyan-500/[0.06] text-cyan-500 dark:text-cyan-400"
+                  : "border-emerald-500/50 bg-emerald-500/[0.06] text-emerald-500 dark:text-emerald-400";
+                return (
+                  <button
+                    key={slug}
+                    type="button"
+                    onClick={() => setSelectedPlan(slug)}
+                    className={`rounded-md border p-2 text-center text-[11px] font-mono transition-colors ${
+                      isActive ? accent : "border-border bg-card hover:border-foreground/30 text-muted-foreground"
+                    }`}
+                  >
+                    <p className="font-semibold uppercase tracking-wider text-[10px]">{shortPlanLabel(slug)}</p>
+                    <p className="text-foreground mt-0.5">{info.price}</p>
+                  </button>
+                );
+              })}
             </div>
+            <p className="mt-2.5 text-[11px] text-muted-foreground">
+              Already have a Ledgr account? Use the same email — we&apos;ll add this plan to it instead of making a new account.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">{role === "ACCOUNTANT" ? "Your name" : "Business / Your Name"}</Label>
+              <Label htmlFor="name">Business / Your Name</Label>
               <Input
                 id="name"
                 placeholder="Acme Store"
