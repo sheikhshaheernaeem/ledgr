@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Eye, EyeOff, XCircle, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle2, Eye, EyeOff, XCircle } from "lucide-react";
 import { useMode } from "@/components/providers/ModeProvider";
 import type { Family } from "@/config/tiers";
 
@@ -59,7 +59,6 @@ const DEFAULT_PLAN: Record<Family, string> = {
 };
 
 const FAMILY_LABEL: Record<Family, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
-const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
 
 // Popular domains — fuzzy match against these
 const POPULAR_DOMAINS = [
@@ -145,7 +144,6 @@ export function RegisterForm() {
   const searchParams = useSearchParams();
   const { mode, setMode } = useMode();
   const isAi = mode === "ai";
-  const other = OTHER_FAMILY[mode];
 
   const planParam = searchParams.get("plan")?.toLowerCase() ?? "";
   // Trust the ?plan= deep link only if it belongs to this route's family —
@@ -388,13 +386,6 @@ export function RegisterForm() {
           className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300"
         >
           Sign in
-        </Link>
-      </p>
-
-      <p className="text-center text-xs text-muted-foreground">
-        Looking for {FAMILY_LABEL[other]} instead?{" "}
-        <Link href={`/${other}/register`} className="inline-flex items-center gap-0.5 font-medium text-foreground hover:underline">
-          Sign up there <ArrowRight className="h-3 w-3" />
         </Link>
       </p>
     </div>

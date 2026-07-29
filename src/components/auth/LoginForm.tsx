@@ -16,12 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, CheckCircle2, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle2, Mail, Eye, EyeOff } from "lucide-react";
 import { useMode } from "@/components/providers/ModeProvider";
 import type { Family } from "@/config/tiers";
 
 const FAMILY_HOME: Record<Family, string> = { ai: "/ai/client", bookkeeping: "/bookkeeping/client" };
-const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
 const FAMILY_LABEL: Record<Family, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
 
 export function LoginForm() {
@@ -31,7 +30,6 @@ export function LoginForm() {
   const justLinked = params.get("justLinked") === "1";
   const { mode } = useMode();
   const isAi = mode === "ai";
-  const other = OTHER_FAMILY[mode];
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -203,13 +201,6 @@ export function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link href={`/${mode}/register`} className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
           Sign up free
-        </Link>
-      </p>
-
-      <p className="text-center text-xs text-muted-foreground">
-        Looking for {FAMILY_LABEL[other]} instead?{" "}
-        <Link href={`/${other}/login`} className="inline-flex items-center gap-0.5 font-medium text-foreground hover:underline">
-          Sign in there <ArrowRight className="h-3 w-3" />
         </Link>
       </p>
     </div>

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
   Wallet, Calculator, Receipt, FolderOpen, Upload,
-  TrendingUp, TrendingDown, Activity, MessageSquare, FileText, ChevronRight, Sparkles,
+  TrendingUp, TrendingDown, Activity, MessageSquare, FileText, Sparkles,
 } from "lucide-react";
 
 // Auth + role + family("bookkeeping") are already enforced by src/app/bookkeeping/client/layout.tsx.
@@ -102,23 +102,6 @@ export default async function BookkeepingHome() {
             desc="Tax filings, audits, special projects — open a ticket."
           />
         </div>
-      </div>
-
-      {/* AI cross-promo */}
-      <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/[0.04] p-5 flex items-start gap-3">
-        <Sparkles className="h-5 w-5 text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" />
-        <div className="flex-1">
-          <p className="font-semibold text-foreground text-sm">Want instant AI-extracted books too?</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            The AI Accountant Services tier processes documents in seconds. Your human accountant reviews the AI output instead of starting from scratch.
-          </p>
-        </div>
-        <Link
-          href="/ai"
-          className="font-mono text-xs text-cyan-500 hover:text-cyan-400 inline-flex items-center gap-1 shrink-0"
-        >
-          try ai_accountant <ChevronRight className="h-3 w-3" />
-        </Link>
       </div>
     </div>
   );
