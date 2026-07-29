@@ -35,7 +35,7 @@ export default function ServicePicker() {
         <div className="mx-auto max-w-5xl px-6 pt-24 pb-28 sm:pt-32">
           <Reveal className="mx-auto max-w-2xl text-center">
             <Pill>Two ways to work with Ledgr</Pill>
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.1] tracking-[-0.03em] sm:text-5xl">
+            <h1 className="mt-6 font-serif text-4xl font-medium leading-[1.1] tracking-[-0.01em] sm:text-5xl">
               Which service do you need?
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">

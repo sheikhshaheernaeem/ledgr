@@ -30,6 +30,8 @@ export function LoginForm() {
   const justLinked = params.get("justLinked") === "1";
   const { mode } = useMode();
   const isAi = mode === "ai";
+  const brandText = isAi ? "text-cyan-600 dark:text-cyan-400" : "text-emerald-600 dark:text-emerald-400";
+  const brandHoverText = isAi ? "hover:text-cyan-600 dark:hover:text-cyan-400" : "hover:text-emerald-600 dark:hover:text-emerald-400";
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -88,7 +90,7 @@ export function LoginForm() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href={`/${mode}`}>
-          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">Ledgr</span>
+          <span className={`text-2xl font-bold tracking-tight ${brandText}`}>Ledgr</span>
         </Link>
         <p className="text-muted-foreground text-sm mt-1">Sign in to your account</p>
       </div>
@@ -157,7 +159,7 @@ export function LoginForm() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <Link href="/forgot-password" className={`text-xs text-muted-foreground transition-colors ${brandHoverText}`}>
                   Forgot password?
                 </Link>
               </div>
@@ -199,7 +201,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href={`/${mode}/register`} className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300">
+        <Link href={`/${mode}/register`} className={brandText}>
           Sign up free
         </Link>
       </p>

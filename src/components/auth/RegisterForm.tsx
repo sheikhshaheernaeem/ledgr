@@ -144,6 +144,7 @@ export function RegisterForm() {
   const searchParams = useSearchParams();
   const { mode, setMode } = useMode();
   const isAi = mode === "ai";
+  const brandText = isAi ? "text-cyan-600 dark:text-cyan-400" : "text-emerald-600 dark:text-emerald-400";
 
   const planParam = searchParams.get("plan")?.toLowerCase() ?? "";
   // Trust the ?plan= deep link only if it belongs to this route's family —
@@ -206,7 +207,7 @@ export function RegisterForm() {
     <div className="space-y-6">
       <div className="text-center">
         <Link href={`/${mode}`}>
-          <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">
+          <span className={`text-2xl font-bold tracking-tight ${brandText}`}>
             Ledgr
           </span>
         </Link>
@@ -383,7 +384,7 @@ export function RegisterForm() {
         Already have an account?{" "}
         <Link
           href={`/${mode}/login`}
-          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300"
+          className={brandText}
         >
           Sign in
         </Link>

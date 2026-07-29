@@ -210,6 +210,7 @@ export default function Landing() {
   const isAi = mode === "ai";
   const copy = COPY[mode];
   const pricing = isAi ? pricingAiAccountant : pricingBookkeeping;
+  const brandText = isAi ? "text-cyan-600 dark:text-cyan-400" : "text-emerald-600 dark:text-emerald-400";
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-emerald-500/25">
@@ -225,11 +226,11 @@ export default function Landing() {
           <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
             {/* copy */}
             <div>
-              <Reveal><Pill>{isAi ? "AI-native accounting firm" : "Human-reviewed bookkeeping"}</Pill></Reveal>
-              <h1 className="mt-6 text-[3.25rem] font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl lg:text-[5rem]">
+              <Reveal><Pill accent={isAi ? "cyan" : "emerald"}>{isAi ? "AI-native accounting firm" : "Human-reviewed bookkeeping"}</Pill></Reveal>
+              <h1 className="mt-6 font-serif text-[3.25rem] font-medium leading-[1.05] tracking-[-0.02em] sm:text-6xl lg:text-[5rem]">
                 {[
                   { t: copy.heroLine1, c: "text-gradient-ink", d: 0.08 },
-                  { t: copy.heroLine2, c: "text-gradient-brand", d: 0.2 },
+                  { t: copy.heroLine2, c: brandText, d: 0.2 },
                 ].map((line) => (
                   <span key={line.t} className="block overflow-hidden py-[0.06em]">
                     <motion.span
@@ -293,7 +294,7 @@ export default function Landing() {
 
                   <div className="rounded-2xl border border-border/60 bg-background/50 p-4">
                     <p className="text-xs text-muted-foreground">Net profit</p>
-                    <p className="mt-1 text-4xl font-bold tracking-tight text-gradient-brand">$15,460</p>
+                    <p className={`mt-1 text-4xl font-bold tracking-tight ${brandText}`}>$15,460</p>
                     <div className="mt-4 flex items-end gap-1.5">
                       {[38, 52, 44, 61, 49, 72, 58, 83, 67, 91, 78, 100].map((h, i) => (
                         <div key={i} className={`flex-1 rounded-sm ${isAi ? "bg-cyan-500/70" : "bg-emerald-500/70"}`} style={{ height: `${h * 0.7}px` }} />
@@ -348,8 +349,8 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">What we do</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-              Services we <span className="text-gradient-brand">perform for you.</span>
+            <h2 className="mt-4 font-serif text-4xl font-medium tracking-[-0.01em] sm:text-5xl">
+              Services we <span className={brandText}>perform for you.</span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               {copy.servicesIntro}
@@ -406,7 +407,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-500">Process</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl text-gradient-brand">
+            <h2 className={`mt-4 font-serif text-4xl font-medium tracking-[-0.01em] sm:text-5xl ${brandText}`}>
               {copy.howIntro}
             </h2>
           </Reveal>
@@ -439,8 +440,8 @@ export default function Landing() {
           <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
             <Reveal>
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-emerald-500">{copy.aiEyebrow}</p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-                AI that actually <span className="text-gradient-brand">knows your numbers.</span>
+              <h2 className="mt-4 font-serif text-4xl font-medium tracking-[-0.01em] sm:text-5xl">
+                AI that actually <span className={brandText}>knows your numbers.</span>
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
                 Ledgr AI runs on Llama 3.3 70B — built into your account at no extra cost.
@@ -498,7 +499,7 @@ export default function Landing() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 sm:grid-cols-4">
           {stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08} className="text-center">
-              <CountUp value={s.val} className="block text-4xl font-bold tracking-tight sm:text-5xl text-gradient-brand" />
+              <CountUp value={s.val} className={`block text-4xl font-bold tracking-tight sm:text-5xl ${brandText}`} />
               <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
             </Reveal>
           ))}
@@ -541,8 +542,8 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-cyan-500">Pricing</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-              {isAi ? "AI Accountant" : "Book keeping"} <span className="text-gradient-brand">plans.</span>
+            <h2 className="mt-4 font-serif text-4xl font-medium tracking-[-0.01em] sm:text-5xl">
+              {isAi ? "AI Accountant" : "Book keeping"} <span className={brandText}>plans.</span>
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">Pick the tier that fits. Upgrade anytime.</p>
           </Reveal>
@@ -601,8 +602,8 @@ export default function Landing() {
       <section className="border-t border-border/60 py-28">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <Reveal>
-            <h2 className="text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
-              Replace a <span className="text-gradient-brand">{copy.comparisonHeadline}</span> with {isAi ? "a 24/7 AI system" : "a done-for-you team"}.
+            <h2 className="font-serif text-4xl font-medium tracking-[-0.01em] sm:text-5xl">
+              Replace a <span className={brandText}>{copy.comparisonHeadline}</span> with {isAi ? "a 24/7 AI system" : "a done-for-you team"}.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground">Never sleeps. Never misses transactions. Updates in real time.</p>
           </Reveal>
@@ -634,11 +635,11 @@ export default function Landing() {
         <Aurora />
         <div className="mx-auto max-w-3xl px-6 text-center">
           <Reveal>
-            <Pill>Join 500+ businesses</Pill>
-            <h2 className="mt-6 text-5xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-6xl">
+            <Pill accent={isAi ? "cyan" : "emerald"}>Join 500+ businesses</Pill>
+            <h2 className="mt-6 font-serif text-5xl font-medium leading-[1.05] tracking-[-0.02em] sm:text-6xl">
               {isAi ? "Stop doing your own books." : "Stop buying accounting software."}
               <br />
-              <span className="text-gradient-brand">{copy.finalCtaHeadline}</span>
+              <span className={brandText}>{copy.finalCtaHeadline}</span>
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {copy.finalCtaSub}

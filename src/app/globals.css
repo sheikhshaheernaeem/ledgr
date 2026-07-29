@@ -49,6 +49,35 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+  /* Refined jewel-tone brand palette — replaces Tailwind's stock neon
+     cyan/emerald everywhere those utilities are already used (buttons,
+     accents, icons) with deeper, less-saturated "private bank" tones.
+     Bookkeeping stays green-family (forest emerald), AI Accountant stays
+     blue-family (sapphire) but shifted off aqua/neon toward indigo. */
+  --color-emerald-50:  oklch(0.982 0.010 158);
+  --color-emerald-100: oklch(0.958 0.026 158);
+  --color-emerald-200: oklch(0.912 0.048 160);
+  --color-emerald-300: oklch(0.835 0.075 162);
+  --color-emerald-400: oklch(0.755 0.100 163);
+  --color-emerald-500: oklch(0.660 0.115 164);
+  --color-emerald-600: oklch(0.545 0.105 164);
+  --color-emerald-700: oklch(0.450 0.088 164);
+  --color-emerald-800: oklch(0.370 0.070 163);
+  --color-emerald-900: oklch(0.295 0.055 162);
+
+  --color-cyan-50:  oklch(0.978 0.012 250);
+  --color-cyan-100: oklch(0.948 0.030 250);
+  --color-cyan-200: oklch(0.895 0.055 251);
+  --color-cyan-300: oklch(0.815 0.082 253);
+  --color-cyan-400: oklch(0.715 0.108 255);
+  --color-cyan-500: oklch(0.615 0.125 257);
+  --color-cyan-600: oklch(0.505 0.118 258);
+  --color-cyan-700: oklch(0.415 0.100 258);
+  --color-cyan-800: oklch(0.340 0.082 258);
+  --color-cyan-900: oklch(0.272 0.064 258);
+}
+
 :root {
   /* Refined "ink & slate" light palette — a whisper-cool off-white paper with
      rich slate ink, for a more premium feel than flat shadcn gray. */
@@ -172,10 +201,6 @@
   .animate-float-slow, .animate-marquee { animation: none; }
 }
 
-/* Solid brand color for display headings — no gradient effect. */
-.text-gradient-brand {
-  color: #10b981;
-}
 .text-gradient-ink {
   color: var(--foreground);
 }

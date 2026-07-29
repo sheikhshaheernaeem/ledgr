@@ -42,10 +42,16 @@ export function Aurora({ className = "" }: { className?: string }) {
   );
 }
 
-export function Pill({ children }: { children: React.ReactNode }) {
+export function Pill({
+  children, accent = "emerald",
+}: { children: React.ReactNode; accent?: "emerald" | "cyan" }) {
+  const tone = accent === "cyan"
+    ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-600 dark:text-cyan-300"
+    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300";
+  const dot = accent === "cyan" ? "bg-cyan-500" : "bg-emerald-500";
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[12px] font-medium text-emerald-600 dark:text-emerald-300 backdrop-blur">
-      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+    <span className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[12px] font-medium backdrop-blur ${tone}`}>
+      <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${dot}`} />
       {children}
     </span>
   );

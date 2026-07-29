@@ -63,7 +63,7 @@ export function PublicNav() {
             </Button>
           </Link>
           <Link href={`/${mode}/register`}>
-            <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm h-8">
+            <Button size="sm" className={`text-black font-semibold text-sm h-8 ${mode === "ai" ? "bg-cyan-500 hover:bg-cyan-400" : "bg-emerald-500 hover:bg-emerald-400"}`}>
               Client portal
             </Button>
           </Link>
@@ -103,7 +103,7 @@ export function PublicNav() {
             )}
             <Link href={`/${mode}/login`} onClick={() => setOpen(false)} className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-card">Sign in</Link>
             <Link href={`/${mode}/register`} onClick={() => setOpen(false)} className="block">
-              <div className="bg-emerald-500 text-black font-semibold rounded-md px-3 py-2 text-sm text-center">Client portal</div>
+              <div className={`text-black font-semibold rounded-md px-3 py-2 text-sm text-center ${mode === "ai" ? "bg-cyan-500" : "bg-emerald-500"}`}>Client portal</div>
             </Link>
           </div>
         </div>
