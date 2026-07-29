@@ -11,7 +11,7 @@ import { ClientNotificationsBell } from "@/components/layout/ClientNotifications
 import type { Family } from "@/config/tiers";
 import {
   Sparkles, FileText, BarChart2, MessageSquare, Settings, Inbox,
-  LogOut, ChevronLeft, ChevronRight, Menu, X,
+  LogOut, ChevronLeft, ChevronRight, Menu, X, ArrowRight,
   Activity, Receipt, Wallet, Calculator, FolderOpen, Upload,
 } from "lucide-react";
 
@@ -51,6 +51,8 @@ const NAV_SECTIONS: { title: string; family: Family | null; items: NavItem[] }[]
 ];
 
 const FAMILY_HOME: Record<Family, string> = { ai: "/ai/client", bookkeeping: "/bookkeeping/client" };
+const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "ai" };
+const FAMILY_LABEL: Record<Family, string> = { ai: "AI Accountant", bookkeeping: "Book keeping" };
 
 interface Props {
   children: React.ReactNode;
@@ -168,6 +170,23 @@ export function ClientSidebar({ children, userEmail, families, signOutAction, ac
           </button>
         </div>
 
+        {/* cross-family nav — only shown once both products are active on the account */}
+        {hasBoth && fixedFamily && (
+          <div className={`px-2 pt-2 ${collapsed ? "flex justify-center" : ""}`}>
+            <Link
+              href={FAMILY_HOME[OTHER_FAMILY[fixedFamily]]}
+              title={collapsed ? `Also on your account: ${FAMILY_LABEL[OTHER_FAMILY[fixedFamily]]}` : undefined}
+              className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
+                fixedFamily === "ai"
+                  ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-500 hover:bg-emerald-500/[0.12]"
+                  : "border-cyan-500/30 bg-cyan-500/[0.06] text-cyan-500 hover:bg-cyan-500/[0.12]"
+              } ${collapsed ? "lg:justify-center lg:px-0" : "w-full justify-center"}`}
+            >
+              {!collapsed && <span className="whitespace-nowrap">Also on your account: {FAMILY_LABEL[OTHER_FAMILY[fixedFamily]]}</span>}
+              <ArrowRight className="h-3 w-3 shrink-0" />
+            </Link>
+          </div>
+        )}
         {/* mode toggle — shared /client/* pages (messages, settings, …) with no fixed family */}
         {hasBoth && !fixedFamily && (
           <div className={`px-2 pt-2 ${collapsed ? "flex justify-center" : ""}`}>
