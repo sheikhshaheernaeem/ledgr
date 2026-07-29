@@ -25,11 +25,11 @@ const OTHER_FAMILY: Record<Family, Family> = { ai: "bookkeeping", bookkeeping: "
 
 /**
  * Internal (ADMIN/QA) accounts that may preview the client portal despite
- * not holding a CLIENT role — e.g. the founder's own login or a reviewer
- * account, so they can see both AI Accountant and Book keeping as a
- * customer would without a separate throwaway account.
+ * not holding a CLIENT role — e.g. the founder's own login, so they can see
+ * both AI Accountant and Book keeping as a customer would without a
+ * separate throwaway account.
  */
-const CLIENT_PORTAL_PREVIEW_EMAILS = new Set(["admin@ledgr.app", "yc-review@ledgr.app"]);
+const CLIENT_PORTAL_PREVIEW_EMAILS = new Set(["admin@ledgr.app"]);
 
 export function canPreviewClientPortal(email: string | null | undefined): boolean {
   return !!email && CLIENT_PORTAL_PREVIEW_EMAILS.has(email);
